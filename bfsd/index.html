@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정보올림피아드 BFS 서술형 마스터</title>
+    <style>
+        :root {
+            --bfs-main: #0ea5e9;
+            --bfs-dark: #0369a1;
+            --bfs-bg: #f0f9ff;
+            --accent-orange: #f97316;
+            --text-slate: #334155;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, system-ui, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--text-slate);
+            line-height: 1.7;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            background: linear-gradient(135deg, #0c4a6e 0%, #0ea5e9 100%);
+            color: white;
+            padding: 50px 20px;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.5);
+        }
+
+        .neon-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            color: #fff;
+            animation: bfsGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes bfsGlow {
+            from { text-shadow: 0 0 5px #fff, 0 0 10px #7dd3fc, 0 0 20px #0ea5e9; }
+            to { text-shadow: 0 0 10px #fff, 0 0 20px #38bdf8, 0 0 40px #0284c7; }
+        }
+
+        .guide-box {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 16px;
+            border-left: 6px solid var(--accent-orange);
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .quiz-card {
+            background: var(--white);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-card:hover {
+            border-color: var(--bfs-main);
+            transform: translateY(-2px);
+        }
+
+        .quiz-header {
+            padding: 20px 25px;
+            background: #f8fafc;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .btn-check {
+            background: var(--bfs-main);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            border: none;
+        }
+
+        .quiz-body {
+            padding: 25px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .answer-panel {
+            display: none;
+            padding: 20px;
+            background: var(--bfs-bg);
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 1px solid #bae6fd;
+        }
+
+        .key-term {
+            display: inline-block;
+            background: #0ea5e9;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .standard-text {
+            margin-top: 10px;
+            font-weight: 500;
+            color: #0369a1;
+        }
+
+        pre {
+            background: #1e293b;
+            color: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .badge-num {
+            background: #334155;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1 class="neon-title">BFS Descriptive Strategy</h1>
+        <p style="margin-top: 15px; opacity: 0.8;">너비 우선 탐색 서술형 완벽 대비 10제</p>
+        <p style="font-size: 0.9rem;">Seyeong Coding Research Institute | Ph.D. Kim</p>
+    </header>
+
+    <div class="guide-box">
+        <strong> BFS 서술형 핵심 포인트:</strong><br>
+        BFS는 <b>'거리 순 탐색'</b>입니다. 답안 작성 시 <b>'큐(FIFO)'</b>와 <b>'최단거리 보장'</b>이라는 키워드가 들어가야 감점을 피할 수 있습니다.
+    </div>
+
+    <div id="quizContainer">
+        </div>
+
+    <footer>
+        <p>© 2026 Seyeong Coding Research Institute. All Rights Reserved.</p>
+        <p>본 자료는 세영코딩연구소 학생들을 위한 학습용 아티팩트입니다.</p>
+    </footer>
+</div>
+
+<script>
+    const quizData = [
+        {
+            title: "문제 1. BFS의 핵심 개념",
+            q: "1) BFS(너비 우선 탐색)란 무엇인지 설명하시오.<br>2) '너비 우선'이라고 불리는 이유와 DFS와의 차이를 설명하시오.",
+            keys: ["가까운 정점부터", "거리 순", "넓게 퍼짐", "최단거리"],
+            ans: "BFS는 시작 정점에서 가까운 정점부터 차례대로 탐색하는 알고리즘입니다. 시작점에서 거리 1인 정점들을 모두 방문한 뒤 거리 2인 정점으로 넘어가며 '넓게 퍼지는' 형태를 띠기에 너비 우선이라 합니다. 한 방향을 끝까지 파고드는 DFS와 달리, BFS는 최단거리를 찾는 데 매우 효율적입니다."
+        },
+        {
+            title: "문제 2. 큐(Queue)의 역할",
+            q: "1) 큐의 FIFO 구조를 설명하시오.<br>2) BFS에서 큐를 사용하지 않으면 어떤 문제가 생기는지 서술하시오.",
+            keys: ["First-In First-Out", "선입선출", "탐색 순서 보장", "거리 순서 유지"],
+            ans: "큐는 먼저 들어온 데이터가 먼저 나가는(FIFO) 구조입니다. BFS는 먼저 발견한 정점(가까운 정점)을 먼저 탐색해야 하므로 큐가 필수적입니다. 만약 큐 대신 스택을 쓰면 DFS처럼 동작하게 되어 거리 순 탐색이 불가능해지며, 최단거리 보장이라는 BFS의 장점을 잃게 됩니다."
+        },
+        {
+            title: "문제 3. BFS 동작 과정 추적",
+            q: "1번(2,3 연결), 2번(4,5 연결), 3번(6 연결) 그래프에서 1번 시작 시 방문 순서와 과정을 쓰시오.",
+            keys: ["1-2-3-4-5-6", "거리 1(2,3)", "거리 2(4,5,6)"],
+            ans: "방문 순서는 1 → 2 → 3 → 4 → 5 → 6 입니다. 1번을 큐에 넣고 꺼내며 인접한 2, 3을 큐에 넣습니다. 이후 2를 꺼내며 인접한 4, 5를, 3을 꺼내며 6을 큐에 넣습니다. 큐의 선입선출 성질에 의해 거리 1인 2, 3이 먼저 처리되고 그다음 거리 2인 정점들이 처리됩니다."
+        },
+        {
+            title: "문제 4. 방문 배열(visited)의 필요성",
+            q: "BFS에서 방문 배열이 왜 필요한지, 그리고 방문 처리는 '언제' 하는 것이 가장 좋은지 설명하시오.",
+            keys: ["중복 삽입 방지", "무한 루프 방지", "큐에 넣을 때(Push 시)"],
+            ans: "방문 배열은 같은 정점이 큐에 여러 번 중복되어 들어가는 것을 막기 위해 필요합니다. 특히 사이클이 있는 경우 무한 루프를 방지합니다. 방문 처리는 '큐에 정점을 넣는 시점'에 바로 하는 것이 좋습니다. 정점을 꺼낼 때 처리하면, 꺼내기 전까지 동일한 정점이 여러 번 큐에 쌓여 메모리와 시간 낭비를 초래할 수 있기 때문입니다."
+        },
+        {
+            title: "문제 5. BFS와 최단거리의 관계",
+            q: "BFS가 모든 간선 가중치가 같을 때 최단거리를 보장하는 이유를 설명하시오.",
+            keys: ["거리 순 탐색", "먼저 발견=최단", "가중치 동일 조건"],
+            ans: "BFS는 시작점으로부터 거리가 1, 2, 3...인 순서대로 탐색을 진행합니다. 따라서 어떤 정점을 탐색 도중 '처음' 발견했다는 것은, 그보다 더 짧은 경로로는 도달할 수 없음을 의미합니다. 단, 이 성질은 모든 간선의 이동 비용(가중치)이 동일할 때만 유효합니다."
+        },
+        {
+            title: "문제 6. BFS 코드 흐름 분석",
+            q: "<code>while (front < rear)</code> 루프와 그 내부에서 <code>visited[next] = 1</code>이 수행되는 코드의 의미를 설명하시오.",
+            keys: ["큐가 빌 때까지", "연결 및 미방문 확인", "탐색 확장"],
+            ans: "<code>while</code>문은 큐에 탐색할 정점이 남아있는 동안 반복을 계속하겠다는 뜻입니다. <code>if</code> 조건문은 현재 정점과 연결되어 있고 아직 방문하지 않은 정점을 찾는 과정이며, 조건을 만족하면 즉시 방문 표시를 하고 큐에 넣어 다음 탐색 후보로 등록합니다."
+        },
+        {
+            title: "문제 7. BFS와 격자(Grid) 탐색",
+            q: "격자판 문제를 그래프로 해석하는 방법과 격자 BFS에서 필수적인 요소 3가지를 설명하시오.",
+            keys: ["칸=정점", "상하좌우=간선", "방향 배열(dx, dy)", "범위 체크"],
+            ans: "격자의 각 칸을 '정점'으로, 상하좌우 이동 가능한 인접 관계를 '간선'으로 봅니다. 필수 요소 3가지는 1) 이동 방향을 정의한 방향 배열(dx, dy), 2) 중복 방문을 막는 방문 배열, 3) 배열 인덱스가 범위를 벗어나지 않는지 확인하는 경계 검사입니다."
+        },
+        {
+            title: "문제 8. 탐색 알고리즘 선택(BFS vs DFS)",
+            q: "시작점에서 목표점까지 '최소 이동 횟수'를 구할 때 왜 BFS가 DFS보다 적절한지 설명하시오.",
+            keys: ["최단 보장", "불필요한 탐색 차단", "DFS는 모든 경로 확인"],
+            ans: "최소 이동 횟수(최단거리) 문제는 BFS가 적합합니다. BFS는 목표점을 찾는 순간 탐색을 종료해도 그것이 최단임을 보장하지만, DFS는 한 길을 끝까지 가기 때문에 처음 찾은 경로가 최단이 아닐 수 있어 모든 경로를 확인해야 하는 비효율이 발생합니다."
+        },
+        {
+            title: "문제 9. 다중 시작점 BFS",
+            q: "바이러스 확산처럼 시작점이 여러 개인 문제에서 BFS를 어떻게 초기화하고 진행하는지 설명하시오.",
+            keys: ["모든 시작점 일괄 삽입", "동시 확산 효과", "초기 큐 설정"],
+            ans: "다중 시작점 문제는 BFS를 시작하기 전, '모든 시작 정점'을 한꺼번에 큐에 먼저 넣고 시작합니다. 이렇게 하면 각 시작점에서 뻗어 나가는 탐색이 거리순(시간순)으로 동시에 진행되는 효과를 얻을 수 있어, 전체 영역이 오염되거나 채워지는 최소 시간을 구할 수 있습니다."
+        },
+        {
+            title: "문제 10. BFS 문제 풀이 사고 과정",
+            q: "BFS 문제를 마주했을 때 정점 정의부터 시작점 설정까지의 단계를 서술하시오.",
+            keys: ["정점/이동 정의", "상태 모델링", "거리 배열", "초기화"],
+            ans: "1) 무엇을 정점(상태)으로 둘지 정합니다. 2) 한 정점에서 다음 정점으로 이동하는 조건(간선)을 정의합니다. 3) 방문 여부와 필요시 거리(Level)를 저장할 배열을 설계합니다. 4) 시작점을 큐에 넣고 방문 처리한 뒤 BFS 루프를 실행하여 목표 상태에 도달할 때까지 탐색합니다."
+        }
+    ];
+
+    const container = document.getElementById('quizContainer');
+
+    quizData.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.className = 'quiz-card';
+        card.innerHTML = `
+            <div class="quiz-header" onclick="toggleAns(${index})">
+                <span><span class="badge-num">${index + 1}</span> ${item.title}</span>
+                <button class="btn-check">답안 보기</button>
+            </div>
+            <div class="quiz-body">
+                <div style="font-weight: 500; margin-bottom: 15px;">${item.q}</div>
+                <div class="answer-panel" id="ans-${index}">
+                    <div style="margin-bottom: 10px;">
+                        <strong> 핵심 키워드</strong><br>
+                        ${item.keys.map(k => `<span class="key-term">${k}</span>`).join('')}
+                    </div>
+                    <div class="standard-text">
+                        <strong>[표준 서술형 답안]</strong><br>
+                        ${item.ans}
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+
+    function toggleAns(idx) {
+        const panel = document.getElementById(`ans-${idx}`);
+        const isVisible = panel.style.display === 'block';
+        panel.style.display = isVisible ? 'none' : 'block';
+    }
+</script>
+
+</body>
+</html>
