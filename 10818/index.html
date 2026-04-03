@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>백준 10818 — 최소 최대 6가지 풀이</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;700;900&family=Source+Code+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #1b1f2e;
+  --s1: #252a3d;
+  --s2: #2c3150;
+  --border: #323755;
+  --text: #cdd5f0;
+  --muted: #6570a0;
+  --a1: #e8c547;
+  --a2: #5ec4ff;
+  --a3: #7defa0;
+  --a4: #ff7eb3;
+  --a5: #ff9f6b;
+  --a6: #c17eff;
+  --kw: #ff7eb3;
+  --ty: #5ec4ff;
+  --fn: #7defa0;
+  --st: #e8c547;
+  --cm: #546e7a;
+  --nm: #ff9f6b;
+  --op: #89ddff;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Serif KR', serif;
+  min-height: 100vh;
+}
+body::before {
+  content:''; position:fixed; inset:0;
+  background-image: repeating-linear-gradient(-45deg, transparent, transparent 18px, rgba(255,255,255,.01) 18px, rgba(255,255,255,.01) 19px);
+  pointer-events:none; z-index:0;
+}
+
+.wrap { max-width: 980px; margin: 0 auto; padding: 44px 20px 90px; position:relative; z-index:1; }
+
+/* Header */
+.hdr { margin-bottom: 44px; animation: up .65s ease; }
+.hdr-top { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.boj-badge {
+  background: var(--a1); color: #1b1f2e;
+  font-family: 'Source Code Pro', monospace; font-size:11px; font-weight:700;
+  letter-spacing:2px; padding:5px 14px; border-radius:4px; text-transform:uppercase;
+}
+.prob-num { font-family:'Source Code Pro',monospace; font-size:13px; color:var(--muted); }
+.hdr h1 { font-size:clamp(26px,5vw,46px); font-weight:900; color:#fff; margin-bottom:8px; }
+.hdr h1 em { color:var(--a1); font-style:normal; }
+.hdr p { color:var(--muted); font-size:14px; font-weight:300; line-height:1.7; }
+
+/* Approach grid */
+.ap-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
+  margin-bottom:28px; animation:up .5s ease .1s both;
+}
+@media(max-width:580px){ .ap-grid { grid-template-columns:repeat(2,1fr); } }
+
+.ap-btn {
+  background:var(--s1); border:1.5px solid var(--border);
+  border-radius:10px; padding:13px 12px; cursor:pointer; text-align:left;
+  transition:all .2s; position:relative; overflow:hidden;
+}
+.ap-btn::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
+  border-radius:0 0 8px 8px; opacity:0; transition:opacity .2s;
+}
+.ap-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.3); }
+.ap-btn.act { border-color:currentColor; }
+.ap-btn.act::after { opacity:1; }
+.c1{color:var(--a1);} .c1::after{background:var(--a1);}
+.c2{color:var(--a2);} .c2::after{background:var(--a2);}
+.c3{color:var(--a3);} .c3::after{background:var(--a3);}
+.c4{color:var(--a4);} .c4::after{background:var(--a4);}
+.c5{color:var(--a5);} .c5::after{background:var(--a5);}
+.c6{color:var(--a6);} .c6::after{background:var(--a6);}
+.ap-label { font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:2px; text-transform:uppercase; opacity:.5; display:block; margin-bottom:4px; }
+.ap-name { font-size:12.5px; font-weight:700; line-height:1.4; color:var(--text); }
+
+/* Sections */
+.sec { display:none; animation:fade .3s ease; }
+.sec.on { display:block; }
+
+/* Code viewer */
+.code-viewer {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.cv-header {
+  background: var(--s2);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.cv-title { font-weight:700; font-size:14px; display:flex; align-items:center; gap:10px; }
+.cv-dots { display:flex; gap:5px; }
+.cv-dots i { width:10px; height:10px; border-radius:50%; }
+.d1{background:#ff5f57;} .d2{background:#febc2e;} .d3{background:#28c840;}
+.cv-tag {
+  font-family:'Source Code Pro',monospace; font-size:10px;
+  padding:3px 10px; border-radius:20px; letter-spacing:1px; text-transform:uppercase;
+}
+
+/* Code with line numbers */
+.cv-code-wrap {
+  display: flex;
+  background: #0d0f1a;
+}
+.cv-linenos {
+  flex-shrink: 0;
+  padding: 20px 0;
+  background: #0a0c14;
+  border-right: 1px solid rgba(255,255,255,.05);
+  min-width: 46px;
+  text-align: right;
+  user-select: none;
+  pointer-events: none;
+}
+.cv-linenos span {
+  display: block;
+  padding: 0 12px 0 8px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 12px;
+  line-height: 1.9;
+  color: #2d3555;
+}
+.cv-code {
+  flex: 1;
+  padding: 20px 22px;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 13px;
+  line-height: 1.9;
+  white-space: pre;
+  overflow-x: auto;
+  tab-size: 4;
+}
+
+/* Run panel */
+.run-panel {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid var(--border);
+  background: var(--s2);
+  flex-wrap: wrap;
+}
+.run-label { font-family:'Source Code Pro',monospace; font-size:11px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+.run-input {
+  flex: 1; min-width: 160px;
+  background: #0d0f1a; border: 1.5px solid var(--border); border-radius:7px;
+  padding: 8px 12px; color:var(--text);
+  font-family:'Source Code Pro',monospace; font-size:13px;
+  transition: border-color .2s;
+}
+.run-input:focus { outline:none; }
+.ri1:focus{border-color:var(--a1);}
+.ri2:focus{border-color:var(--a2);}
+.ri3:focus{border-color:var(--a3);}
+.ri4:focus{border-color:var(--a4);}
+.ri5:focus{border-color:var(--a5);}
+.ri6:focus{border-color:var(--a6);}
+
+.run-btn {
+  padding: 8px 20px; border-radius:7px; border:none; cursor:pointer;
+  font-family:'Source Code Pro',monospace; font-size:12px;
+  font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  transition:all .18s; white-space:nowrap; color:#1b1f2e;
+}
+.run-btn:hover { opacity:.85; transform:translateY(-1px); }
+.rb1{background:var(--a1);} .rb2{background:var(--a2);}
+.rb3{background:var(--a3);} .rb4{background:var(--a4);}
+.rb5{background:var(--a5);} .rb6{background:var(--a6);}
+
+.run-output {
+  flex: 1; min-width: 140px;
+  background: #0d0f1a; border: 1.5px solid var(--border); border-radius:7px;
+  padding: 8px 12px;
+  font-family:'Source Code Pro',monospace; font-size:13px;
+  min-height: 36px; line-height:1.5;
+  white-space: pre-wrap;
+}
+
+/* Cards */
+.card {
+  background: var(--s1); border:1px solid var(--border);
+  border-radius:14px; padding:26px; margin-bottom:18px;
+}
+.card-hd {
+  font-size:15px; font-weight:700; margin-bottom:14px;
+  padding-bottom:12px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.tag {
+  font-family:'Source Code Pro',monospace; font-size:10px;
+  padding:3px 10px; border-radius:20px; letter-spacing:1px; text-transform:uppercase;
+}
+.card p { font-size:14px; color:#9aa3c8; line-height:1.85; margin-bottom:10px; }
+.card p:last-child { margin-bottom:0; }
+
+.diff { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0; }
+@media(max-width:520px){ .diff { grid-template-columns:1fr; } }
+.diff-item { background:#0d0f1a; border-radius:10px; overflow:hidden; }
+.diff-hd { padding:8px 14px; font-family:'Source Code Pro',monospace; font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
+.diff-body { padding:14px 16px; font-family:'Source Code Pro',monospace; font-size:12.5px; line-height:1.9; color:#9aa3c8; white-space: pre; }
+
+.hl { border-radius:8px; padding:13px 17px; margin:12px 0; font-size:13.5px; line-height:1.75; }
+.hl-y{background:rgba(232,197,71,.07);border-left:3px solid var(--a1);}
+.hl-b{background:rgba(94,196,255,.07);border-left:3px solid var(--a2);}
+.hl-g{background:rgba(125,239,160,.07);border-left:3px solid var(--a3);}
+.hl-p{background:rgba(255,126,179,.07);border-left:3px solid var(--a4);}
+.hl-o{background:rgba(255,159,107,.07);border-left:3px solid var(--a5);}
+.hl-v{background:rgba(193,126,255,.07);border-left:3px solid var(--a6);}
+
+.steps { list-style:none; display:flex; flex-direction:column; gap:8px; margin:12px 0; }
+.steps li { display:flex; gap:12px; align-items:flex-start; font-size:13.5px; color:#9aa3c8; line-height:1.75; }
+.sn { flex-shrink:0; width:22px; height:22px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:'Source Code Pro',monospace; font-size:11px; font-weight:700; color:#1b1f2e; margin-top:2px; }
+
+.tbl { width:100%; border-collapse:collapse; font-size:13px; margin:12px 0; }
+.tbl th { background:rgba(232,197,71,.1); color:var(--a1); padding:9px 14px; text-align:left; font-family:'Source Code Pro',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; border:1px solid var(--border); }
+.tbl td { padding:9px 14px; border:1px solid var(--border); color:#9aa3c8; line-height:1.6; }
+.tbl tr:hover td { background:rgba(232,197,71,.02); }
+.tbl code { font-family:'Source Code Pro',monospace; background:rgba(125,239,160,.08); color:var(--a3); padding:1px 5px; border-radius:4px; font-size:11.5px; }
+
+.ic { font-family:'Source Code Pro',monospace; background:rgba(125,239,160,.08); color:var(--a3); padding:1px 6px; border-radius:4px; font-size:13px; }
+strong { color:var(--text); }
+
+.kw{color:var(--kw);} .ty{color:var(--ty);} .fn{color:var(--fn);}
+.st{color:var(--st);} .cm{color:var(--cm); font-style:italic;}
+.nm{color:var(--nm);} .op{color:var(--op);} .pp{color:#ff9cac;}
+
+@keyframes up { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fade { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div class="hdr-top">
+    <span class="boj-badge">BOJ</span>
+    <span class="prob-num"># 10818</span>
+  </div>
+  <h1>최소, <em>최대</em></h1>
+  <p>같은 문제를 6가지 방법으로 풀며 구조체·포인터·함수를 한 번에 학습합니다</p>
+</div>
+
+<div class="ap-grid">
+  <button class="ap-btn c1 act" onclick="show('s1',this)">
+    <span class="ap-label">풀이 2-1</span><span class="ap-name">기본 풀이</span>
+  </button>
+  <button class="ap-btn c2" onclick="show('s2',this)">
+    <span class="ap-label">풀이 2-2</span><span class="ap-name">배열 사용</span>
+  </button>
+  <button class="ap-btn c3" onclick="show('s3',this)">
+    <span class="ap-label">풀이 2-3</span><span class="ap-name">함수 분리</span>
+  </button>
+  <button class="ap-btn c4" onclick="show('s4',this)">
+    <span class="ap-label">풀이 2-4</span><span class="ap-name">포인터 탐색</span>
+  </button>
+  <button class="ap-btn c5" onclick="show('s5',this)">
+    <span class="ap-label">풀이 2-5</span><span class="ap-name">구조체 반환</span>
+  </button>
+  <button class="ap-btn c6" onclick="show('s6',this)">
+    <span class="ap-label">풀이 2-6</span><span class="ap-name">구조체 포인터</span>
+  </button>
+</div>
+
+<!-- S1 -->
+<div class="sec on" id="sec-s1">
+  <div class="code-viewer">
+    <div class="cv-header">
+      <div class="cv-title"><div class="cv-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>풀이 2-1 — 기본 풀이</div>
+      <span class="cv-tag" style="background:rgba(232,197,71,.12);color:var(--a1)">배열 없음 · 변수 2개</span>
+    </div>
+    <div class="cv-code-wrap">
+      <div class="cv-linenos" id="ln-s1"></div>
+      <div class="cv-code" id="code-s1"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {
+    <span class="kw">int</span> N, x;
+    <span class="kw">int</span> min, max;
+
+    <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;N);
+
+    <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;x);
+    min = x;        <span class="cm">// 첫 수로 min 초기화</span>
+    max = x;        <span class="cm">// 첫 수로 max 초기화</span>
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">1</span>; i &lt; N; i++) {
+        <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;x);
+
+        <span class="kw">if</span> (x &lt; min) min = x;   <span class="cm">// 더 작으면 min 갱신</span>
+        <span class="kw">if</span> (x &gt; max) max = x;   <span class="cm">// 더 크면 max 갱신</span>
+    }
+
+    <span class="fn">printf</span>(<span class="st">"%d %d\n"</span>, min, max);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+    </div>
+    <div class="run-panel">
+      <span class="run-label">📥 입력</span>
+      <input class="run-input ri1" id="s1-in" type="text" placeholder="예: 3 1 5 -1 8 2" />
+      <button class="run-btn rb1" onclick="run('s1')">▶ 실행</button>
+      <span class="run-label">📤 출력</span>
+      <div class="run-output" id="s1-out" style="color:var(--a1)">실행 버튼을 눌러보세요</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd">핵심 포인트 <span class="tag" style="background:rgba(232,197,71,.12);color:var(--a1)">기본</span></div>
+    <ul class="steps">
+      <li><div class="sn" style="background:var(--a1)">1</div><div><strong>첫 수로 초기화</strong> — 0 대신 실제 첫 번째 입력값으로 min/max를 초기화합니다. 0으로 하면 모든 수가 음수일 때 오답이 납니다.</div></li>
+      <li><div class="sn" style="background:var(--a1)">2</div><div><strong>배열 없이</strong> 변수 두 개(min, max)만으로 처리합니다. 입력받으면서 즉시 비교하므로 메모리가 가장 적습니다.</div></li>
+      <li><div class="sn" style="background:var(--a1)">3</div><div>데이터를 저장하지 않아 나중에 다시 볼 수 없습니다. 최솟값·최댓값만 구하면 될 때 가장 적합합니다.</div></li>
+    </ul>
+    <div class="hl hl-y">💡 <strong>왜 첫 수로 초기화?</strong> 입력 범위가 -1,000,000 ~ 1,000,000 이므로 0으로 초기화하면 모두 음수인 경우 max가 0으로 잘못 계산됩니다.</div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div class="sec" id="sec-s2">
+  <div class="code-viewer">
+    <div class="cv-header">
+      <div class="cv-title"><div class="cv-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>풀이 2-2 — 배열 사용</div>
+      <span class="cv-tag" style="background:rgba(94,196,255,.12);color:var(--a2)">int arr[ ]</span>
+    </div>
+    <div class="cv-code-wrap">
+      <div class="cv-linenos" id="ln-s2"></div>
+      <div class="cv-code" id="code-s2"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+
+<span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {
+    <span class="kw">int</span> N;
+    <span class="kw">int</span> arr[<span class="nm">1000000</span>];   <span class="cm">// 최대 개수만큼 배열 선언</span>
+
+    <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;N);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; N; i++) {
+        <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;arr[i]);   <span class="cm">// 전체를 배열에 저장</span>
+    }
+
+    <span class="kw">int</span> min = arr[<span class="nm">0</span>];   <span class="cm">// 배열 첫 원소로 초기화</span>
+    <span class="kw">int</span> max = arr[<span class="nm">0</span>];
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">1</span>; i &lt; N; i++) {
+        <span class="kw">if</span> (arr[i] &lt; min) min = arr[i];
+        <span class="kw">if</span> (arr[i] &gt; max) max = arr[i];
+    }
+
+    <span class="fn">printf</span>(<span class="st">"%d %d\n"</span>, min, max);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+    </div>
+    <div class="run-panel">
+      <span class="run-label">📥 입력</span>
+      <input class="run-input ri2" id="s2-in" type="text" placeholder="예: 5 3 -2 10 7 1" />
+      <button class="run-btn rb2" onclick="run('s2')">▶ 실행</button>
+      <span class="run-label">📤 출력</span>
+      <div class="run-output" id="s2-out" style="color:var(--a2)">실행 버튼을 눌러보세요</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd">기본 풀이와 차이 <span class="tag" style="background:rgba(94,196,255,.12);color:var(--a2)">배열</span></div>
+    <div class="diff">
+      <div class="diff-item">
+        <div class="diff-hd" style="background:rgba(232,197,71,.12);color:var(--a1)">풀이 2-1 (기본)</div>
+        <div class="diff-body">입력 즉시 비교
+변수 2개 (min, max)
+데이터 재사용 ❌
+메모리 최소 ✅</div>
+      </div>
+      <div class="diff-item">
+        <div class="diff-hd" style="background:rgba(94,196,255,.12);color:var(--a2)">풀이 2-2 (배열)</div>
+        <div class="diff-body">전체 저장 후 비교
+배열 arr[N] 사용
+데이터 재사용 ✅
+메모리 더 사용</div>
+      </div>
+    </div>
+    <div class="hl hl-b">💡 <strong>언제 배열을 쓰나요?</strong> 입력값을 나중에 다시 써야 하거나(정렬·검색 등) 여러 번 처리해야 할 때 배열이 필요합니다.</div>
+  </div>
+</div>
+
+<!-- S3 -->
+<div class="sec" id="sec-s3">
+  <div class="code-viewer">
+    <div class="cv-header">
+      <div class="cv-title"><div class="cv-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>풀이 2-3 — 함수로 분리</div>
+      <span class="cv-tag" style="background:rgba(125,239,160,.12);color:var(--a3)">포인터 매개변수</span>
+    </div>
+    <div class="cv-code-wrap">
+      <div class="cv-linenos" id="ln-s3"></div>
+      <div class="cv-code" id="code-s3"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+
+<span class="cm">/* min, max 두 값을 동시에 반환하려면
+   포인터 매개변수로 주소를 받아야 한다 */</span>
+<span class="kw">void</span> <span class="fn">findMinMax</span>(<span class="kw">int</span> arr[], <span class="kw">int</span> n,
+                  <span class="kw">int</span> *min, <span class="kw">int</span> *max) {
+    *min = arr[<span class="nm">0</span>];   <span class="cm">// *min: min이 가리키는 주소에 값 씀</span>
+    *max = arr[<span class="nm">0</span>];
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">1</span>; i &lt; n; i++) {
+        <span class="kw">if</span> (arr[i] &lt; *min) *min = arr[i];
+        <span class="kw">if</span> (arr[i] &gt; *max) *max = arr[i];
+    }
+}
+
+<span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {
+    <span class="kw">int</span> N;
+    <span class="kw">int</span> arr[<span class="nm">1000000</span>];
+    <span class="kw">int</span> min, max;
+
+    <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;N);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; N; i++) {
+        <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;arr[i]);
+    }
+
+    <span class="fn">findMinMax</span>(arr, N, &amp;min, &amp;max);   <span class="cm">// &amp;로 주소를 넘김</span>
+
+    <span class="fn">printf</span>(<span class="st">"%d %d\n"</span>, min, max);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+    </div>
+    <div class="run-panel">
+      <span class="run-label">📥 입력</span>
+      <input class="run-input ri3" id="s3-in" type="text" placeholder="예: 4 9 -3 5 0" />
+      <button class="run-btn rb3" onclick="run('s3')">▶ 실행</button>
+      <span class="run-label">📤 출력</span>
+      <div class="run-output" id="s3-out" style="color:var(--a3)">실행 버튼을 눌러보세요</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd">왜 포인터 매개변수가 필요한가 <span class="tag" style="background:rgba(125,239,160,.12);color:var(--a3)">핵심</span></div>
+    <p>함수는 return으로 값을 <strong>하나만</strong> 돌려줄 수 있습니다. min과 max <strong>두 개를 동시에 반환</strong>하려면 주소를 넘겨야 합니다.</p>
+    <div class="diff">
+      <div class="diff-item">
+        <div class="diff-hd" style="background:rgba(255,126,179,.12);color:var(--a4)">❌ 값을 넘기면</div>
+        <div class="diff-body"><span class="fn">findMinMax</span>(arr, N, min, max);
+<span class="cm">// 복사본 전달
+// 원본은 그대로!</span></div>
+      </div>
+      <div class="diff-item">
+        <div class="diff-hd" style="background:rgba(125,239,160,.12);color:var(--a3)">✅ 주소를 넘기면</div>
+        <div class="diff-body"><span class="fn">findMinMax</span>(arr, N, <span class="op">&amp;</span>min, <span class="op">&amp;</span>max);
+<span class="cm">// 실제 주소 전달
+// 원본 값을 직접 변경!</span></div>
+      </div>
+    </div>
+    <div class="hl hl-g">💡 <span class="ic">&amp;min</span>은 min의 주소 / <span class="ic">*min = ...</span>은 그 주소에 값 쓰기. 이것이 포인터 매개변수의 핵심입니다.</div>
+  </div>
+</div>
+
+<!-- S4 -->
+<div class="sec" id="sec-s4">
+  <div class="code-viewer">
+    <div class="cv-header">
+      <div class="cv-title"><div class="cv-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>풀이 2-4 — 포인터로 배열 탐색</div>
+      <span class="cv-tag" style="background:rgba(255,126,179,.12);color:var(--a4)">*(p+i) 포인터 산술</span>
+    </div>
+    <div class="cv-code-wrap">
+      <div class="cv-linenos" id="ln-s4"></div>
+      <div class="cv-code" id="code-s4"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+
+<span class="cm">/* 배열 이름 대신 포인터로 원소에 접근하는 방법 */</span>
+<span class="kw">void</span> <span class="fn">findMinMax</span>(<span class="kw">int</span> *p, <span class="kw">int</span> n,
+                  <span class="kw">int</span> *min, <span class="kw">int</span> *max) {
+    *min = *p;        <span class="cm">// *(p+0) == p[0] == 첫 번째 원소</span>
+    *max = *p;
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">1</span>; i &lt; n; i++) {
+        <span class="kw">if</span> (*(p + i) &lt; *min)
+            *min = *(p + i);   <span class="cm">// *(p+i) == p[i]</span>
+        <span class="kw">if</span> (*(p + i) &gt; *max)
+            *max = *(p + i);
+    }
+}
+
+<span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {
+    <span class="kw">int</span> N;
+    <span class="kw">int</span> arr[<span class="nm">1000000</span>];
+    <span class="kw">int</span> min, max;
+
+    <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;N);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; N; i++) {
+        <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;arr[i]);
+    }
+
+    <span class="fn">findMinMax</span>(arr, N, &amp;min, &amp;max);
+
+    <span class="fn">printf</span>(<span class="st">"%d %d\n"</span>, min, max);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+    </div>
+    <div class="run-panel">
+      <span class="run-label">📥 입력</span>
+      <input class="run-input ri4" id="s4-in" type="text" placeholder="예: 6 10 3 -5 8 2 7" />
+      <button class="run-btn rb4" onclick="run('s4')">▶ 실행</button>
+      <span class="run-label">📤 출력</span>
+      <div class="run-output" id="s4-out" style="color:var(--a4)">실행 버튼을 눌러보세요</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd">배열 표기 vs 포인터 표기 — 완전히 동일 <span class="tag" style="background:rgba(255,126,179,.12);color:var(--a4)">동치</span></div>
+    <div class="diff">
+      <div class="diff-item">
+        <div class="diff-hd" style="background:rgba(94,196,255,.12);color:var(--a2)">배열 표기 (arr[])</div>
+        <div class="diff-body">arr[0]   <span class="cm">→ 첫 번째 원소</span>
+arr[i]   <span class="cm">→ i번째 원소</span>
+&amp;arr[i]  <span class="cm">→ i번째 주소</span></div>
+      </div>
+      <div class="diff-item">
+        <div class="diff-hd" style="background:rgba(255,126,179,.12);color:var(--a4)">포인터 표기 (int *p)</div>
+        <div class="diff-body">*p       <span class="cm">→ 첫 번째 원소</span>
+*(p+i)   <span class="cm">→ i번째 원소</span>
+p+i      <span class="cm">→ i번째 주소</span></div>
+      </div>
+    </div>
+    <div class="hl hl-p">💡 <span class="ic">arr[i]</span>와 <span class="ic">*(arr+i)</span>는 <strong>완전히 동일</strong>합니다. 컴파일러는 배열 표기를 내부적으로 포인터 산술로 변환합니다.</div>
+  </div>
+</div>
+
+<!-- S5 -->
+<div class="sec" id="sec-s5">
+  <div class="code-viewer">
+    <div class="cv-header">
+      <div class="cv-title"><div class="cv-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>풀이 2-5 — 구조체로 결과 반환</div>
+      <span class="cv-tag" style="background:rgba(255,159,107,.12);color:var(--a5)">struct 반환</span>
+    </div>
+    <div class="cv-code-wrap">
+      <div class="cv-linenos" id="ln-s5"></div>
+      <div class="cv-code" id="code-s5"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+
+<span class="cm">/* 결과 두 개를 구조체 하나에 묶어 반환 */</span>
+<span class="kw">typedef struct</span> {
+    <span class="kw">int</span> min;
+    <span class="kw">int</span> max;
+} <span class="ty">Result</span>;
+
+<span class="ty">Result</span> <span class="fn">findMinMax</span>(<span class="kw">int</span> arr[], <span class="kw">int</span> n) {
+    <span class="ty">Result</span> r;
+    r.min = arr[<span class="nm">0</span>];
+    r.max = arr[<span class="nm">0</span>];
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">1</span>; i &lt; n; i++) {
+        <span class="kw">if</span> (arr[i] &lt; r.min) r.min = arr[i];
+        <span class="kw">if</span> (arr[i] &gt; r.max) r.max = arr[i];
+    }
+
+    <span class="kw">return</span> r;   <span class="cm">// 구조체 통째로 반환</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {
+    <span class="kw">int</span> N;
+    <span class="kw">int</span> arr[<span class="nm">1000000</span>];
+    <span class="ty">Result</span> ans;
+
+    <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;N);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; N; i++) {
+        <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;arr[i]);
+    }
+
+    ans = <span class="fn">findMinMax</span>(arr, N);   <span class="cm">// 구조체 통째로 받음</span>
+
+    <span class="fn">printf</span>(<span class="st">"%d %d\n"</span>, ans.min, ans.max);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+    </div>
+    <div class="run-panel">
+      <span class="run-label">📥 입력</span>
+      <input class="run-input ri5" id="s5-in" type="text" placeholder="예: 5 12 -4 0 9 6" />
+      <button class="run-btn rb5" onclick="run('s5')">▶ 실행</button>
+      <span class="run-label">📤 출력</span>
+      <div class="run-output" id="s5-out" style="color:var(--a5)">실행 버튼을 눌러보세요</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd">포인터 매개변수 vs 구조체 반환 <span class="tag" style="background:rgba(255,159,107,.12);color:var(--a5)">비교</span></div>
+    <div class="diff">
+      <div class="diff-item">
+        <div class="diff-hd" style="background:rgba(125,239,160,.12);color:var(--a3)">풀이 2-3 (포인터 매개변수)</div>
+        <div class="diff-body"><span class="fn">findMinMax</span>(arr, N, <span class="op">&amp;</span>min, <span class="op">&amp;</span>max);
+<span class="cm">// &amp; 로 주소를 넘겨야 함
+// *min = ... 로 값 쓰기</span></div>
+      </div>
+      <div class="diff-item">
+        <div class="diff-hd" style="background:rgba(255,159,107,.12);color:var(--a5)">풀이 2-5 (구조체 반환)</div>
+        <div class="diff-body"><span class="ty">Result</span> r = <span class="fn">findMinMax</span>(arr, N);
+<span class="cm">// &amp;, * 없이 깔끔
+// r.min / r.max 로 접근</span></div>
+      </div>
+    </div>
+    <div class="hl hl-o">💡 구조체를 반환하면 <span class="ic">&amp;</span>와 <span class="ic">*</span> 없이 결과 두 개를 한 번에 받을 수 있어 코드가 더 읽기 쉽습니다.</div>
+  </div>
+</div>
+
+<!-- S6 -->
+<div class="sec" id="sec-s6">
+  <div class="code-viewer">
+    <div class="cv-header">
+      <div class="cv-title"><div class="cv-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>풀이 2-6 — 구조체 포인터 + 동적 할당</div>
+      <span class="cv-tag" style="background:rgba(193,126,255,.12);color:var(--a6)">malloc · 구조체 포인터 · -&gt;</span>
+    </div>
+    <div class="cv-code-wrap">
+      <div class="cv-linenos" id="ln-s6"></div>
+      <div class="cv-code" id="code-s6"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>   <span class="cm">// malloc, free</span>
+
+<span class="cm">/* 입력 데이터를 구조체에 저장 */</span>
+<span class="kw">typedef struct</span> {
+    <span class="kw">int</span> value;
+} <span class="ty">Data</span>;
+
+<span class="cm">/* 결과를 구조체에 저장 */</span>
+<span class="kw">typedef struct</span> {
+    <span class="kw">int</span> min;
+    <span class="kw">int</span> max;
+} <span class="ty">Result</span>;
+
+<span class="kw">void</span> <span class="fn">findMinMax</span>(<span class="ty">Data</span> *p, <span class="kw">int</span> n, <span class="ty">Result</span> *r) {
+    r<span class="op">-&gt;</span>min = p[<span class="nm">0</span>].value;   <span class="cm">// r-&gt;min: r이 가리키는 구조체의 min</span>
+    r<span class="op">-&gt;</span>max = p[<span class="nm">0</span>].value;
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">1</span>; i &lt; n; i++) {
+        <span class="kw">if</span> ((p + i)<span class="op">-&gt;</span>value &lt; r<span class="op">-&gt;</span>min)
+            r<span class="op">-&gt;</span>min = (p + i)<span class="op">-&gt;</span>value;   <span class="cm">// (p+i)-&gt;value == p[i].value</span>
+        <span class="kw">if</span> ((p + i)<span class="op">-&gt;</span>value &gt; r<span class="op">-&gt;</span>max)
+            r<span class="op">-&gt;</span>max = (p + i)<span class="op">-&gt;</span>value;
+    }
+}
+
+<span class="kw">int</span> <span class="fn">main</span>(<span class="kw">void</span>) {
+    <span class="kw">int</span> N;
+    <span class="ty">Data</span>   *arr;
+    <span class="ty">Result</span>  ans;
+
+    <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;N);
+
+    <span class="cm">// 힙에 N개짜리 Data 배열 동적 할당</span>
+    arr = (<span class="ty">Data</span> *)<span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="ty">Data</span>) * N);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; N; i++) {
+        <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;arr[i].value);
+    }
+
+    <span class="fn">findMinMax</span>(arr, N, &amp;ans);   <span class="cm">// &amp;ans: Result 구조체 주소 전달</span>
+
+    <span class="fn">printf</span>(<span class="st">"%d %d\n"</span>, ans.min, ans.max);
+
+    <span class="fn">free</span>(arr);   <span class="cm">// 반드시 해제! 안 하면 메모리 누수</span>
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+    </div>
+    <div class="run-panel">
+      <span class="run-label">📥 입력</span>
+      <input class="run-input ri6" id="s6-in" type="text" placeholder="예: 7 -1 5 3 8 2 6 4" />
+      <button class="run-btn rb6" onclick="run('s6')">▶ 실행</button>
+      <span class="run-label">📤 출력</span>
+      <div class="run-output" id="s6-out" style="color:var(--a6)">실행 버튼을 눌러보세요</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd">새로 등장한 개념 4가지 <span class="tag" style="background:rgba(193,126,255,.12);color:var(--a6)">심화</span></div>
+    <ul class="steps">
+      <li><div class="sn" style="background:var(--a6)">1</div><div><strong>동적 할당 (malloc)</strong> — <span class="ic">malloc(sizeof(Data) * N)</span>으로 힙에 N개 공간을 확보합니다. 스택 한계를 넘는 대용량 배열에 필요합니다.</div></li>
+      <li><div class="sn" style="background:var(--a6)">2</div><div><strong>(p+i)-&gt;value</strong> — 포인터로 구조체 배열을 탐색하며 멤버에 접근합니다. <span class="ic">p[i].value</span>와 완전히 동일합니다.</div></li>
+      <li><div class="sn" style="background:var(--a6)">3</div><div><strong>Result *r</strong> — 결과 구조체도 포인터로 받아 <span class="ic">r-&gt;min</span>으로 원본을 직접 수정합니다.</div></li>
+      <li><div class="sn" style="background:var(--a6)">4</div><div><strong>free(arr)</strong> — malloc으로 확보한 메모리는 반드시 free로 반환해야 합니다. 빠뜨리면 메모리 누수가 발생합니다.</div></li>
+    </ul>
+    <div class="hl hl-v">💡 모든 개념의 총집합: <strong>구조체 + 포인터 + 동적 할당 + -&gt; 연산자</strong>를 한 코드에서 모두 볼 수 있습니다.</div>
+  </div>
+</div>
+
+<!-- 비교표 -->
+<div style="margin-top:8px;">
+  <div class="card">
+    <div class="card-hd">6가지 풀이 한눈에 비교</div>
+    <table class="tbl">
+      <tr><th>풀이</th><th>핵심 기법</th><th>결과 전달</th><th>특징</th></tr>
+      <tr><td>2-1 기본</td><td>변수만 사용</td><td>printf 직접</td><td>가장 단순, 메모리 최소</td></tr>
+      <tr><td>2-2 배열</td><td><code>int arr[]</code></td><td>printf 직접</td><td>데이터 재사용 가능</td></tr>
+      <tr><td>2-3 함수</td><td><code>int *min, *max</code></td><td>포인터 매개변수</td><td>기능 분리, &amp;로 주소 전달</td></tr>
+      <tr><td>2-4 포인터</td><td><code>*(p+i)</code></td><td>포인터 매개변수</td><td>배열=포인터 개념 이해</td></tr>
+      <tr><td>2-5 구조체</td><td><code>typedef struct</code></td><td>구조체 return</td><td>두 값을 묶어 반환, 깔끔</td></tr>
+      <tr><td>2-6 구조체포인터</td><td><code>Data*, Result*, malloc</code></td><td>구조체 포인터 매개변수</td><td>모든 개념 총집합</td></tr>
+    </table>
+  </div>
+</div>
+
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.ap-btn').forEach(b => b.classList.remove('act'));
+  document.getElementById('sec-' + id).classList.add('on');
+  btn.classList.add('act');
+}
+
+function buildLineNos() {
+  ['s1','s2','s3','s4','s5','s6'].forEach(id => {
+    const codeEl = document.getElementById('code-' + id);
+    const lnEl   = document.getElementById('ln-' + id);
+    if (!codeEl || !lnEl) return;
+    const lineCount = codeEl.innerHTML.split('\n').length;
+    let html = '';
+    for (let i = 1; i <= lineCount; i++) html += `<span>${i}</span>`;
+    lnEl.innerHTML = html;
+  });
+}
+
+function run(id) {
+  const inEl  = document.getElementById(id + '-in');
+  const outEl = document.getElementById(id + '-out');
+  const v = inEl.value.trim();
+  if (!v) { outEl.textContent = '⚠️  숫자를 입력하세요.\n예: 5 3 -1 8 2 7'; return; }
+  const parts = v.split(/\s+/).map(Number);
+  if (parts.some(isNaN)) { outEl.textContent = '⚠️  숫자만 입력하세요.'; return; }
+  let nums;
+  if (parts.length >= 2 && parts[0] === parts.length - 1) {
+    nums = parts.slice(1);
+  } else {
+    nums = parts;
+  }
+  if (nums.length === 0) { outEl.textContent = '⚠️  숫자를 더 입력하세요.'; return; }
+  outEl.textContent = `${Math.min(...nums)} ${Math.max(...nums)}`;
+}
+
+['s1','s2','s3','s4','s5','s6'].forEach(id => {
+  const el = document.getElementById(id + '-in');
+  if (el) el.addEventListener('keydown', e => { if (e.key === 'Enter') run(id); });
+});
+
+window.addEventListener('DOMContentLoaded', buildLineNos);
+</script>
+</body>
+</html>
