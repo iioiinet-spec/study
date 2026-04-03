@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>구조체 + qsort 비교함수 20패턴</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #0f1117;
+  --s1:     #161a26;
+  --s2:     #1c2134;
+  --s3:     #222840;
+  --border: #2a3050;
+  --text:   #d4daf5;
+  --muted:  #5a6490;
+  --dim:    #3a4470;
+
+  --num:  #ffb347;
+  --coord:#5ec4ff;
+  --str:  #7defa0;
+  --stu:  #ff7eb3;
+  --int:  #c17eff;
+  --gre:  #f7c84f;
+  --ord:  #ff9f6b;
+
+  --kw:  #ff7eb3;
+  --ty:  #5ec4ff;
+  --fn:  #7defa0;
+  --cm:  #4a5a6a;
+  --nm:  #ffb347;
+  --st:  #f7c84f;
+  --op:  #89ddff;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans KR', sans-serif;
+  min-height: 100vh;
+}
+
+body::before {
+  content:''; position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(94,196,255,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 35% at 20% 90%, rgba(193,126,255,.04) 0%, transparent 60%);
+  pointer-events:none; z-index:0;
+}
+
+.wrap { max-width:1060px; margin:0 auto; padding:40px 20px 80px; position:relative; z-index:1; }
+
+/* ── Header ── */
+.hdr { margin-bottom:40px; }
+.hdr-kicker {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  letter-spacing:3px; color:var(--muted); text-transform:uppercase;
+  margin-bottom:14px; display:flex; align-items:center; gap:10px;
+}
+.hdr-kicker::after { content:''; flex:1; height:1px; background:var(--border); }
+.hdr h1 {
+  font-size:clamp(24px,4vw,42px); font-weight:900; line-height:1.15;
+  color:#fff; margin-bottom:10px;
+}
+.hdr h1 span { color:var(--num); }
+.hdr p { color:var(--muted); font-size:13.5px; line-height:1.7; }
+
+/* ── Category nav ── */
+.cat-nav {
+  display:flex; gap:6px; flex-wrap:wrap; margin-bottom:28px;
+}
+.cat-btn {
+  padding:7px 16px; border-radius:8px;
+  border:1px solid var(--border); background:var(--s1);
+  color:var(--muted); cursor:pointer;
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  letter-spacing:1px; text-transform:uppercase;
+  transition:all .18s; white-space:nowrap;
+}
+.cat-btn:hover { border-color:currentColor; }
+.cat-btn.on  { font-weight:700; }
+
+/* ── Pattern grid ── */
+.grid {
+  display:grid; grid-template-columns:repeat(2,1fr); gap:14px;
+  margin-bottom:32px;
+}
+@media(max-width:700px){ .grid { grid-template-columns:1fr; } }
+
+/* ── Pattern card ── */
+.pcard {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:14px; overflow:hidden;
+  transition:border-color .2s, transform .15s;
+  cursor:pointer; position:relative;
+}
+.pcard:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(0,0,0,.35); }
+.pcard.hide { display:none; }
+
+.pcard-top {
+  padding:13px 16px 0;
+  display:flex; align-items:flex-start; justify-content:space-between; gap:8px;
+}
+.pcard-num {
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  letter-spacing:2px; color:var(--muted); text-transform:uppercase;
+  white-space:nowrap; padding-top:2px;
+}
+.pcard-title { font-size:14px; font-weight:700; line-height:1.4; flex:1; text-align:right; }
+
+.pcard-cat {
+  font-family:'JetBrains Mono',monospace; font-size:9px;
+  padding:2px 8px; border-radius:20px; letter-spacing:1px;
+  text-transform:uppercase; white-space:nowrap;
+  display:inline-block; margin-bottom:1px;
+}
+
+/* Code inside card */
+.pcard-code {
+  margin:10px 16px 14px;
+  background:#090c14;
+  border:1px solid var(--border);
+  border-radius:9px;
+  overflow:hidden;
+}
+.pcard-code-inner {
+  padding:14px 16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:12.5px; line-height:1.9;
+  white-space:pre; overflow-x:auto;
+}
+
+/* star badge */
+.star {
+  color:#ffd700; font-size:13px; margin-left:4px;
+}
+
+/* desc pills */
+.pcard-desc {
+  padding:0 16px 14px;
+  display:flex; flex-wrap:wrap; gap:6px;
+}
+.dpill {
+  background:var(--s3); border:1px solid var(--border);
+  border-radius:6px; padding:4px 10px;
+  font-size:11.5px; color:#9aa3c8; line-height:1.4;
+}
+
+/* warn/ok diff */
+.pcard-diff {
+  margin:0 16px 14px;
+  display:grid; grid-template-columns:1fr 1fr; gap:8px;
+}
+@media(max-width:450px){ .pcard-diff { grid-template-columns:1fr; } }
+.diff-box { background:#090c14; border-radius:8px; overflow:hidden; }
+.diff-hd  {
+  padding:5px 12px;
+  font-family:'JetBrains Mono',monospace; font-size:10px;
+  font-weight:700; letter-spacing:1px; text-transform:uppercase;
+}
+.diff-body {
+  padding:10px 12px;
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+  line-height:1.8; color:#9aa3c8; white-space:pre;
+}
+
+/* ── Big sections ── */
+.section-hd {
+  display:flex; align-items:center; gap:12px;
+  margin:36px 0 18px;
+}
+.section-hd h2 {
+  font-size:16px; font-weight:700; white-space:nowrap;
+}
+.section-hd::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* ── Template block ── */
+.tpl-grid {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+  margin-bottom:28px;
+}
+@media(max-width:700px){ .tpl-grid { grid-template-columns:1fr; } }
+
+.tpl-card {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:13px; overflow:hidden;
+}
+.tpl-hd {
+  padding:10px 16px;
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  font-weight:700; letter-spacing:1px; text-transform:uppercase;
+  border-bottom:1px solid var(--border);
+}
+.tpl-body {
+  padding:14px 16px;
+  font-family:'JetBrains Mono',monospace; font-size:12px;
+  line-height:1.9; white-space:pre; overflow-x:auto;
+  background:#090c14;
+}
+
+/* ── Rules ── */
+.rules-grid {
+  display:grid; grid-template-columns:repeat(5,1fr); gap:10px;
+  margin-bottom:28px;
+}
+@media(max-width:700px){ .rules-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:400px){ .rules-grid { grid-template-columns:1fr; } }
+
+.rule-card {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:12px; padding:16px 14px; text-align:center;
+}
+.rule-icon { font-size:22px; margin-bottom:8px; }
+.rule-type { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
+.rule-val  { font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700; }
+
+/* ── Steps ── */
+.steps-row {
+  display:flex; gap:0; margin-bottom:28px; flex-wrap:wrap;
+}
+.step {
+  flex:1; min-width:100px;
+  background:var(--s1); padding:16px 14px;
+  border:1px solid var(--border);
+  border-right:none; position:relative; text-align:center;
+}
+.step:last-child { border-right:1px solid var(--border); border-radius:0 10px 10px 0; }
+.step:first-child { border-radius:10px 0 0 10px; }
+.step-n {
+  width:26px; height:26px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700;
+  color:#1b1f2e; margin:0 auto 8px;
+}
+.step-txt { font-size:12px; color:#9aa3c8; line-height:1.5; }
+.step-arrow {
+  position:absolute; right:-10px; top:50%; transform:translateY(-50%);
+  font-size:14px; color:var(--muted); z-index:2;
+}
+
+/* ── TOP7 ── */
+.top7-grid {
+  display:grid; grid-template-columns:repeat(7,1fr); gap:8px;
+  margin-bottom:28px;
+}
+@media(max-width:700px){ .top7-grid { grid-template-columns:repeat(3,1fr); } }
+
+.top7-card {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:11px; padding:14px 10px; text-align:center;
+}
+.top7-n { font-family:'JetBrains Mono',monospace; font-size:18px; font-weight:700; margin-bottom:6px; }
+.top7-txt { font-size:11px; color:#9aa3c8; line-height:1.4; }
+
+/* ── Quiz button ── */
+.quiz-wrap {
+  background:var(--s1); border:1px solid var(--border);
+  border-radius:14px; padding:24px; margin-top:8px;
+}
+.quiz-hd { font-size:16px; font-weight:700; margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+.qcard { margin-bottom:20px; }
+.qtxt { font-size:14px; font-weight:700; margin-bottom:12px; line-height:1.5; }
+.qopts { display:flex; flex-direction:column; gap:8px; }
+.qopt {
+  background:#090c14; border:1.5px solid var(--border);
+  border-radius:9px; padding:11px 14px;
+  cursor:pointer; font-family:'JetBrains Mono',monospace;
+  font-size:12.5px; text-align:left; color:var(--text);
+  display:flex; align-items:center; gap:10px; transition:all .15s;
+}
+.qopt:hover:not(:disabled) { border-color:var(--num); background:rgba(255,179,71,.04); }
+.qlbl {
+  width:22px; height:22px; border-radius:5px;
+  background:var(--border); display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; flex-shrink:0;
+}
+.qopt.ok { border-color:var(--fn); background:rgba(125,239,160,.05); color:var(--fn); }
+.qopt.ok .qlbl { background:rgba(125,239,160,.2); color:var(--fn); }
+.qopt.no { border-color:var(--kw); background:rgba(255,126,179,.05); color:var(--kw); opacity:.65; }
+.qopt.no .qlbl { background:rgba(255,126,179,.2); color:var(--kw); }
+.qopt:disabled { cursor:not-allowed; }
+.qfb { margin-top:10px; padding:10px 14px; border-radius:8px; font-size:13px; line-height:1.65; display:none; }
+.qfb.show { display:block; }
+.qfb.ok-fb { background:rgba(125,239,160,.07); border:1px solid rgba(125,239,160,.2); color:#a8f5c0; }
+.qfb.no-fb { background:rgba(255,126,179,.07); border:1px solid rgba(255,126,179,.2); color:#f5afc8; }
+
+.score-wrap {
+  display:none; align-items:center; gap:14px;
+  background:var(--s2); border:1px solid var(--border);
+  border-radius:10px; padding:12px 18px; margin-bottom:18px;
+  font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted);
+}
+.score-wrap.show { display:flex; }
+.score-num { font-weight:700; font-size:16px; color:var(--fn); }
+.score-bar { flex:1; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+.score-fill { height:100%; background:linear-gradient(90deg,var(--fn),#a8f5c0); border-radius:3px; transition:width .4s; }
+
+/* syntax */
+.kw{color:var(--kw);} .ty{color:var(--ty);} .fn{color:var(--fn);}
+.cm{color:var(--cm);font-style:italic;} .nm{color:var(--nm);}
+.st{color:var(--st);} .op{color:var(--op);}
+
+/* search */
+.search-wrap { margin-bottom:18px; }
+.search-input {
+  width:100%; background:var(--s1); border:1.5px solid var(--border);
+  border-radius:10px; padding:11px 16px;
+  color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px;
+  transition:border-color .2s;
+}
+.search-input:focus { outline:none; border-color:var(--num); }
+.search-input::placeholder { color:var(--muted); }
+
+@keyframes up   { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fade { from{opacity:0;} to{opacity:1;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- Header -->
+<div class="hdr" style="animation:up .5s ease">
+  <div class="hdr-kicker">qsort · compare function</div>
+  <h1>구조체 + qsort<br>비교함수 <span>20패턴</span></h1>
+  <p>시험·코딩테스트 필수 패턴을 카테고리별로 정리했습니다</p>
+</div>
+
+<!-- Search -->
+<div class="search-wrap">
+  <input class="search-input" type="text" placeholder="🔍 패턴 검색... (예: 오름차순, 문자열, 좌표)" oninput="filterSearch(this.value)" />
+</div>
+
+<!-- Category nav -->
+<div class="cat-nav">
+  <button class="cat-btn on" style="color:var(--text)" onclick="filterCat('all',this)">전체 (20)</button>
+  <button class="cat-btn" style="color:var(--num)"   onclick="filterCat('num',this)">숫자</button>
+  <button class="cat-btn" style="color:var(--coord)" onclick="filterCat('coord',this)">좌표</button>
+  <button class="cat-btn" style="color:var(--str)"   onclick="filterCat('str',this)">문자열</button>
+  <button class="cat-btn" style="color:var(--stu)"   onclick="filterCat('stu',this)">학생/점수</button>
+  <button class="cat-btn" style="color:var(--int)"   onclick="filterCat('int',this)">구간</button>
+  <button class="cat-btn" style="color:var(--gre)"   onclick="filterCat('gre',this)">그리디</button>
+  <button class="cat-btn" style="color:var(--ord)"   onclick="filterCat('ord',this)">입력순</button>
+</div>
+
+<!-- Pattern grid -->
+<div class="grid" id="pattern-grid">
+
+  <!-- 1 -->
+  <div class="pcard" data-cat="num" data-title="숫자 1개 오름차순" style="border-color:rgba(255,179,71,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 01</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(255,179,71,.12);color:var(--num)">숫자</span>
+        <div class="pcard-title">숫자 오름차순</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">return</span> x<span class="op">-&gt;</span>value <span class="op">-</span> y<span class="op">-&gt;</span>value;</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">작은 값이 앞으로</span>
+      <span class="dpill">가장 기본 패턴</span>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="pcard" data-cat="num" data-title="숫자 1개 내림차순" style="border-color:rgba(255,179,71,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 02</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(255,179,71,.12);color:var(--num)">숫자</span>
+        <div class="pcard-title">숫자 내림차순</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">return</span> y<span class="op">-&gt;</span>value <span class="op">-</span> x<span class="op">-&gt;</span>value;</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">큰 값이 앞으로</span>
+      <span class="dpill">점수·순위 문제</span>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="pcard" data-cat="num" data-title="long long 안전 비교" style="border-color:rgba(255,179,71,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 03</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(255,179,71,.12);color:var(--num)">숫자</span>
+        <div class="pcard-title">long long 안전 비교</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (x<span class="op">-&gt;</span>value <span class="op">&lt;</span> y<span class="op">-&gt;</span>value) <span class="kw">return</span> <span class="nm">-1</span>;
+<span class="kw">if</span> (x<span class="op">-&gt;</span>value <span class="op">&gt;</span> y<span class="op">-&gt;</span>value) <span class="kw">return</span>  <span class="nm">1</span>;
+<span class="kw">return</span> <span class="nm">0</span>;</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">큰 수 비교용</span>
+      <span class="dpill">⚠️ 오버플로우 방지</span>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="pcard" data-cat="coord" data-title="x 오름차순" style="border-color:rgba(94,196,255,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 04</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(94,196,255,.12);color:var(--coord)">좌표</span>
+        <div class="pcard-title">x 오름차순</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">return</span> p<span class="op">-&gt;</span>x <span class="op">-</span> q<span class="op">-&gt;</span>x;</div></div>
+    <div class="pcard-desc"><span class="dpill">x좌표 기준 오름차순</span></div>
+  </div>
+
+  <!-- 5 -->
+  <div class="pcard" data-cat="coord" data-title="x 내림차순" style="border-color:rgba(94,196,255,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 05</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(94,196,255,.12);color:var(--coord)">좌표</span>
+        <div class="pcard-title">x 내림차순</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">return</span> q<span class="op">-&gt;</span>x <span class="op">-</span> p<span class="op">-&gt;</span>x;</div></div>
+    <div class="pcard-desc"><span class="dpill">x좌표 기준 내림차순</span></div>
+  </div>
+
+  <!-- 6 -->
+  <div class="pcard" data-cat="coord" data-title="x 오름차순 y 오름차순" style="border-color:rgba(94,196,255,.35)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 06</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(94,196,255,.12);color:var(--coord)">좌표</span>
+        <div class="pcard-title">x↑ y↑ <span class="star">⭐</span></div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (p<span class="op">-&gt;</span>x <span class="op">!=</span> q<span class="op">-&gt;</span>x) <span class="kw">return</span> p<span class="op">-&gt;</span>x <span class="op">-</span> q<span class="op">-&gt;</span>x;
+<span class="kw">return</span> p<span class="op">-&gt;</span>y <span class="op">-</span> q<span class="op">-&gt;</span>y;</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">백준 좌표 정렬 기본</span>
+      <span class="dpill">가장 중요</span>
+    </div>
+  </div>
+
+  <!-- 7 -->
+  <div class="pcard" data-cat="coord" data-title="x 오름차순 y 내림차순" style="border-color:rgba(94,196,255,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 07</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(94,196,255,.12);color:var(--coord)">좌표</span>
+        <div class="pcard-title">x↑ y↓</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (p<span class="op">-&gt;</span>x <span class="op">!=</span> q<span class="op">-&gt;</span>x) <span class="kw">return</span> p<span class="op">-&gt;</span>x <span class="op">-</span> q<span class="op">-&gt;</span>x;
+<span class="kw">return</span> q<span class="op">-&gt;</span>y <span class="op">-</span> p<span class="op">-&gt;</span>y;</div></div>
+    <div class="pcard-desc"><span class="dpill">x 같으면 y 내림차순</span></div>
+  </div>
+
+  <!-- 8 -->
+  <div class="pcard" data-cat="coord" data-title="x 내림차순 y 오름차순" style="border-color:rgba(94,196,255,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 08</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(94,196,255,.12);color:var(--coord)">좌표</span>
+        <div class="pcard-title">x↓ y↑</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (p<span class="op">-&gt;</span>x <span class="op">!=</span> q<span class="op">-&gt;</span>x) <span class="kw">return</span> q<span class="op">-&gt;</span>x <span class="op">-</span> p<span class="op">-&gt;</span>x;
+<span class="kw">return</span> p<span class="op">-&gt;</span>y <span class="op">-</span> q<span class="op">-&gt;</span>y;</div></div>
+    <div class="pcard-desc"><span class="dpill">x 내림, y 같으면 오름</span></div>
+  </div>
+
+  <!-- 9 -->
+  <div class="pcard" data-cat="coord" data-title="x 내림차순 y 내림차순" style="border-color:rgba(94,196,255,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 09</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(94,196,255,.12);color:var(--coord)">좌표</span>
+        <div class="pcard-title">x↓ y↓</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (p<span class="op">-&gt;</span>x <span class="op">!=</span> q<span class="op">-&gt;</span>x) <span class="kw">return</span> q<span class="op">-&gt;</span>x <span class="op">-</span> p<span class="op">-&gt;</span>x;
+<span class="kw">return</span> q<span class="op">-&gt;</span>y <span class="op">-</span> p<span class="op">-&gt;</span>y;</div></div>
+    <div class="pcard-desc"><span class="dpill">x, y 모두 내림차순</span></div>
+  </div>
+
+  <!-- 10 -->
+  <div class="pcard" data-cat="str" data-title="문자열 사전순 오름차순" style="border-color:rgba(125,239,160,.35)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 10</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(125,239,160,.12);color:var(--str)">문자열</span>
+        <div class="pcard-title">사전순 오름차순 <span class="star">⭐</span></div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>name, y<span class="op">-&gt;</span>name);</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">문자열은 반드시 strcmp</span>
+      <span class="dpill">⚠️ 절대 빼기 사용 금지</span>
+    </div>
+  </div>
+
+  <!-- 11 -->
+  <div class="pcard" data-cat="str" data-title="문자열 사전순 내림차순" style="border-color:rgba(125,239,160,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 11</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(125,239,160,.12);color:var(--str)">문자열</span>
+        <div class="pcard-title">사전순 내림차순</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">return</span> <span class="fn">strcmp</span>(y<span class="op">-&gt;</span>name, x<span class="op">-&gt;</span>name);</div></div>
+    <div class="pcard-desc"><span class="dpill">x↔y 순서만 뒤집기</span></div>
+  </div>
+
+  <!-- 12 -->
+  <div class="pcard" data-cat="str" data-title="문자열 길이 오름차순" style="border-color:rgba(125,239,160,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 12</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(125,239,160,.12);color:var(--str)">문자열</span>
+        <div class="pcard-title">길이 오름차순</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">return</span> x<span class="op">-&gt;</span>len <span class="op">-</span> y<span class="op">-&gt;</span>len;</div></div>
+    <div class="pcard-desc"><span class="dpill">짧은 문자열이 앞으로</span></div>
+  </div>
+
+  <!-- 13 -->
+  <div class="pcard" data-cat="str" data-title="길이 오름차순 사전순" style="border-color:rgba(125,239,160,.35)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 13</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(125,239,160,.12);color:var(--str)">문자열</span>
+        <div class="pcard-title">길이↑ + 사전순 <span class="star">⭐</span></div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (x<span class="op">-&gt;</span>len <span class="op">!=</span> y<span class="op">-&gt;</span>len) <span class="kw">return</span> x<span class="op">-&gt;</span>len <span class="op">-</span> y<span class="op">-&gt;</span>len;
+<span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>word, y<span class="op">-&gt;</span>word);</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">백준 1181 핵심 패턴</span>
+    </div>
+  </div>
+
+  <!-- 14 -->
+  <div class="pcard" data-cat="str" data-title="길이 내림차순 사전순" style="border-color:rgba(125,239,160,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 14</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(125,239,160,.12);color:var(--str)">문자열</span>
+        <div class="pcard-title">길이↓ + 사전순</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (x<span class="op">-&gt;</span>len <span class="op">!=</span> y<span class="op">-&gt;</span>len) <span class="kw">return</span> y<span class="op">-&gt;</span>len <span class="op">-</span> x<span class="op">-&gt;</span>len;
+<span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>word, y<span class="op">-&gt;</span>word);</div></div>
+    <div class="pcard-desc"><span class="dpill">긴 단어 먼저, 같으면 사전순</span></div>
+  </div>
+
+  <!-- 15 -->
+  <div class="pcard" data-cat="stu" data-title="점수 내림차순 이름 사전순" style="border-color:rgba(255,126,179,.35)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 15</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(255,126,179,.12);color:var(--stu)">학생</span>
+        <div class="pcard-title">점수↓ + 이름↑ <span class="star">⭐</span></div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (x<span class="op">-&gt;</span>score <span class="op">!=</span> y<span class="op">-&gt;</span>score)
+    <span class="kw">return</span> y<span class="op">-&gt;</span>score <span class="op">-</span> x<span class="op">-&gt;</span>score;
+<span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>name, y<span class="op">-&gt;</span>name);</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">점수 높은 순</span>
+      <span class="dpill">같으면 이름 사전순</span>
+    </div>
+  </div>
+
+  <!-- 16 -->
+  <div class="pcard" data-cat="stu" data-title="다중 조건 국영수" style="border-color:rgba(255,126,179,.35)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 16</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(255,126,179,.12);color:var(--stu)">학생</span>
+        <div class="pcard-title">다중 조건 (국영수) <span class="star">⭐</span></div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (x<span class="op">-&gt;</span>kor  <span class="op">!=</span> y<span class="op">-&gt;</span>kor)  <span class="kw">return</span> y<span class="op">-&gt;</span>kor  <span class="op">-</span> x<span class="op">-&gt;</span>kor;
+<span class="kw">if</span> (x<span class="op">-&gt;</span>eng  <span class="op">!=</span> y<span class="op">-&gt;</span>eng)  <span class="kw">return</span> x<span class="op">-&gt;</span>eng  <span class="op">-</span> y<span class="op">-&gt;</span>eng;
+<span class="kw">if</span> (x<span class="op">-&gt;</span>math <span class="op">!=</span> y<span class="op">-&gt;</span>math) <span class="kw">return</span> y<span class="op">-&gt;</span>math <span class="op">-</span> x<span class="op">-&gt;</span>math;
+<span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>name, y<span class="op">-&gt;</span>name);</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">시험 필수 패턴</span>
+      <span class="dpill">조건 순서 중요</span>
+    </div>
+  </div>
+
+  <!-- 17 -->
+  <div class="pcard" data-cat="int" data-title="시작 오름차순 끝 오름차순" style="border-color:rgba(193,126,255,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 17</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(193,126,255,.12);color:var(--int)">구간</span>
+        <div class="pcard-title">시작↑ + 끝↑</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (x<span class="op">-&gt;</span>start <span class="op">!=</span> y<span class="op">-&gt;</span>start)
+    <span class="kw">return</span> x<span class="op">-&gt;</span>start <span class="op">-</span> y<span class="op">-&gt;</span>start;
+<span class="kw">return</span> x<span class="op">-&gt;</span>end <span class="op">-</span> y<span class="op">-&gt;</span>end;</div></div>
+    <div class="pcard-desc"><span class="dpill">시작 시간 기준 정렬</span></div>
+  </div>
+
+  <!-- 18 -->
+  <div class="pcard" data-cat="int" data-title="끝 오름차순 시작 오름차순" style="border-color:rgba(193,126,255,.35)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 18</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(193,126,255,.12);color:var(--int)">구간</span>
+        <div class="pcard-title">끝↑ + 시작↑ <span class="star">⭐</span></div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (x<span class="op">-&gt;</span>end <span class="op">!=</span> y<span class="op">-&gt;</span>end)
+    <span class="kw">return</span> x<span class="op">-&gt;</span>end <span class="op">-</span> y<span class="op">-&gt;</span>end;
+<span class="kw">return</span> x<span class="op">-&gt;</span>start <span class="op">-</span> y<span class="op">-&gt;</span>start;</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">회의실 배정 핵심</span>
+      <span class="dpill">그리디 필수</span>
+    </div>
+  </div>
+
+  <!-- 19 -->
+  <div class="pcard" data-cat="gre" data-title="무게 오름차순 가격 내림차순" style="border-color:rgba(247,200,79,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 19</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(247,200,79,.12);color:var(--gre)">그리디</span>
+        <div class="pcard-title">무게↑ + 가격↓</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (x<span class="op">-&gt;</span>weight <span class="op">!=</span> y<span class="op">-&gt;</span>weight)
+    <span class="kw">return</span> x<span class="op">-&gt;</span>weight <span class="op">-</span> y<span class="op">-&gt;</span>weight;
+<span class="kw">return</span> y<span class="op">-&gt;</span>price <span class="op">-</span> x<span class="op">-&gt;</span>price;</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">무게 가벼운 순</span>
+      <span class="dpill">같으면 비싼 순</span>
+    </div>
+  </div>
+
+  <!-- 20 -->
+  <div class="pcard" data-cat="ord" data-title="나이 오름차순 입력순 유지" style="border-color:rgba(255,159,107,.2)">
+    <div class="pcard-top">
+      <span class="pcard-num">패턴 20</span>
+      <div style="text-align:right">
+        <span class="pcard-cat" style="background:rgba(255,159,107,.12);color:var(--ord)">입력순</span>
+        <div class="pcard-title">나이↑ + 입력순 유지</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="kw">if</span> (x<span class="op">-&gt;</span>age <span class="op">!=</span> y<span class="op">-&gt;</span>age)
+    <span class="kw">return</span> x<span class="op">-&gt;</span>age <span class="op">-</span> y<span class="op">-&gt;</span>age;
+<span class="kw">return</span> x<span class="op">-&gt;</span>order <span class="op">-</span> y<span class="op">-&gt;</span>order;</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">같은 값이면 입력순</span>
+      <span class="dpill">order 필드 필수</span>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- ── 자주 틀리는 것 ── -->
+<div class="section-hd">
+  <h2>⚠️ 자주 틀리는 패턴</h2>
+</div>
+
+<div class="grid" style="margin-bottom:16px">
+  <!-- 실수1 -->
+  <div class="pcard" data-cat="" style="border-color:rgba(255,126,179,.25)">
+    <div class="pcard-top">
+      <span class="pcard-num" style="color:var(--kw)">실수 01</span>
+      <div style="text-align:right">
+        <div class="pcard-title" style="color:var(--kw)">문자열 비교 실수</div>
+      </div>
+    </div>
+    <div class="pcard-diff">
+      <div class="diff-box">
+        <div class="diff-hd" style="background:rgba(255,126,179,.12);color:var(--kw)">❌ 틀린 코드</div>
+        <div class="diff-body"><span class="kw">return</span> x<span class="op">-&gt;</span>name <span class="op">-</span> y<span class="op">-&gt;</span>name;
+<span class="cm">// 포인터 주소 비교됨!</span></div>
+      </div>
+      <div class="diff-box">
+        <div class="diff-hd" style="background:rgba(125,239,160,.12);color:var(--fn)">✅ 올바른 코드</div>
+        <div class="diff-body"><span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>name,
+           y<span class="op">-&gt;</span>name);
+<span class="cm">// 문자 내용 비교!</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 실수2 -->
+  <div class="pcard" data-cat="" style="border-color:rgba(255,126,179,.25)">
+    <div class="pcard-top">
+      <span class="pcard-num" style="color:var(--kw)">실수 02</span>
+      <div style="text-align:right">
+        <div class="pcard-title" style="color:var(--kw)">조건 순서 실수</div>
+      </div>
+    </div>
+    <div class="pcard-diff">
+      <div class="diff-box">
+        <div class="diff-hd" style="background:rgba(255,126,179,.12);color:var(--kw)">❌ 틀린 코드</div>
+        <div class="diff-body"><span class="cm">// 2순위를 먼저 쓰면 안 됨</span>
+<span class="kw">return</span> x<span class="op">-&gt;</span>eng <span class="op">-</span> y<span class="op">-&gt;</span>eng;</div>
+      </div>
+      <div class="diff-box">
+        <div class="diff-hd" style="background:rgba(125,239,160,.12);color:var(--fn)">✅ 올바른 코드</div>
+        <div class="diff-body"><span class="kw">if</span> (x<span class="op">-&gt;</span>kor <span class="op">!=</span> y<span class="op">-&gt;</span>kor)
+    <span class="kw">return</span> y<span class="op">-&gt;</span>kor <span class="op">-</span> x<span class="op">-&gt;</span>kor;</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 실수3 -->
+  <div class="pcard" data-cat="" style="border-color:rgba(255,126,179,.25)">
+    <div class="pcard-top">
+      <span class="pcard-num" style="color:var(--kw)">실수 03</span>
+      <div style="text-align:right">
+        <div class="pcard-title" style="color:var(--kw)">long long 오버플로우</div>
+      </div>
+    </div>
+    <div class="pcard-diff">
+      <div class="diff-box">
+        <div class="diff-hd" style="background:rgba(255,126,179,.12);color:var(--kw)">❌ 위험한 코드</div>
+        <div class="diff-body"><span class="kw">return</span> x<span class="op">-&gt;</span>value <span class="op">-</span> y<span class="op">-&gt;</span>value;
+<span class="cm">// 큰 수 → 오버플로우!</span></div>
+      </div>
+      <div class="diff-box">
+        <div class="diff-hd" style="background:rgba(125,239,160,.12);color:var(--fn)">✅ 안전한 코드</div>
+        <div class="diff-body"><span class="kw">if</span> (x<span class="op">-&gt;</span>value <span class="op">&lt;</span> y<span class="op">-&gt;</span>value)
+    <span class="kw">return</span> <span class="nm">-1</span>;
+<span class="kw">if</span> (x<span class="op">-&gt;</span>value <span class="op">&gt;</span> y<span class="op">-&gt;</span>value)
+    <span class="kw">return</span>  <span class="nm">1</span>;
+<span class="kw">return</span> <span class="nm">0</span>;</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 실수4: 빈칸 맞추기 -->
+  <div class="pcard" data-cat="" style="border-color:rgba(255,126,179,.25)">
+    <div class="pcard-top">
+      <span class="pcard-num" style="color:var(--kw)">실수 04</span>
+      <div style="text-align:right">
+        <div class="pcard-title" style="color:var(--kw)">오름/내림 방향 혼동</div>
+      </div>
+    </div>
+    <div class="pcard-code"><div class="pcard-code-inner"><span class="cm">// 오름차순: x - y  (작은 것이 앞)</span>
+<span class="kw">return</span> x<span class="op">-&gt;</span>v <span class="op">-</span> y<span class="op">-&gt;</span>v;
+
+<span class="cm">// 내림차순: y - x  (큰 것이 앞)</span>
+<span class="kw">return</span> y<span class="op">-&gt;</span>v <span class="op">-</span> x<span class="op">-&gt;</span>v;</div></div>
+    <div class="pcard-desc">
+      <span class="dpill">오름 = x-y</span>
+      <span class="dpill">내림 = y-x</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── 암기 규칙 ── -->
+<div class="section-hd"><h2>📌 5가지 핵심 규칙</h2></div>
+<div class="rules-grid">
+  <div class="rule-card">
+    <div class="rule-icon">🔢</div>
+    <div class="rule-type">숫자</div>
+    <div class="rule-val" style="color:var(--num)">빼기<br>(x-y)</div>
+  </div>
+  <div class="rule-card">
+    <div class="rule-icon">🔤</div>
+    <div class="rule-type">문자열</div>
+    <div class="rule-val" style="color:var(--str)">strcmp</div>
+  </div>
+  <div class="rule-card">
+    <div class="rule-icon">🔀</div>
+    <div class="rule-type">여러 조건</div>
+    <div class="rule-val" style="color:var(--coord)">if 순서</div>
+  </div>
+  <div class="rule-card">
+    <div class="rule-icon">📋</div>
+    <div class="rule-type">입력순 유지</div>
+    <div class="rule-val" style="color:var(--ord)">order<br>필드</div>
+  </div>
+  <div class="rule-card">
+    <div class="rule-icon">⚡</div>
+    <div class="rule-type">큰 수</div>
+    <div class="rule-val" style="color:var(--kw)">안전<br>비교</div>
+  </div>
+</div>
+
+<!-- ── 비교함수 만드는 공식 ── -->
+<div class="section-hd"><h2>🛠 비교함수 만드는 5단계</h2></div>
+<div class="steps-row">
+  <div class="step">
+    <div class="step-n" style="background:var(--num)">1</div>
+    <div class="step-txt">구조체<br>설계</div>
+    <div class="step-arrow">›</div>
+  </div>
+  <div class="step">
+    <div class="step-n" style="background:var(--coord)">2</div>
+    <div class="step-txt">1순위<br>기준 결정</div>
+    <div class="step-arrow">›</div>
+  </div>
+  <div class="step">
+    <div class="step-n" style="background:var(--str)">3</div>
+    <div class="step-txt">같으면<br>다음 기준</div>
+    <div class="step-arrow">›</div>
+  </div>
+  <div class="step">
+    <div class="step-n" style="background:var(--stu)">4</div>
+    <div class="step-txt">문자열이면<br>strcmp</div>
+    <div class="step-arrow">›</div>
+  </div>
+  <div class="step">
+    <div class="step-n" style="background:var(--int)">5</div>
+    <div class="step-txt">qsort<br>적용</div>
+  </div>
+</div>
+
+<!-- ── TOP7 ── -->
+<div class="section-hd"><h2>🏆 시험 필수 TOP 7</h2></div>
+<div class="top7-grid">
+  <div class="top7-card"><div class="top7-n" style="color:var(--num)">1</div><div class="top7-txt">숫자<br>오름차순</div></div>
+  <div class="top7-card"><div class="top7-n" style="color:var(--num)">2</div><div class="top7-txt">숫자<br>내림차순</div></div>
+  <div class="top7-card"><div class="top7-n" style="color:var(--coord)">3</div><div class="top7-txt">x,y<br>좌표 정렬</div></div>
+  <div class="top7-card"><div class="top7-n" style="color:var(--str)">4</div><div class="top7-txt">문자열<br>사전순</div></div>
+  <div class="top7-card"><div class="top7-n" style="color:var(--str)">5</div><div class="top7-txt">길이+<br>사전순</div></div>
+  <div class="top7-card"><div class="top7-n" style="color:var(--stu)">6</div><div class="top7-txt">점수+<br>이름</div></div>
+  <div class="top7-card"><div class="top7-n" style="color:var(--int)">7</div><div class="top7-txt">끝시간<br>기준</div></div>
+</div>
+
+<!-- ── 암기 템플릿 ── -->
+<div class="section-hd"><h2>📝 실전 암기 템플릿</h2></div>
+<div class="tpl-grid">
+  <div class="tpl-card">
+    <div class="tpl-hd" style="color:var(--coord)">좌표 정렬</div>
+    <div class="tpl-body"><span class="kw">if</span> (x<span class="op">-&gt;</span>x <span class="op">!=</span> y<span class="op">-&gt;</span>x)
+    <span class="kw">return</span> x<span class="op">-&gt;</span>x <span class="op">-</span> y<span class="op">-&gt;</span>x;
+<span class="kw">return</span> x<span class="op">-&gt;</span>y <span class="op">-</span> y<span class="op">-&gt;</span>y;</div>
+  </div>
+  <div class="tpl-card">
+    <div class="tpl-hd" style="color:var(--str)">문자열 + 길이</div>
+    <div class="tpl-body"><span class="kw">if</span> (x<span class="op">-&gt;</span>len <span class="op">!=</span> y<span class="op">-&gt;</span>len)
+    <span class="kw">return</span> x<span class="op">-&gt;</span>len <span class="op">-</span> y<span class="op">-&gt;</span>len;
+<span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>word,
+           y<span class="op">-&gt;</span>word);</div>
+  </div>
+  <div class="tpl-card">
+    <div class="tpl-hd" style="color:var(--stu)">점수 + 이름</div>
+    <div class="tpl-body"><span class="kw">if</span> (x<span class="op">-&gt;</span>score <span class="op">!=</span> y<span class="op">-&gt;</span>score)
+    <span class="kw">return</span> y<span class="op">-&gt;</span>score
+         <span class="op">-</span> x<span class="op">-&gt;</span>score;
+<span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>name,
+           y<span class="op">-&gt;</span>name);</div>
+  </div>
+</div>
+
+<!-- ── Quiz ── -->
+<div class="section-hd"><h2>✏️ 퀴즈</h2></div>
+<div class="quiz-wrap">
+  <div class="score-wrap" id="score-wrap">
+    <span>점수</span>
+    <div class="score-bar"><div class="score-fill" id="score-fill"></div></div>
+    <span class="score-num" id="score-num">0 / 0</span>
+  </div>
+
+  <!-- Q1 -->
+  <div class="qcard">
+    <div class="qtxt">Q1. 문자열을 사전순으로 비교하는 올바른 방법은?</div>
+    <div class="qopts">
+      <button class="qopt" onclick="qa(this,'q1',false,'❌ 포인터 주소를 뺀 것이므로 문자열 내용과 관계없는 값이 반환됩니다.')"><div class="qlbl">A</div><span>return x->name - y->name;</span></button>
+      <button class="qopt" onclick="qa(this,'q1',true,'✅ 정답! 문자열은 반드시 strcmp()를 사용해야 합니다. 직접 빼면 포인터 주소가 비교됩니다.')"><div class="qlbl">B</div><span>return strcmp(x->name, y->name);</span></button>
+      <button class="qopt" onclick="qa(this,'q1',false,'❌ *x->name은 첫 글자 하나만 비교하므로 완전한 문자열 비교가 되지 않습니다.')"><div class="qlbl">C</div><span>return *x->name - *y->name;</span></button>
+    </div>
+    <div class="qfb" id="q1-fb"></div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="qcard">
+    <div class="qtxt">Q2. 점수 내림차순 정렬의 비교 반환값은?</div>
+    <div class="qopts">
+      <button class="qopt" onclick="qa(this,'q2',false,'❌ x->score - y->score는 오름차순입니다. 작은 값이 앞으로 옵니다.')"><div class="qlbl">A</div><span>return x->score - y->score;</span></button>
+      <button class="qopt" onclick="qa(this,'q2',true,'✅ 정답! y - x 순서면 큰 값이 음수를 반환해 앞으로 오는 내림차순이 됩니다.')"><div class="qlbl">B</div><span>return y->score - x->score;</span></button>
+      <button class="qopt" onclick="qa(this,'q2',false,'❌ 항상 0을 반환하면 모든 원소가 같다고 판단되어 정렬이 되지 않습니다.')"><div class="qlbl">C</div><span>return 0;</span></button>
+    </div>
+    <div class="qfb" id="q2-fb"></div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="qcard">
+    <div class="qtxt">Q3. x 오름차순, x가 같으면 y 내림차순 정렬의 올바른 비교함수는?</div>
+    <div class="qopts">
+      <button class="qopt" onclick="qa(this,'q3',false,'❌ 두 번째 줄이 p->y - q->y 이므로 y도 오름차순입니다. 문제에서 y는 내림차순이어야 합니다.')"><div class="qlbl">A</div><span>if (p->x != q->x) return p->x - q->x;<br>&nbsp;&nbsp;return p->y - q->y;</span></button>
+      <button class="qopt" onclick="qa(this,'q3',true,'✅ 정답! x는 p-q (오름), y는 q-p (내림). 조건이 다를 때 y-x로 방향을 뒤집습니다.')"><div class="qlbl">B</div><span>if (p->x != q->x) return p->x - q->x;<br>&nbsp;&nbsp;return q->y - p->y;</span></button>
+      <button class="qopt" onclick="qa(this,'q3',false,'❌ x도 내림차순(q-p)이 되어 버립니다. x는 오름차순이어야 합니다.')"><div class="qlbl">C</div><span>if (p->x != q->x) return q->x - p->x;<br>&nbsp;&nbsp;return q->y - p->y;</span></button>
+    </div>
+    <div class="qfb" id="q3-fb"></div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="qcard">
+    <div class="qtxt">Q4. long long 값을 안전하게 비교하는 이유는?</div>
+    <div class="qopts">
+      <button class="qopt" onclick="qa(this,'q4',false,'❌ strcmp는 문자열 비교 함수입니다. long long 숫자 비교에는 사용하지 않습니다.')"><div class="qlbl">A</div><span>strcmp()를 사용해야 하기 때문에</span></button>
+      <button class="qopt" onclick="qa(this,'q4',true,'✅ 정답! 예를 들어 2^31과 -1을 빼면 int 범위를 초과해 음수가 됩니다. if 비교로 -1/0/1을 직접 반환해야 안전합니다.')"><div class="qlbl">B</div><span>빼기 연산이 int 오버플로우를 일으킬 수 있기 때문에</span></button>
+      <button class="qopt" onclick="qa(this,'q4',false,'❌ qsort의 성능 문제와는 관계없습니다. 정확성의 문제입니다.')"><div class="qlbl">C</div><span>qsort의 성능을 높이기 위해</span></button>
+    </div>
+    <div class="qfb" id="q4-fb"></div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="qcard">
+    <div class="qtxt">Q5. 회의실 배정 문제에서 핵심이 되는 정렬 기준은?</div>
+    <div class="qopts">
+      <button class="qopt" onclick="qa(this,'q5',false,'❌ 시작 시간 기준 정렬은 일반적인 구간 정렬입니다. 회의실 배정(그리디)에서는 끝 시간이 기준입니다.')"><div class="qlbl">A</div><span>시작 시간 오름차순</span></button>
+      <button class="qopt" onclick="qa(this,'q5',true,'✅ 정답! 끝나는 시간이 빠른 회의부터 선택해야 가장 많은 회의를 열 수 있습니다. 패턴 18번이 이 핵심입니다.')"><div class="qlbl">B</div><span>끝 시간 오름차순</span></button>
+      <button class="qopt" onclick="qa(this,'q5',false,'❌ 회의 길이(끝-시작)를 기준으로 하면 최적해가 보장되지 않습니다.')"><div class="qlbl">C</div><span>회의 길이(끝 - 시작) 오름차순</span></button>
+    </div>
+    <div class="qfb" id="q5-fb"></div>
+  </div>
+
+</div><!-- /quiz -->
+
+</div>
+
+<script>
+// ── 카테고리 필터 ──
+let curCat = 'all';
+let curSearch = '';
+
+function applyFilter() {
+  const cards = document.querySelectorAll('#pattern-grid .pcard');
+  cards.forEach(c => {
+    const cat   = c.dataset.cat || '';
+    const title = (c.dataset.title || '').toLowerCase();
+    const full  = c.textContent.toLowerCase();
+    const catOk = curCat === 'all' || cat === curCat;
+    const srOk  = curSearch === '' || full.includes(curSearch);
+    c.classList.toggle('hide', !(catOk && srOk));
+  });
+}
+
+function filterCat(cat, btn) {
+  curCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  applyFilter();
+}
+
+function filterSearch(val) {
+  curSearch = val.trim().toLowerCase();
+  applyFilter();
+}
+
+// ── 퀴즈 ──
+let correct = 0, answered = 0;
+
+function qa(btn, qid, isOk, msg) {
+  const card = btn.closest('.qcard');
+  if (card.querySelector('.qfb.show')) return;
+  card.querySelectorAll('.qopt').forEach(b => { b.disabled = true; });
+  btn.classList.add(isOk ? 'ok' : 'no');
+  if (!isOk) {
+    card.querySelectorAll('.qopt').forEach(b => {
+      if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(',true,'))
+        b.classList.add('ok');
+    });
+  }
+  const fb = document.getElementById(qid + '-fb');
+  fb.textContent = msg;
+  fb.className = 'qfb show ' + (isOk ? 'ok-fb' : 'no-fb');
+  answered++; if (isOk) correct++;
+  const sw = document.getElementById('score-wrap');
+  sw.classList.add('show');
+  document.getElementById('score-num').textContent = `${correct} / ${answered}`;
+  document.getElementById('score-fill').style.width = (correct / answered * 100) + '%';
+}
+</script>
+</body>
+</html>

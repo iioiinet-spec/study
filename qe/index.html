@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>qsort 구조체 정렬 10가지 예제</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:     #111318;
+  --s1:     #17191f;
+  --s2:     #1d2028;
+  --s3:     #232733;
+  --border: #2c3044;
+  --text:   #c8d0ea;
+  --muted:  #56607a;
+  --dim:    #363d55;
+
+  --a1: #ffc96b;  /* 숫자/기본 - amber */
+  --a2: #5ebaff;  /* 좌표     - blue  */
+  --a3: #6ee7a0;  /* 문자열   - green */
+  --a4: #f07eb8;  /* 학생     - pink  */
+  --a5: #b57fff;  /* 회의     - purple*/
+  --a6: #ff9f6b;  /* 실전     - orange*/
+
+  --kw:  #f07eb8;
+  --ty:  #5ebaff;
+  --fn:  #6ee7a0;
+  --cm:  #404e5a;
+  --nm:  #ffc96b;
+  --st:  #fde68a;
+  --op:  #89ddff;
+  --pp:  #ff9f9f;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;min-height:100vh;}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 70% 50% at 15% 15%,rgba(94,186,255,.04) 0,transparent 60%),
+             radial-gradient(ellipse 60% 45% at 85% 85%,rgba(181,127,255,.04) 0,transparent 60%);
+  pointer-events:none;z-index:0;
+}
+
+.wrap{max-width:1080px;margin:0 auto;padding:40px 18px 90px;position:relative;z-index:1;}
+
+/* ─── Header ─── */
+.hdr{margin-bottom:36px;}
+.hdr-tag{
+  font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;
+  color:var(--muted);text-transform:uppercase;margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.hdr-tag::after{content:'';flex:1;height:1px;background:var(--border);}
+.hdr h1{font-size:clamp(22px,4vw,40px);font-weight:900;color:#fff;margin-bottom:8px;line-height:1.15;}
+.hdr h1 em{color:var(--a1);font-style:normal;}
+.hdr p{color:var(--muted);font-size:13.5px;line-height:1.7;}
+
+/* ─── Nav pills ─── */
+.nav{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:26px;}
+.npill{
+  padding:7px 15px;border-radius:8px;border:1px solid var(--border);
+  background:var(--s2);color:var(--muted);cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:1px;text-transform:uppercase;transition:all .18s;white-space:nowrap;
+}
+.npill:hover{border-color:currentColor;}
+.npill.on{font-weight:700;}
+
+/* ─── Example cards ─── */
+.ex-card{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:16px;overflow:hidden;margin-bottom:22px;
+  transition:border-color .2s;
+}
+.ex-card.hide{display:none;}
+
+/* card header */
+.ex-head{
+  background:var(--s2);padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap;
+}
+.ex-meta{display:flex;align-items:center;gap:10px;}
+.ex-num{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  font-weight:700;color:#fff;
+  background:var(--s3);border:1px solid var(--border);
+  padding:3px 10px;border-radius:6px;
+}
+.ex-title{font-size:14px;font-weight:700;}
+.ex-cat{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  padding:3px 10px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;
+}
+.ex-dots{display:flex;gap:5px;}
+.ex-dots i{width:10px;height:10px;border-radius:50%;}
+.d1{background:#ff5f57;}.d2{background:#febc2e;}.d3{background:#28c840;}
+
+/* two-column body: code left, panel right */
+.ex-body{display:grid;grid-template-columns:1fr 320px;}
+@media(max-width:760px){.ex-body{grid-template-columns:1fr;}}
+
+/* code column */
+.ex-code-col{border-right:1px solid var(--border);}
+@media(max-width:760px){.ex-code-col{border-right:none;border-bottom:1px solid var(--border);}}
+
+/* code with line numbers */
+.code-wrap{display:flex;background:#090b12;}
+.ln-col{
+  flex-shrink:0;padding:18px 0;
+  background:#07090f;border-right:1px solid rgba(255,255,255,.04);
+  min-width:42px;text-align:right;user-select:none;pointer-events:none;
+}
+.ln-col span{
+  display:block;padding:0 10px 0 6px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9;color:#2a3148;
+}
+.code-body{
+  flex:1;padding:18px 20px;
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.9;
+  white-space:pre;overflow-x:auto;tab-size:4;
+}
+
+/* highlight section labels in code */
+.code-section{
+  display:block;
+  background:rgba(255,255,255,.03);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  margin:4px -20px;padding:3px 20px;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+}
+
+/* right panel */
+.ex-panel{
+  padding:18px;display:flex;flex-direction:column;gap:12px;
+  background:var(--s2);
+}
+
+.panel-section{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+
+/* key concept pills */
+.concepts{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px;}
+.concept{
+  background:var(--s3);border:1px solid var(--border);
+  border-radius:6px;padding:5px 10px;
+  font-size:12px;color:#9aa3c8;line-height:1.4;
+}
+
+/* mini code (cmp function only) */
+.mini-code{
+  background:#090b12;border:1px solid var(--border);
+  border-radius:9px;padding:12px 14px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.9;
+  white-space:pre;overflow-x:auto;
+}
+
+/* run section */
+.run-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+.run-input{
+  width:100%;background:#090b12;border:1.5px solid var(--border);
+  border-radius:7px;padding:8px 12px;color:var(--text);
+  font-family:'JetBrains Mono',monospace;font-size:12.5px;
+  resize:none;transition:border-color .2s;
+}
+.run-input:focus{outline:none;}
+.run-btn{
+  padding:8px 16px;border-radius:7px;border:none;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  transition:all .18s;color:#111318;align-self:flex-start;
+}
+.run-btn:hover{opacity:.85;transform:translateY(-1px);}
+.run-output{
+  background:#090b12;border:1.5px solid var(--border);border-radius:7px;
+  padding:9px 12px;font-family:'JetBrains Mono',monospace;font-size:12.5px;
+  min-height:44px;line-height:1.7;white-space:pre-wrap;word-break:break-all;
+}
+
+/* ─── highlight ─── */
+.hl{border-radius:8px;padding:12px 16px;margin:8px 0;font-size:13px;line-height:1.75;}
+.hl-b{background:rgba(94,186,255,.07);border-left:3px solid var(--a2);}
+.hl-g{background:rgba(110,231,160,.07);border-left:3px solid var(--a3);}
+.hl-p{background:rgba(181,127,255,.07);border-left:3px solid var(--a5);}
+.hl-o{background:rgba(255,159,107,.07);border-left:3px solid var(--a6);}
+
+/* syntax */
+.kw{color:var(--kw);} .ty{color:var(--ty);} .fn{color:var(--fn);}
+.cm{color:var(--cm);font-style:italic;} .nm{color:var(--nm);}
+.st{color:var(--st);} .op{color:var(--op);} .pp{color:var(--pp);}
+
+@keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- Header -->
+<div class="hdr" style="animation:up .5s ease">
+  <div class="hdr-tag">qsort · struct · 전체 코드</div>
+  <h1>구조체 qsort<br><em>10가지 예제</em></h1>
+  <p>비교함수 패턴별 전체 코드 — 직접 입력해서 결과를 확인하세요</p>
+</div>
+
+<!-- Nav -->
+<div class="nav">
+  <button class="npill on" style="color:var(--text)" onclick="filter('all',this)">전체 (10)</button>
+  <button class="npill" style="color:var(--a1)" onclick="filter('num',this)">숫자</button>
+  <button class="npill" style="color:var(--a2)" onclick="filter('coord',this)">좌표</button>
+  <button class="npill" style="color:var(--a3)" onclick="filter('str',this)">문자열</button>
+  <button class="npill" style="color:var(--a4)" onclick="filter('stu',this)">학생</button>
+  <button class="npill" style="color:var(--a5)" onclick="filter('meet',this)">회의</button>
+  <button class="npill" style="color:var(--a6)" onclick="filter('real',this)">실전</button>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 1 — 정수 1개 오름차순
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="num" style="border-color:rgba(255,201,107,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">01</span>
+      <span class="ex-title">정수 1개 기준 오름차순</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(255,201,107,.12);color:var(--a1)">숫자</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln1"></div>
+        <div class="code-body" id="cb1"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+
+<span class="cm">/* 구조체 정의 */</span>
+<span class="kw">typedef struct</span> {
+    <span class="kw">int</span> value;
+} <span class="ty">Data</span>;
+
+<span class="cm">/* 비교 함수 — 오름차순 */</span>
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Data</span> *x = (<span class="ty">Data</span> *)a;
+    <span class="ty">Data</span> *y = (<span class="ty">Data</span> *)b;
+    <span class="kw">return</span> x<span class="op">-&gt;</span>value <span class="op">-</span> y<span class="op">-&gt;</span>value;
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="ty">Data</span> arr[<span class="nm">5</span>] = {{<span class="nm">30</span>}, {<span class="nm">10</span>}, {<span class="nm">50</span>}, {<span class="nm">20</span>}, {<span class="nm">40</span>}};
+    <span class="kw">int</span> n = <span class="nm">5</span>;
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Data</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"%d "</span>, arr[i].value);
+    <span class="fn">printf</span>(<span class="st">"\n"</span>);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">value 하나짜리 구조체</span>
+          <span class="concept">x - y → 오름차순</span>
+          <span class="concept">가장 기본 패턴</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">비교 함수</div>
+        <div class="mini-code"><span class="kw">return</span> x<span class="op">-&gt;</span>value <span class="op">-</span> y<span class="op">-&gt;</span>value;
+<span class="cm">// 작은 값이 앞으로</span></div>
+      </div>
+      <div>
+        <div class="run-label">📥 숫자 입력 (공백 구분)</div>
+        <input class="run-input" id="in1" type="text" placeholder="예: 30 10 50 20 40" />
+        <button class="run-btn" style="background:var(--a1)" onclick="run1()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out1" style="color:var(--a1)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 2 — x값 기준 오름차순
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="coord" style="border-color:rgba(94,186,255,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">02</span>
+      <span class="ex-title">x값 기준 오름차순</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(94,186,255,.12);color:var(--a2)">좌표</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln2"></div>
+        <div class="code-body" id="cb2"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="kw">int</span> x;
+    <span class="kw">int</span> y;
+} <span class="ty">Point</span>;
+
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Point</span> *p = (<span class="ty">Point</span> *)a;
+    <span class="ty">Point</span> *q = (<span class="ty">Point</span> *)b;
+    <span class="kw">return</span> p<span class="op">-&gt;</span>x <span class="op">-</span> q<span class="op">-&gt;</span>x;   <span class="cm">// x만 비교</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="ty">Point</span> arr[<span class="nm">5</span>] = {
+        {<span class="nm">3</span>, <span class="nm">9</span>}, {<span class="nm">1</span>, <span class="nm">7</span>}, {<span class="nm">5</span>, <span class="nm">2</span>},
+        {<span class="nm">2</span>, <span class="nm">8</span>}, {<span class="nm">4</span>, <span class="nm">1</span>}
+    };
+    <span class="kw">int</span> n = <span class="nm">5</span>;
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Point</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"(%d, %d)\n"</span>, arr[i].x, arr[i].y);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">x만 비교</span>
+          <span class="concept">y는 무시</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">비교 함수</div>
+        <div class="mini-code"><span class="kw">return</span> p<span class="op">-&gt;</span>x <span class="op">-</span> q<span class="op">-&gt;</span>x;
+<span class="cm">// x 기준 오름차순만</span></div>
+      </div>
+      <div>
+        <div class="run-label">📥 좌표 입력 (x y 한 쌍씩, 줄바꿈)</div>
+        <textarea class="run-input" id="in2" rows="4" placeholder="3 9&#10;1 7&#10;5 2&#10;2 8&#10;4 1"></textarea>
+        <button class="run-btn" style="background:var(--a2)" onclick="run2()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out2" style="color:var(--a2)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 3 — x↑ y↑
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="coord" style="border-color:rgba(94,186,255,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">03</span>
+      <span class="ex-title">x 오름차순, x 같으면 y 오름차순</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(94,186,255,.12);color:var(--a2)">좌표 ⭐</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln3"></div>
+        <div class="code-body" id="cb3"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="kw">int</span> x;
+    <span class="kw">int</span> y;
+} <span class="ty">Point</span>;
+
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Point</span> *p = (<span class="ty">Point</span> *)a;
+    <span class="ty">Point</span> *q = (<span class="ty">Point</span> *)b;
+
+    <span class="kw">if</span> (p<span class="op">-&gt;</span>x <span class="op">!=</span> q<span class="op">-&gt;</span>x) <span class="kw">return</span> p<span class="op">-&gt;</span>x <span class="op">-</span> q<span class="op">-&gt;</span>x;   <span class="cm">// 1순위: x</span>
+    <span class="kw">return</span> p<span class="op">-&gt;</span>y <span class="op">-</span> q<span class="op">-&gt;</span>y;                        <span class="cm">// 2순위: y</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="ty">Point</span> arr[<span class="nm">6</span>] = {
+        {<span class="nm">3</span>, <span class="nm">2</span>}, {<span class="nm">1</span>, <span class="nm">5</span>}, {<span class="nm">3</span>, <span class="nm">1</span>},
+        {<span class="nm">2</span>, <span class="nm">7</span>}, {<span class="nm">1</span>, <span class="nm">2</span>}, {<span class="nm">2</span>, <span class="nm">4</span>}
+    };
+    <span class="kw">int</span> n = <span class="nm">6</span>;
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Point</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"(%d, %d)\n"</span>, arr[i].x, arr[i].y);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">2단계 비교</span>
+          <span class="concept">백준 좌표 정렬 기본</span>
+          <span class="concept">if-return 패턴</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">비교 함수</div>
+        <div class="mini-code"><span class="kw">if</span> (p<span class="op">-&gt;</span>x <span class="op">!=</span> q<span class="op">-&gt;</span>x)
+    <span class="kw">return</span> p<span class="op">-&gt;</span>x <span class="op">-</span> q<span class="op">-&gt;</span>x;
+<span class="kw">return</span> p<span class="op">-&gt;</span>y <span class="op">-</span> q<span class="op">-&gt;</span>y;</div>
+      </div>
+      <div>
+        <div class="run-label">📥 좌표 입력 (x y, 줄바꿈)</div>
+        <textarea class="run-input" id="in3" rows="4" placeholder="3 2&#10;1 5&#10;3 1&#10;2 7&#10;1 2&#10;2 4"></textarea>
+        <button class="run-btn" style="background:var(--a2)" onclick="run3()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out3" style="color:var(--a2)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 4 — x↓ y↑
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="coord" style="border-color:rgba(94,186,255,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">04</span>
+      <span class="ex-title">x 내림차순, x 같으면 y 오름차순</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(94,186,255,.12);color:var(--a2)">좌표</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln4"></div>
+        <div class="code-body" id="cb4"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="kw">int</span> x;
+    <span class="kw">int</span> y;
+} <span class="ty">Point</span>;
+
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Point</span> *p = (<span class="ty">Point</span> *)a;
+    <span class="ty">Point</span> *q = (<span class="ty">Point</span> *)b;
+
+    <span class="kw">if</span> (p<span class="op">-&gt;</span>x <span class="op">!=</span> q<span class="op">-&gt;</span>x) <span class="kw">return</span> q<span class="op">-&gt;</span>x <span class="op">-</span> p<span class="op">-&gt;</span>x;   <span class="cm">// x 내림: q-p</span>
+    <span class="kw">return</span> p<span class="op">-&gt;</span>y <span class="op">-</span> q<span class="op">-&gt;</span>y;                        <span class="cm">// y 오름: p-q</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="ty">Point</span> arr[<span class="nm">6</span>] = {
+        {<span class="nm">3</span>, <span class="nm">2</span>}, {<span class="nm">1</span>, <span class="nm">5</span>}, {<span class="nm">3</span>, <span class="nm">1</span>},
+        {<span class="nm">2</span>, <span class="nm">7</span>}, {<span class="nm">1</span>, <span class="nm">2</span>}, {<span class="nm">2</span>, <span class="nm">4</span>}
+    };
+    <span class="kw">int</span> n = <span class="nm">6</span>;
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Point</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"(%d, %d)\n"</span>, arr[i].x, arr[i].y);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">내림 → q-p</span>
+          <span class="concept">오름 → p-q</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">비교 함수</div>
+        <div class="mini-code"><span class="cm">// 오름차순: p - q</span>
+<span class="cm">// 내림차순: q - p</span>
+<span class="kw">if</span> (p<span class="op">-&gt;</span>x <span class="op">!=</span> q<span class="op">-&gt;</span>x)
+    <span class="kw">return</span> q<span class="op">-&gt;</span>x <span class="op">-</span> p<span class="op">-&gt;</span>x;  <span class="cm">// ↓</span>
+<span class="kw">return</span> p<span class="op">-&gt;</span>y <span class="op">-</span> q<span class="op">-&gt;</span>y;     <span class="cm">// ↑</span></div>
+      </div>
+      <div>
+        <div class="run-label">📥 좌표 입력 (x y, 줄바꿈)</div>
+        <textarea class="run-input" id="in4" rows="4" placeholder="3 2&#10;1 5&#10;3 1&#10;2 7&#10;1 2&#10;2 4"></textarea>
+        <button class="run-btn" style="background:var(--a2)" onclick="run4()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out4" style="color:var(--a2)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 5 — 문자열 사전순
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="str" style="border-color:rgba(110,231,160,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">05</span>
+      <span class="ex-title">문자열 사전순 오름차순</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(110,231,160,.12);color:var(--a3)">문자열 ⭐</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln5"></div>
+        <div class="code-body" id="cb5"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;string.h&gt;</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="kw">char</span> name[<span class="nm">50</span>];
+} <span class="ty">Word</span>;
+
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Word</span> *x = (<span class="ty">Word</span> *)a;
+    <span class="ty">Word</span> *y = (<span class="ty">Word</span> *)b;
+    <span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>name, y<span class="op">-&gt;</span>name);
+    <span class="cm">// ⚠️ 절대 x->name - y->name 금지!</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="ty">Word</span> arr[<span class="nm">5</span>] = {
+        {<span class="st">"pear"</span>}, {<span class="st">"apple"</span>}, {<span class="st">"banana"</span>},
+        {<span class="st">"kiwi"</span>}, {<span class="st">"grape"</span>}
+    };
+    <span class="kw">int</span> n = <span class="nm">5</span>;
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Word</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"%s\n"</span>, arr[i].name);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">문자열은 strcmp</span>
+          <span class="concept">빼기(-) 절대 금지</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">비교 함수</div>
+        <div class="mini-code"><span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>name,
+           y<span class="op">-&gt;</span>name);
+<span class="cm">// 내림차순: strcmp(y,x)</span></div>
+      </div>
+      <div>
+        <div class="run-label">📥 단어 입력 (줄바꿈, 최대 8개)</div>
+        <textarea class="run-input" id="in5" rows="4" placeholder="pear&#10;apple&#10;banana&#10;kiwi&#10;grape"></textarea>
+        <button class="run-btn" style="background:var(--a3);color:#111318" onclick="run5()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out5" style="color:var(--a3)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 6 — 길이 오름차순
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="str" style="border-color:rgba(110,231,160,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">06</span>
+      <span class="ex-title">문자열 길이 오름차순</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(110,231,160,.12);color:var(--a3)">문자열</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln6"></div>
+        <div class="code-body" id="cb6"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;string.h&gt;</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="kw">char</span> word[<span class="nm">50</span>];
+    <span class="kw">int</span>  len;     <span class="cm">// 길이를 미리 저장</span>
+} <span class="ty">Word</span>;
+
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Word</span> *x = (<span class="ty">Word</span> *)a;
+    <span class="ty">Word</span> *y = (<span class="ty">Word</span> *)b;
+    <span class="kw">return</span> x<span class="op">-&gt;</span>len <span class="op">-</span> y<span class="op">-&gt;</span>len;   <span class="cm">// 길이 오름차순</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="ty">Word</span> arr[<span class="nm">5</span>] = {
+        {<span class="st">"apple"</span>, <span class="nm">5</span>}, {<span class="st">"kiwi"</span>, <span class="nm">4</span>},
+        {<span class="st">"banana"</span>, <span class="nm">6</span>}, {<span class="st">"fig"</span>, <span class="nm">3</span>}, {<span class="st">"melon"</span>, <span class="nm">5</span>}
+    };
+    <span class="kw">int</span> n = <span class="nm">5</span>;
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Word</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"%s %d\n"</span>, arr[i].word, arr[i].len);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">len 필드 사전에 저장</span>
+          <span class="concept">짧은 단어 먼저</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">비교 함수</div>
+        <div class="mini-code"><span class="kw">return</span> x<span class="op">-&gt;</span>len <span class="op">-</span> y<span class="op">-&gt;</span>len;
+<span class="cm">// 길이 오름차순</span></div>
+      </div>
+      <div>
+        <div class="run-label">📥 단어 입력 (줄바꿈)</div>
+        <textarea class="run-input" id="in6" rows="4" placeholder="apple&#10;kiwi&#10;banana&#10;fig&#10;melon"></textarea>
+        <button class="run-btn" style="background:var(--a3);color:#111318" onclick="run6()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out6" style="color:var(--a3)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 7 — 길이↓ + 사전순
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="str" style="border-color:rgba(110,231,160,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">07</span>
+      <span class="ex-title">길이 내림차순, 같으면 사전순</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(110,231,160,.12);color:var(--a3)">문자열 ⭐</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln7"></div>
+        <div class="code-body" id="cb7"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;string.h&gt;</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="kw">char</span> word[<span class="nm">50</span>];
+    <span class="kw">int</span>  len;
+} <span class="ty">Word</span>;
+
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Word</span> *x = (<span class="ty">Word</span> *)a;
+    <span class="ty">Word</span> *y = (<span class="ty">Word</span> *)b;
+
+    <span class="kw">if</span> (x<span class="op">-&gt;</span>len <span class="op">!=</span> y<span class="op">-&gt;</span>len)
+        <span class="kw">return</span> y<span class="op">-&gt;</span>len <span class="op">-</span> x<span class="op">-&gt;</span>len;   <span class="cm">// 길이 내림: y-x</span>
+    <span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>word, y<span class="op">-&gt;</span>word); <span class="cm">// 같으면 사전순</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="ty">Word</span> arr[<span class="nm">6</span>] = {
+        {<span class="st">"apple"</span>, <span class="nm">5</span>}, {<span class="st">"kiwi"</span>, <span class="nm">4</span>},
+        {<span class="st">"banana"</span>, <span class="nm">6</span>}, {<span class="st">"fig"</span>, <span class="nm">3</span>},
+        {<span class="st">"melon"</span>, <span class="nm">5</span>}, {<span class="st">"grape"</span>, <span class="nm">5</span>}
+    };
+    <span class="kw">int</span> n = <span class="nm">6</span>;
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Word</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"%s %d\n"</span>, arr[i].word, arr[i].len);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">길이 내림: y-x</span>
+          <span class="concept">같으면 strcmp</span>
+          <span class="concept">2단계 비교</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">비교 함수</div>
+        <div class="mini-code"><span class="kw">if</span> (x<span class="op">-&gt;</span>len <span class="op">!=</span> y<span class="op">-&gt;</span>len)
+    <span class="kw">return</span> y<span class="op">-&gt;</span>len <span class="op">-</span> x<span class="op">-&gt;</span>len;
+<span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>word,
+           y<span class="op">-&gt;</span>word);</div>
+      </div>
+      <div>
+        <div class="run-label">📥 단어 입력 (줄바꿈)</div>
+        <textarea class="run-input" id="in7" rows="4" placeholder="apple&#10;kiwi&#10;banana&#10;fig&#10;melon&#10;grape"></textarea>
+        <button class="run-btn" style="background:var(--a3);color:#111318" onclick="run7()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out7" style="color:var(--a3)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 8 — 국영수 + 이름
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="stu" style="border-color:rgba(240,126,184,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">08</span>
+      <span class="ex-title">국어↓ 영어↑ 수학↓ 이름↑</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(240,126,184,.12);color:var(--a4)">학생 ⭐</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln8"></div>
+        <div class="code-body" id="cb8"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;string.h&gt;</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="kw">char</span> name[<span class="nm">50</span>];
+    <span class="kw">int</span>  kor, eng, math;
+} <span class="ty">Student</span>;
+
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Student</span> *x = (<span class="ty">Student</span> *)a;
+    <span class="ty">Student</span> *y = (<span class="ty">Student</span> *)b;
+
+    <span class="kw">if</span> (x<span class="op">-&gt;</span>kor  <span class="op">!=</span> y<span class="op">-&gt;</span>kor)  <span class="kw">return</span> y<span class="op">-&gt;</span>kor  <span class="op">-</span> x<span class="op">-&gt;</span>kor;  <span class="cm">// 국어↓</span>
+    <span class="kw">if</span> (x<span class="op">-&gt;</span>eng  <span class="op">!=</span> y<span class="op">-&gt;</span>eng)  <span class="kw">return</span> x<span class="op">-&gt;</span>eng  <span class="op">-</span> y<span class="op">-&gt;</span>eng;  <span class="cm">// 영어↑</span>
+    <span class="kw">if</span> (x<span class="op">-&gt;</span>math <span class="op">!=</span> y<span class="op">-&gt;</span>math) <span class="kw">return</span> y<span class="op">-&gt;</span>math <span class="op">-</span> x<span class="op">-&gt;</span>math; <span class="cm">// 수학↓</span>
+    <span class="kw">return</span> <span class="fn">strcmp</span>(x<span class="op">-&gt;</span>name, y<span class="op">-&gt;</span>name);              <span class="cm">// 이름↑</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="ty">Student</span> arr[<span class="nm">5</span>] = {
+        {<span class="st">"Kim"</span>,  <span class="nm">90</span>, <span class="nm">80</span>, <span class="nm">70</span>},
+        {<span class="st">"Lee"</span>,  <span class="nm">90</span>, <span class="nm">70</span>, <span class="nm">90</span>},
+        {<span class="st">"Park"</span>, <span class="nm">80</span>, <span class="nm">80</span>, <span class="nm">100</span>},
+        {<span class="st">"Choi"</span>, <span class="nm">90</span>, <span class="nm">70</span>, <span class="nm">85</span>},
+        {<span class="st">"Jung"</span>, <span class="nm">90</span>, <span class="nm">70</span>, <span class="nm">85</span>}
+    };
+    <span class="kw">int</span> n = <span class="nm">5</span>;
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Student</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"%s %d %d %d\n"</span>,
+               arr[i].name, arr[i].kor,
+               arr[i].eng, arr[i].math);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">4단계 비교</span>
+          <span class="concept">시험 필수 패턴</span>
+          <span class="concept">조건 순서가 핵심</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">비교 함수 요약</div>
+        <div class="mini-code">국어↓  <span class="kw">return</span> y<span class="op">-&gt;</span>kor  <span class="op">-</span> x<span class="op">-&gt;</span>kor;
+영어↑  <span class="kw">return</span> x<span class="op">-&gt;</span>eng  <span class="op">-</span> y<span class="op">-&gt;</span>eng;
+수학↓  <span class="kw">return</span> y<span class="op">-&gt;</span>math <span class="op">-</span> x<span class="op">-&gt;</span>math;
+이름↑  <span class="fn">strcmp</span>(x, y);</div>
+      </div>
+      <div>
+        <div class="run-label">📥 이름 국어 영어 수학 (줄바꿈)</div>
+        <textarea class="run-input" id="in8" rows="4" placeholder="Kim 90 80 70&#10;Lee 90 70 90&#10;Park 80 80 100&#10;Choi 90 70 85&#10;Jung 90 70 85"></textarea>
+        <button class="run-btn" style="background:var(--a4)" onclick="run8()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out8" style="color:var(--a4)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 9 — 끝 시간↑ 시작 시간↑
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="meet" style="border-color:rgba(181,127,255,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">09</span>
+      <span class="ex-title">끝 시간 오름차순, 같으면 시작 시간 오름차순</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(181,127,255,.12);color:var(--a5)">회의 ⭐</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln9"></div>
+        <div class="code-body" id="cb9"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="kw">int</span> start;
+    <span class="kw">int</span> end;
+} <span class="ty">Meeting</span>;
+
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Meeting</span> *x = (<span class="ty">Meeting</span> *)a;
+    <span class="ty">Meeting</span> *y = (<span class="ty">Meeting</span> *)b;
+
+    <span class="kw">if</span> (x<span class="op">-&gt;</span>end <span class="op">!=</span> y<span class="op">-&gt;</span>end)
+        <span class="kw">return</span> x<span class="op">-&gt;</span>end <span class="op">-</span> y<span class="op">-&gt;</span>end;     <span class="cm">// 끝 시간↑</span>
+    <span class="kw">return</span> x<span class="op">-&gt;</span>start <span class="op">-</span> y<span class="op">-&gt;</span>start;      <span class="cm">// 시작 시간↑</span>
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="ty">Meeting</span> arr[<span class="nm">5</span>] = {
+        {<span class="nm">3</span>, <span class="nm">5</span>}, {<span class="nm">1</span>, <span class="nm">4</span>}, {<span class="nm">2</span>, <span class="nm">3</span>},
+        {<span class="nm">1</span>, <span class="nm">2</span>}, {<span class="nm">3</span>, <span class="nm">3</span>}
+    };
+    <span class="kw">int</span> n = <span class="nm">5</span>;
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Meeting</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"%d %d\n"</span>, arr[i].start, arr[i].end);
+
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">회의실 배정 그리디</span>
+          <span class="concept">끝 시간이 1순위</span>
+          <span class="concept">시험 빈출 패턴</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">비교 함수</div>
+        <div class="mini-code"><span class="kw">if</span> (x<span class="op">-&gt;</span>end <span class="op">!=</span> y<span class="op">-&gt;</span>end)
+    <span class="kw">return</span> x<span class="op">-&gt;</span>end <span class="op">-</span> y<span class="op">-&gt;</span>end;
+<span class="kw">return</span> x<span class="op">-&gt;</span>start <span class="op">-</span> y<span class="op">-&gt;</span>start;</div>
+      </div>
+      <div>
+        <div class="run-label">📥 시작 끝 (줄바꿈)</div>
+        <textarea class="run-input" id="in9" rows="4" placeholder="3 5&#10;1 4&#10;2 3&#10;1 2&#10;3 3"></textarea>
+        <button class="run-btn" style="background:var(--a5)" onclick="run9()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out9" style="color:var(--a5)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     예제 10 — 실전형 (입력받아 정렬)
+════════════════════════════════════════ -->
+<div class="ex-card" data-cat="real" style="border-color:rgba(255,159,107,.18)">
+  <div class="ex-head">
+    <div class="ex-meta">
+      <div class="ex-dots"><i class="d1"></i><i class="d2"></i><i class="d3"></i></div>
+      <span class="ex-num">10</span>
+      <span class="ex-title">입력받아 정렬하는 실전형 예제</span>
+    </div>
+    <span class="ex-cat" style="background:rgba(255,159,107,.12);color:var(--a6)">실전 ⭐</span>
+  </div>
+  <div class="ex-body">
+    <div class="ex-code-col">
+      <div class="code-wrap">
+        <div class="ln-col" id="ln10"></div>
+        <div class="code-body" id="cb10"><span class="pp">#include</span> <span class="st">&lt;stdio.h&gt;</span>
+<span class="pp">#include</span> <span class="st">&lt;stdlib.h&gt;</span>
+
+<span class="kw">typedef struct</span> {
+    <span class="kw">int</span> x;
+    <span class="kw">int</span> y;
+} <span class="ty">Point</span>;
+
+<span class="kw">int</span> <span class="fn">cmp</span>(<span class="kw">const void</span> *a, <span class="kw">const void</span> *b) {
+    <span class="ty">Point</span> *p = (<span class="ty">Point</span> *)a;
+    <span class="ty">Point</span> *q = (<span class="ty">Point</span> *)b;
+
+    <span class="kw">if</span> (p<span class="op">-&gt;</span>x <span class="op">!=</span> q<span class="op">-&gt;</span>x) <span class="kw">return</span> p<span class="op">-&gt;</span>x <span class="op">-</span> q<span class="op">-&gt;</span>x;
+    <span class="kw">return</span> p<span class="op">-&gt;</span>y <span class="op">-</span> q<span class="op">-&gt;</span>y;
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="kw">int</span> n;
+    <span class="fn">scanf</span>(<span class="st">"%d"</span>, &amp;n);
+
+    <span class="cm">/* 동적 할당 — n개를 힙에 확보 */</span>
+    <span class="ty">Point</span> *arr = (<span class="ty">Point</span> *)<span class="fn">malloc</span>(<span class="kw">sizeof</span>(<span class="ty">Point</span>) * n);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">scanf</span>(<span class="st">"%d %d"</span>, &amp;arr[i].x, &amp;arr[i].y);
+
+    <span class="fn">qsort</span>(arr, n, <span class="kw">sizeof</span>(<span class="ty">Point</span>), cmp);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++)
+        <span class="fn">printf</span>(<span class="st">"%d %d\n"</span>, arr[i].x, arr[i].y);
+
+    <span class="fn">free</span>(arr);   <span class="cm">// 반드시 해제!</span>
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      </div>
+    </div>
+    <div class="ex-panel">
+      <div>
+        <div class="panel-section">핵심 포인트</div>
+        <div class="concepts">
+          <span class="concept">백준 스타일</span>
+          <span class="concept">malloc 동적 할당</span>
+          <span class="concept">free 필수</span>
+          <span class="concept">x↑ y↑ 정렬</span>
+        </div>
+      </div>
+      <div>
+        <div class="panel-section">실전 패턴</div>
+        <div class="mini-code"><span class="cm">// 1. n 입력받기</span>
+<span class="cm">// 2. malloc으로 할당</span>
+<span class="cm">// 3. 데이터 입력</span>
+<span class="cm">// 4. qsort 호출</span>
+<span class="cm">// 5. 출력 후 free</span></div>
+      </div>
+      <div>
+        <div class="run-label">📥 첫 줄: n, 이후 x y (줄바꿈)</div>
+        <textarea class="run-input" id="in10" rows="5" placeholder="5&#10;3 2&#10;1 5&#10;3 1&#10;2 4&#10;1 2"></textarea>
+        <button class="run-btn" style="background:var(--a6)" onclick="run10()">▶ 실행</button>
+        <div class="run-label">📤 출력</div>
+        <div class="run-output" id="out10" style="color:var(--a6)">실행 버튼을 눌러보세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+/* ── 줄 번호 생성 ── */
+function buildLN() {
+  for (let i = 1; i <= 10; i++) {
+    const cb = document.getElementById('cb' + i);
+    const ln = document.getElementById('ln' + i);
+    if (!cb || !ln) continue;
+    const lines = cb.innerHTML.split('\n').length;
+    ln.innerHTML = Array.from({length: lines}, (_,j) => `<span>${j+1}</span>`).join('');
+  }
+}
+
+/* ── 카테고리 필터 ── */
+function filter(cat, btn) {
+  document.querySelectorAll('.ex-card').forEach(c => {
+    c.classList.toggle('hide', cat !== 'all' && c.dataset.cat !== cat);
+  });
+  document.querySelectorAll('.npill').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+}
+
+/* ── 공통 유틸 ── */
+function err(id, msg) { document.getElementById('out'+id).textContent = '⚠️  ' + msg; }
+
+function parseNums(str) {
+  return str.trim().split(/\s+/).map(Number);
+}
+
+/* ── 실행 함수 ── */
+function run1() {
+  const nums = parseNums(document.getElementById('in1').value);
+  if (!nums.length || nums.some(isNaN)) { err(1,'숫자만 입력하세요'); return; }
+  document.getElementById('out1').textContent = [...nums].sort((a,b)=>a-b).join(' ');
+}
+
+function parseCoordLines(id) {
+  const lines = document.getElementById('in'+id).value.trim().split('\n').map(l=>l.trim()).filter(l=>l);
+  return lines.map(l => {
+    const p = l.split(/\s+/).map(Number);
+    return {x:p[0], y:p[1]};
+  });
+}
+
+function run2() {
+  const pts = parseCoordLines(2);
+  if (!pts.length || pts.some(p=>isNaN(p.x)||isNaN(p.y))) { err(2,'x y 형식으로 입력하세요'); return; }
+  const sorted = [...pts].sort((a,b)=>a.x-b.x);
+  document.getElementById('out2').textContent = sorted.map(p=>`(${p.x}, ${p.y})`).join('\n');
+}
+
+function run3() {
+  const pts = parseCoordLines(3);
+  if (!pts.length || pts.some(p=>isNaN(p.x)||isNaN(p.y))) { err(3,'x y 형식으로 입력하세요'); return; }
+  const sorted = [...pts].sort((a,b)=>a.x!==b.x?a.x-b.x:a.y-b.y);
+  document.getElementById('out3').textContent = sorted.map(p=>`(${p.x}, ${p.y})`).join('\n');
+}
+
+function run4() {
+  const pts = parseCoordLines(4);
+  if (!pts.length || pts.some(p=>isNaN(p.x)||isNaN(p.y))) { err(4,'x y 형식으로 입력하세요'); return; }
+  const sorted = [...pts].sort((a,b)=>a.x!==b.x?b.x-a.x:a.y-b.y);
+  document.getElementById('out4').textContent = sorted.map(p=>`(${p.x}, ${p.y})`).join('\n');
+}
+
+function run5() {
+  const words = document.getElementById('in5').value.trim().split('\n').map(l=>l.trim()).filter(l=>l).slice(0,10);
+  if (!words.length) { err(5,'단어를 입력하세요'); return; }
+  document.getElementById('out5').textContent = [...words].sort().join('\n');
+}
+
+function run6() {
+  const words = document.getElementById('in6').value.trim().split('\n').map(l=>l.trim()).filter(l=>l).slice(0,10);
+  if (!words.length) { err(6,'단어를 입력하세요'); return; }
+  const sorted = [...words].sort((a,b)=>a.length-b.length);
+  document.getElementById('out6').textContent = sorted.map(w=>`${w} ${w.length}`).join('\n');
+}
+
+function run7() {
+  const words = document.getElementById('in7').value.trim().split('\n').map(l=>l.trim()).filter(l=>l).slice(0,10);
+  if (!words.length) { err(7,'단어를 입력하세요'); return; }
+  const sorted = [...words].sort((a,b)=>a.length!==b.length?b.length-a.length:a.localeCompare(b));
+  document.getElementById('out7').textContent = sorted.map(w=>`${w} ${w.length}`).join('\n');
+}
+
+function run8() {
+  const lines = document.getElementById('in8').value.trim().split('\n').map(l=>l.trim()).filter(l=>l).slice(0,10);
+  const students = lines.map(l=>{
+    const p=l.split(/\s+/);
+    return {name:p[0],kor:+p[1],eng:+p[2],math:+p[3]};
+  });
+  if (students.some(s=>isNaN(s.kor)||isNaN(s.eng)||isNaN(s.math))) { err(8,'이름 국어 영어 수학 형식으로 입력하세요'); return; }
+  const sorted = [...students].sort((a,b)=>{
+    if(a.kor!==b.kor) return b.kor-a.kor;
+    if(a.eng!==b.eng) return a.eng-b.eng;
+    if(a.math!==b.math) return b.math-a.math;
+    return a.name.localeCompare(b.name);
+  });
+  document.getElementById('out8').textContent = sorted.map(s=>`${s.name} ${s.kor} ${s.eng} ${s.math}`).join('\n');
+}
+
+function run9() {
+  const lines = document.getElementById('in9').value.trim().split('\n').map(l=>l.trim()).filter(l=>l);
+  const mtgs = lines.map(l=>{const p=l.split(/\s+/).map(Number);return{start:p[0],end:p[1]};});
+  if (mtgs.some(m=>isNaN(m.start)||isNaN(m.end))) { err(9,'시작 끝 형식으로 입력하세요'); return; }
+  const sorted = [...mtgs].sort((a,b)=>a.end!==b.end?a.end-b.end:a.start-b.start);
+  document.getElementById('out9').textContent = sorted.map(m=>`${m.start} ${m.end}`).join('\n');
+}
+
+function run10() {
+  const lines = document.getElementById('in10').value.trim().split('\n').map(l=>l.trim()).filter(l=>l);
+  if (lines.length < 2) { err(10,'첫 줄에 n, 이후 x y 입력하세요'); return; }
+  const n = parseInt(lines[0]);
+  if (isNaN(n)) { err(10,'첫 줄은 정수(n)를 입력하세요'); return; }
+  const pts = lines.slice(1, n+1).map(l=>{const p=l.split(/\s+/).map(Number);return{x:p[0],y:p[1]};});
+  if (pts.length<n || pts.some(p=>isNaN(p.x)||isNaN(p.y))) { err(10,'좌표 데이터가 부족합니다'); return; }
+  const sorted = [...pts].sort((a,b)=>a.x!==b.x?a.x-b.x:a.y-b.y);
+  document.getElementById('out10').textContent = sorted.map(p=>`${p.x} ${p.y}`).join('\n');
+}
+
+/* ── Enter 지원 ── */
+for (let i=1;i<=10;i++){
+  const el=document.getElementById('in'+i);
+  if(!el)continue;
+  const fn=window['run'+i];
+  el.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();fn();}});
+}
+
+window.addEventListener('DOMContentLoaded', buildLN);
+</script>
+</body>
+</html>
