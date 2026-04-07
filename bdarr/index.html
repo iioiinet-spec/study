@@ -1,0 +1,572 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+.w{max-width:760px;margin:0 auto;padding:1.5rem 1rem}
+.hd{text-align:center;padding:1.5rem 0 1.8rem}
+.hd h1{font-size:22px;font-weight:500;margin-bottom:5px}
+.hd p{font-size:14px;color:var(--color-text-secondary)}
+.nav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
+.nb{padding:6px 14px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:transparent;cursor:pointer;font-size:13px;color:var(--color-text-secondary);font-family:var(--font-sans);transition:all .15s}
+.nb:hover{background:var(--color-background-secondary)}
+.nb.on{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
+.sec{display:none}.sec.on{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
+.st{font-size:16px;font-weight:500;margin-bottom:10px}
+.sb{font-size:14px;color:var(--color-text-secondary);line-height:1.65;margin-bottom:10px}
+.hl{border-left:3px solid #7F77DD;padding:9px 14px;background:#EEEDFE;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;margin:10px 0}
+.hl p{font-size:13px;color:#3C3489;line-height:1.6}
+.hl.tl{border-left-color:#1D9E75;background:#E1F5EE}.hl.tl p{color:#085041}
+.hl.cl{border-left-color:#D85A30;background:#FAECE7}.hl.cl p{color:#712B13}
+.hl.bl{border-left-color:#185FA5;background:#E6F1FB}.hl.bl p{color:#0C447C}
+.code{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:1rem 1.25rem;font-family:var(--font-mono);font-size:12px;line-height:1.85;margin:8px 0;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
+.kw{color:#534AB7;font-weight:500}.fn{color:#0F6E56}.cm{color:var(--color-text-tertiary)}.nm{color:#BA7517}.pp{color:#D85A30}
+.hl-line{background:#FAEEDA;border-radius:3px;padding:0 2px;color:#412402;font-weight:500}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:10px 0}
+.g4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
+.cmp{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px}
+.cl2{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:10px;font-weight:500;margin-bottom:8px}
+.bp{background:#EEEDFE;color:#3C3489}.bt{background:#E1F5EE;color:#085041}.bc{background:#FAECE7;color:#712B13}
+.bb{background:#E6F1FB;color:#0C447C}.bgy{background:#F1EFE8;color:#444441}.bamb{background:#FAEEDA;color:#633806}
+.si{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.sn{width:22px;height:22px;border-radius:50%;background:#EEEDFE;color:#3C3489;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.sx{font-size:13px;line-height:1.6;color:var(--color-text-secondary)}
+.sx code{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;color:var(--color-text-primary)}
+.mat{border-collapse:collapse;font-family:var(--font-mono);font-size:12px;margin:8px auto}
+.mat td,.mat th{border:0.5px solid var(--color-border-secondary);padding:5px 9px;text-align:center;color:var(--color-text-primary)}
+.mat th{background:var(--color-background-secondary);font-weight:500}
+.mat .hi{background:#EEEDFE;color:#3C3489;font-weight:500}
+.mat .hg{background:#E1F5EE;color:#085041;font-weight:500}
+.io-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px;margin:6px 0}
+.io-label{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.io-val{font-family:var(--font-mono);font-size:13px;color:var(--color-text-primary);line-height:1.7}
+.mistake-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.mistake-item:last-child{border-bottom:none}
+.mn{font-size:12px;font-weight:500;color:#712B13;background:#FAECE7;padding:2px 8px;border-radius:10px;flex-shrink:0;white-space:nowrap}
+.mt{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.mt code{font-family:var(--font-mono);font-size:12px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;color:var(--color-text-primary)}
+.grid-cell{width:34px;height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;font-family:var(--font-mono);border:1px solid}
+.gc1{background:#E6F1FB;border-color:#85B7EB;color:#0C447C}
+.gc0{background:#D3D1C7;border-color:#B4B2A9;color:#444441}
+.qi{padding:9px 13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;font-size:13px;font-family:var(--font-sans);background:transparent;color:var(--color-text-primary);text-align:left;transition:all .15s;width:100%;margin-bottom:7px}
+.qi:hover:not(:disabled){background:var(--color-background-secondary)}
+.qi.ok{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.qi.ng{background:#FCEBEB;border-color:#E24B4A;color:#501313}
+.qfb{font-size:13px;padding:9px 13px;border-radius:var(--border-radius-md);margin-bottom:10px;line-height:1.55}
+.qfb.ok{background:#E1F5EE;color:#085041}.qfb.ng{background:#FCEBEB;color:#501313}
+.qn{font-size:13px;color:var(--color-text-secondary)}
+.sc{text-align:center;padding:2rem}
+.scn{font-size:48px;font-weight:500;color:#534AB7}
+.scl{font-size:14px;color:var(--color-text-secondary);margin-top:5px}
+.scm{font-size:15px;margin-top:14px}
+.tbbar{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:14px;gap:4px;flex-wrap:wrap}
+.tb{padding:6px 14px;font-size:13px;cursor:pointer;color:var(--color-text-secondary);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font-sans);transition:all .15s}
+.tb.on{color:#534AB7;border-bottom-color:#7F77DD}
+.tbc{display:none}.tbc.on{display:block}
+.decision-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:12px 16px;margin:8px 0;cursor:pointer;transition:all .15s}
+.decision-box:hover{background:#EEEDFE;border-color:#7F77DD}
+.decision-box.sel{background:#EEEDFE;border-color:#7F77DD}
+.decision-q{font-size:14px;font-weight:500;margin-bottom:6px}
+.decision-opts{display:flex;gap:8px;flex-wrap:wrap}
+.dopt{padding:5px 14px;border:0.5px solid var(--color-border-secondary);border-radius:20px;font-size:13px;cursor:pointer;background:transparent;font-family:var(--font-sans);color:var(--color-text-secondary);transition:all .15s}
+.dopt:hover{background:var(--color-background-secondary)}
+.dopt.sel{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
+.result-box{background:#E1F5EE;border:1px solid #1D9E75;border-radius:var(--border-radius-md);padding:12px 16px;margin-top:10px;display:none}
+.result-box.show{display:block}
+.result-title{font-size:14px;font-weight:500;color:#085041;margin-bottom:6px}
+.result-code{font-family:var(--font-mono);font-size:12px;color:#085041;line-height:1.7}
+</style>
+
+<div class="w">
+  <div class="hd">
+    <h1>BFS/DFS 입력을 배열에 담는 법</h1>
+    <p>탐색보다 먼저 — 입력을 어떤 배열에 담을지 판단하기</p>
+  </div>
+
+  <nav class="nav">
+    <button class="nb on" onclick="show('overview')">전체 개요</button>
+    <button class="nb" onclick="show('graph')">그래프 입력</button>
+    <button class="nb" onclick="show('grid')">격자 입력</button>
+    <button class="nb" onclick="show('compare')">비교 & 선택</button>
+    <button class="nb" onclick="show('decide')">판단 도구</button>
+    <button class="nb" onclick="show('mistakes')">자주 하는 실수</button>
+    <button class="nb" onclick="show('quiz')">퀴즈</button>
+  </nav>
+
+  <!-- 전체 개요 -->
+  <div id="s-overview" class="sec on">
+    <div class="card">
+      <div class="st">BFS/DFS에서 가장 먼저 해야 할 일</div>
+      <div class="sb">탐색 알고리즘을 외우는 것보다, 입력을 어떤 배열에 담을지 판단하는 것이 먼저입니다.</div>
+      <div class="si"><div class="sn">1</div><div class="sx">입력이 어떤 모양인지 본다</div></div>
+      <div class="si"><div class="sn">2</div><div class="sx">그 입력을 저장할 자료구조를 정한다</div></div>
+      <div class="si"><div class="sn">3</div><div class="sx">배열에 입력을 저장한다</div></div>
+      <div class="si"><div class="sn">4</div><div class="sx">BFS 또는 DFS로 탐색한다</div></div>
+    </div>
+    <div class="card">
+      <div class="st">입력 형태 4가지와 저장 방법</div>
+      <div class="g2">
+        <div class="cmp" style="background:#EEEDFE;border-color:#AFA9EC;">
+          <div class="cl2" style="color:#534AB7;">그래프 입력</div>
+          <div style="font-size:13px;color:#3C3489;line-height:1.7;font-family:var(--font-mono);">1 2<br>1 3<br>2 4</div>
+          <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
+            <span class="badge bp">인접 행렬</span>
+            <span class="badge bt">인접 리스트</span>
+          </div>
+        </div>
+        <div class="cmp" style="background:#E6F1FB;border-color:#85B7EB;">
+          <div class="cl2" style="color:#185FA5;">격자 입력</div>
+          <div style="font-size:13px;color:#0C447C;line-height:1.7;font-family:var(--font-mono);">1101<br>1011<br>0110</div>
+          <div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">
+            <span class="badge bb">char 2D 배열</span>
+            <span class="badge bgy">int 2D 배열</span>
+          </div>
+        </div>
+      </div>
+      <div class="hl"><p>"그래프냐, 격자냐"를 먼저 판단하는 것이 시작입니다.</p></div>
+    </div>
+    <div class="card">
+      <div class="st">핵심 암기 5문장</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:4px;">
+        <div style="font-size:13px;color:var(--color-text-secondary);padding:7px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">그래프 입력은 a b를 읽고 배열에 연결 표시한다.</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);padding:7px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">무방향 그래프는 양쪽 다 넣는다.</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);padding:7px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">격자 입력은 줄 단위 또는 칸 단위로 2차원 배열에 넣는다.</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);padding:7px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">BFS/DFS는 입력 배열과 방문 배열을 함께 쓴다.</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);padding:7px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">문자 격자는 '1', '0'으로 비교하고, 숫자 격자는 1, 0으로 비교한다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 그래프 입력 -->
+  <div id="s-graph" class="sec">
+    <div class="tbbar">
+      <button class="tb on" onclick="showTab('g1')">무방향 그래프</button>
+      <button class="tb" onclick="showTab('g2')">방향 그래프</button>
+      <button class="tb" onclick="showTab('g3')">인접 리스트</button>
+      <button class="tb" onclick="showTab('g4')">행렬 시각화</button>
+    </div>
+
+    <div id="g1" class="tbc on">
+      <div class="card">
+        <span class="badge bp">무방향 그래프 — graph[a][b]=1 AND graph[b][a]=1</span>
+        <div class="io-box"><div class="io-label">입력 예시</div><div class="io-val">5 4
+1 2
+1 3
+2 4
+3 5</div></div>
+        <div class="code"><span class="pp">#include</span> &lt;stdio.h&gt;
+<span class="pp">#define</span> MAX <span class="nm">101</span>
+
+<span class="kw">int</span> graph[MAX][MAX];
+<span class="kw">int</span> n, m;
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;n, &amp;m);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; m; i++) {
+        <span class="kw">int</span> a, b;
+        <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;a, &amp;b);
+        <span class="hl-line">graph[a][b] = <span class="nm">1</span>;</span>  <span class="cm">// a→b</span>
+        <span class="hl-line">graph[b][a] = <span class="nm">1</span>;</span>  <span class="cm">// b→a (무방향!)</span>
+    }
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+        <div class="hl cl"><p>무방향 그래프는 양쪽 다 저장! graph[a][b]=1만 하면 b→a 탐색이 안 됩니다.</p></div>
+        <div class="st" style="margin-top:12px;">실제 저장 결과 (1-2, 1-3, 2-4, 3-5)</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);margin:6px 0 8px;">1이 되는 칸들:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;">
+          <span style="font-family:var(--font-mono);font-size:12px;background:#EEEDFE;color:#3C3489;padding:3px 9px;border-radius:var(--border-radius-md);">graph[1][2]=1</span>
+          <span style="font-family:var(--font-mono);font-size:12px;background:#EEEDFE;color:#3C3489;padding:3px 9px;border-radius:var(--border-radius-md);">graph[2][1]=1</span>
+          <span style="font-family:var(--font-mono);font-size:12px;background:#EEEDFE;color:#3C3489;padding:3px 9px;border-radius:var(--border-radius-md);">graph[1][3]=1</span>
+          <span style="font-family:var(--font-mono);font-size:12px;background:#EEEDFE;color:#3C3489;padding:3px 9px;border-radius:var(--border-radius-md);">graph[3][1]=1</span>
+          <span style="font-family:var(--font-mono);font-size:12px;background:#EEEDFE;color:#3C3489;padding:3px 9px;border-radius:var(--border-radius-md);">graph[2][4]=1</span>
+          <span style="font-family:var(--font-mono);font-size:12px;background:#EEEDFE;color:#3C3489;padding:3px 9px;border-radius:var(--border-radius-md);">graph[4][2]=1</span>
+          <span style="font-family:var(--font-mono);font-size:12px;background:#EEEDFE;color:#3C3489;padding:3px 9px;border-radius:var(--border-radius-md);">graph[3][5]=1</span>
+          <span style="font-family:var(--font-mono);font-size:12px;background:#EEEDFE;color:#3C3489;padding:3px 9px;border-radius:var(--border-radius-md);">graph[5][3]=1</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="st">BFS/DFS에서 인접 행렬 사용 방법</div>
+        <div class="code"><span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
+    <span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; !visited[next]) {
+        <span class="cm">// now와 next가 연결됨</span>
+    }
+}</div>
+        <div class="hl tl"><p>1번부터 n번까지 순서대로 확인 → 자동으로 번호 작은 정점부터 방문!</p></div>
+      </div>
+    </div>
+
+    <div id="g2" class="tbc">
+      <div class="card">
+        <span class="badge bb">방향 그래프 — graph[a][b]=1 만</span>
+        <div class="io-box"><div class="io-label">입력 예시 (a→b 방향)</div><div class="io-val">4 4
+1 2
+1 3
+2 4
+3 4</div></div>
+        <div class="code"><span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; m; i++) {
+    <span class="kw">int</span> a, b;
+    <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;a, &amp;b);
+    <span class="hl-line">graph[a][b] = <span class="nm">1</span>;</span>   <span class="cm">// a→b만</span>
+    <span class="cm">// graph[b][a] = 1; ← 안 함!</span>
+}</div>
+        <div class="hl"><p>방향 그래프는 graph[a][b]=1 만! 이 경우 graph[2][1]은 0입니다.</p></div>
+        <div class="g2" style="margin-top:10px;">
+          <div class="cmp" style="background:#E1F5EE;border-color:#5DCAA5;">
+            <div class="cl2" style="color:#0F6E56;">무방향 — 양쪽</div>
+            <div style="font-size:12px;color:#085041;font-family:var(--font-mono);line-height:1.7;">graph[a][b]=1<br>graph[b][a]=1</div>
+          </div>
+          <div class="cmp" style="background:#EEEDFE;border-color:#AFA9EC;">
+            <div class="cl2" style="color:#534AB7;">방향 — 한쪽</div>
+            <div style="font-size:12px;color:#3C3489;font-family:var(--font-mono);line-height:1.7;">graph[a][b]=1<br>(반대는 안 함)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="g3" class="tbc">
+      <div class="card">
+        <span class="badge bt">인접 리스트 — adj[x]에 연결 목록 저장</span>
+        <div class="sb">각 정점마다 연결된 정점들을 줄줄이 저장하는 방법. 큰 문제에 효율적입니다.</div>
+        <div class="code"><span class="kw">int</span> adj[MAX][MAX];  <span class="cm">// adj[x] = x와 연결된 정점들</span>
+<span class="kw">int</span> cnt[MAX];        <span class="cm">// cnt[x] = x의 연결 개수</span>
+
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; m; i++) {
+    <span class="kw">int</span> a, b;
+    <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;a, &amp;b);
+    <span class="hl-line">adj[a][cnt[a]++] = b;</span>  <span class="cm">// a의 목록에 b 추가</span>
+    <span class="hl-line">adj[b][cnt[b]++] = a;</span>  <span class="cm">// b의 목록에 a 추가</span>
+}</div>
+        <div class="io-box" style="margin-top:10px;"><div class="io-label">입력 1 2, 1 3, 2 4, 3 5 저장 결과</div>
+          <div class="io-val">adj[1] = {2, 3}  cnt[1]=2
+adj[2] = {1, 4}  cnt[2]=2
+adj[3] = {1, 5}  cnt[3]=2
+adj[4] = {2}     cnt[4]=1
+adj[5] = {3}     cnt[5]=1</div>
+        </div>
+        <div class="code"><span class="cm">// DFS/BFS에서 사용</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; cnt[now]; i++) {
+    <span class="kw">int</span> next = adj[now][i];
+    <span class="cm">// next 처리</span>
+}</div>
+      </div>
+    </div>
+
+    <div id="g4" class="tbc">
+      <div class="card">
+        <div class="st">인접 행렬 시각화 (정점 5, 간선: 1-2, 1-3, 2-4, 3-5)</div>
+        <div style="overflow-x:auto;">
+          <table class="mat">
+            <tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
+            <tr><th>1</th><td class="hi">0</td><td class="hi">1</td><td class="hi">1</td><td>0</td><td>0</td></tr>
+            <tr><th>2</th><td class="hi">1</td><td>0</td><td>0</td><td class="hi">1</td><td>0</td></tr>
+            <tr><th>3</th><td class="hi">1</td><td>0</td><td>0</td><td>0</td><td class="hi">1</td></tr>
+            <tr><th>4</th><td>0</td><td class="hi">1</td><td>0</td><td>0</td><td>0</td></tr>
+            <tr><th>5</th><td>0</td><td>0</td><td class="hi">1</td><td>0</td><td>0</td></tr>
+          </table>
+        </div>
+        <div class="hl tl"><p>무방향 그래프의 인접 행렬은 대각선 기준으로 대칭입니다. (graph[a][b] = graph[b][a])</p></div>
+        <div class="st" style="margin-top:12px;">방문 배열은 별도!</div>
+        <div class="code"><span class="kw">int</span> graph[<span class="nm">101</span>][<span class="nm">101</span>];   <span class="cm">// 원본 그래프 정보</span>
+<span class="kw">int</span> visited[<span class="nm">101</span>];     <span class="cm">// 내가 이미 갔는지</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 격자 입력 -->
+  <div id="s-grid" class="sec">
+    <div class="tbbar">
+      <button class="tb on" onclick="showTab('gr1')">문자 격자 (char)</button>
+      <button class="tb" onclick="showTab('gr2')">숫자 격자 (int)</button>
+      <button class="tb" onclick="showTab('gr3')">격자 + 방문 배열</button>
+    </div>
+
+    <div id="gr1" class="tbc on">
+      <div class="card">
+        <span class="badge bb">문자 격자 — 공백 없이 붙어서 오는 입력</span>
+        <div class="io-box"><div class="io-label">입력 예시</div><div class="io-val">3 4
+1101
+1011
+0110</div></div>
+        <div class="code"><span class="kw">char</span> map[MAX][MAX];  <span class="cm">// char 배열</span>
+
+<span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;n, &amp;m);
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++) {
+    <span class="hl-line"><span class="fn">scanf</span>(<span class="nm">"%s"</span>, map[i]);</span>  <span class="cm">// 줄 단위 읽기</span>
+}</div>
+        <div class="hl cl"><p>비교할 때 반드시 문자로! <code style="font-family:var(--font-mono);">map[x][y] == '1'</code> (숫자 1이 아님)</p></div>
+        <div class="st" style="margin-top:12px;">실제 저장 결과</div>
+        <div style="display:inline-grid;gap:3px;grid-template-columns:repeat(4,36px);margin:8px 0;">
+          <div class="grid-cell gc1">'1'</div><div class="grid-cell gc1">'1'</div><div class="grid-cell gc0">'0'</div><div class="grid-cell gc1">'1'</div>
+          <div class="grid-cell gc1">'1'</div><div class="grid-cell gc0">'0'</div><div class="grid-cell gc1">'1'</div><div class="grid-cell gc1">'1'</div>
+          <div class="grid-cell gc0">'0'</div><div class="grid-cell gc1">'1'</div><div class="grid-cell gc1">'1'</div><div class="grid-cell gc0">'0'</div>
+        </div>
+        <div class="code"><span class="cm">// BFS/DFS에서 조건 확인</span>
+<span class="kw">if</span> (map[nx][ny] == <span class="nm">'0'</span>) <span class="kw">continue</span>;  <span class="cm">// 벽이면 skip</span>
+<span class="kw">if</span> (map[nx][ny] == <span class="nm">'1'</span>)  ...         <span class="cm">// 길이면 처리</span></div>
+      </div>
+    </div>
+
+    <div id="gr2" class="tbc">
+      <div class="card">
+        <span class="badge bgy">숫자 격자 — 공백으로 띄어진 숫자 입력</span>
+        <div class="io-box"><div class="io-label">입력 예시</div><div class="io-val">3 3
+1 0 1
+1 1 0
+0 1 1</div></div>
+        <div class="code"><span class="kw">int</span> map[MAX][MAX];   <span class="cm">// int 배열</span>
+
+<span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;n, &amp;m);
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; n; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = <span class="nm">0</span>; j &lt; m; j++) {
+        <span class="hl-line"><span class="fn">scanf</span>(<span class="nm">"%d"</span>, &amp;map[i][j]);</span>  <span class="cm">// 칸 단위 읽기</span>
+    }
+}</div>
+        <div class="hl tl"><p>숫자 격자는 숫자로 비교: <code style="font-family:var(--font-mono);">map[x][y] == 1</code> ('1'이 아님)</p></div>
+        <div class="g2" style="margin-top:10px;">
+          <div class="cmp" style="background:#E6F1FB;border-color:#85B7EB;">
+            <div class="cl2" style="color:#185FA5;">문자 격자</div>
+            <div style="font-size:12px;color:#0C447C;line-height:1.7;font-family:var(--font-mono);">입력: 1101<br>scanf("%s")<br>비교: == '1'</div>
+          </div>
+          <div class="cmp" style="background:#F1EFE8;border-color:#D3D1C7;">
+            <div class="cl2" style="color:#5F5E5A;">숫자 격자</div>
+            <div style="font-size:12px;color:#444441;line-height:1.7;font-family:var(--font-mono);">입력: 1 0 1<br>scanf("%d")<br>비교: == 1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="gr3" class="tbc">
+      <div class="card">
+        <div class="st">격자 문제의 전형적인 배열 구성</div>
+        <div class="code"><span class="kw">char</span> map[MAX][MAX];      <span class="cm">// 원본 지도 (길/벽)</span>
+<span class="kw">int</span>  visited[MAX][MAX];  <span class="cm">// 방문 여부</span>
+<span class="kw">int</span>  dist[MAX][MAX];     <span class="cm">// 거리 (필요할 때)</span>
+
+<span class="kw">int</span> dx[<span class="nm">4</span>] = {<span class="nm">-1</span>, <span class="nm">1</span>,  <span class="nm">0</span>,  <span class="nm">0</span>};
+<span class="kw">int</span> dy[<span class="nm">4</span>] = { <span class="nm">0</span>, <span class="nm">0</span>, <span class="nm">-1</span>,  <span class="nm">1</span>};</div>
+        <div class="code"><span class="cm">// BFS/DFS에서 격자 조건 확인 3단계</span>
+<span class="kw">if</span> (nx &lt; <span class="nm">0</span> || ny &lt; <span class="nm">0</span> || nx &gt;= n || ny &gt;= m) <span class="kw">continue</span>;
+<span class="kw">if</span> (map[nx][ny] == <span class="nm">'0'</span>) <span class="kw">continue</span>;  <span class="cm">// 벽</span>
+<span class="kw">if</span> (visited[nx][ny]) <span class="kw">continue</span>;       <span class="cm">// 이미 방문</span></div>
+        <div class="hl"><p>map은 원본 지도(변경 X), visited는 탐색 상태(변경 O). 두 배열은 역할이 다릅니다!</p></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;">
+          <div class="cmp">
+            <div class="cl2">map (원본)</div>
+            <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7;font-family:var(--font-mono);">1 1 0 1<br>1 0 1 1<br>0 1 1 0</div>
+          </div>
+          <div class="cmp">
+            <div class="cl2">visited (탐색 중)</div>
+            <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.7;font-family:var(--font-mono);">1 1 0 0<br>1 0 0 0<br>0 0 0 0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 비교 & 선택 -->
+  <div id="s-compare" class="sec">
+    <div class="card">
+      <div class="st">4가지 입력 패턴 한눈에 비교</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
+        <div style="background:#EEEDFE;border-radius:var(--border-radius-md);padding:12px;">
+          <div style="font-size:12px;font-weight:500;color:#3C3489;margin-bottom:6px;">무방향 그래프</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:#534AB7;line-height:1.7;">graph[a][b]=1;<br>graph[b][a]=1;</div>
+        </div>
+        <div style="background:#E6F1FB;border-radius:var(--border-radius-md);padding:12px;">
+          <div style="font-size:12px;font-weight:500;color:#0C447C;margin-bottom:6px;">방향 그래프</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:#185FA5;line-height:1.7;">graph[a][b]=1;<br>(반대 안 함)</div>
+        </div>
+        <div style="background:#E1F5EE;border-radius:var(--border-radius-md);padding:12px;">
+          <div style="font-size:12px;font-weight:500;color:#085041;margin-bottom:6px;">문자 격자</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:#0F6E56;line-height:1.7;">scanf("%s",map[i]);<br>비교: =='1'</div>
+        </div>
+        <div style="background:#F1EFE8;border-radius:var(--border-radius-md);padding:12px;">
+          <div style="font-size:12px;font-weight:500;color:#444441;margin-bottom:6px;">숫자 격자</div>
+          <div style="font-family:var(--font-mono);font-size:11px;color:#5F5E5A;line-height:1.7;">scanf("%d",&map[i][j]);<br>비교: ==1</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="st">인접 행렬 vs 인접 리스트</div>
+      <div class="g2">
+        <div class="cmp">
+          <div class="cl2">인접 행렬</div>
+          <div style="font-size:13px;color:var(--color-text-secondary);line-height:1.75;margin-top:4px;"><span style="color:#1D9E75;">✓</span> 이해하기 쉬움<br><span style="color:#1D9E75;">✓</span> 번호 순서 방문 쉬움<br><span style="color:#1D9E75;">✓</span> 기초 문제에 적합<br><span style="color:#E24B4A;">✗</span> 메모리 O(n²) 사용</div>
+        </div>
+        <div class="cmp">
+          <div class="cl2">인접 리스트</div>
+          <div style="font-size:13px;color:var(--color-text-secondary);line-height:1.75;margin-top:4px;"><span style="color:#1D9E75;">✓</span> 메모리 효율적<br><span style="color:#1D9E75;">✓</span> 연결 정점만 탐색<br><span style="color:#1D9E75;">✓</span> 큰 문제에 적합<br><span style="color:#E24B4A;">✗</span> 구현이 복잡함</div>
+        </div>
+      </div>
+      <div class="hl tl"><p>처음 배우는 단계: 인접 행렬 먼저 → 이해 후 인접 리스트로 확장하세요.</p></div>
+    </div>
+  </div>
+
+  <!-- 판단 도구 -->
+  <div id="s-decide" class="sec">
+    <div class="card">
+      <div class="st">입력 모양 → 배열 선택 판단</div>
+      <div class="sb">입력 예시를 보고 어떤 배열을 써야 하는지 클릭해서 확인하세요.</div>
+      <div id="decide-area"></div>
+    </div>
+  </div>
+
+  <!-- 자주 하는 실수 -->
+  <div id="s-mistakes" class="sec">
+    <div class="card">
+      <div class="st">자주 하는 실수 5가지</div>
+      <div style="margin-top:4px;">
+        <div class="mistake-item">
+          <div class="mn">실수 1</div>
+          <div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">무방향 그래프를 한쪽만 저장</span><br><code>graph[a][b]=1</code>만 하고 <code>graph[b][a]=1</code>을 빠뜨리면 b→a 탐색이 안 됩니다.</div>
+        </div>
+        <div class="mistake-item">
+          <div class="mn">실수 2</div>
+          <div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">문자 격자인데 숫자처럼 비교</span><br><code>map[x][y]=='1'</code>이어야 하는데 <code>map[x][y]==1</code>로 쓰면 항상 거짓이 됩니다.</div>
+        </div>
+        <div class="mistake-item">
+          <div class="mn">실수 3</div>
+          <div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">방문 배열과 입력 배열을 혼동</span><br>map(지도 정보)과 visited(방문 여부)는 완전히 다른 배열입니다. 지도 배열을 방문 배열처럼 수정하면 안 됩니다.</div>
+        </div>
+        <div class="mistake-item">
+          <div class="mn">실수 4</div>
+          <div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">배열 크기를 너무 작게 잡음</span><br>정점 번호를 1부터 쓰면 크기 n+1이 필요합니다. 여유 있게 MAX=101 정도로 잡으세요.</div>
+        </div>
+        <div class="mistake-item">
+          <div class="mn">실수 5</div>
+          <div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">격자 범위 체크 누락</span><br>상하좌우 이동 시 배열 밖으로 나가는지 먼저 확인해야 합니다.<br><code>if(nx&lt;0||ny&lt;0||nx&gt;=n||ny&gt;=m) continue;</code></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 퀴즈 -->
+  <div id="s-quiz" class="sec">
+    <div class="card" id="qbox"><div id="qarea"></div></div>
+  </div>
+</div>
+
+<script>
+function show(n){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s-'+n).classList.add('on');
+  const ns=['overview','graph','grid','compare','decide','mistakes','quiz'];
+  document.querySelectorAll('.nav .nb').forEach((b,i)=>b.classList.toggle('on',ns[i]===n));
+  if(n==='decide') renderDecide();
+  if(n==='quiz') rq();
+}
+function showTab(id){
+  const parent=document.getElementById(id).parentElement;
+  parent.querySelectorAll('.tbc').forEach(t=>t.classList.remove('on'));
+  parent.querySelectorAll('.tb').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  event.target.classList.add('on');
+}
+
+const DECIDE_CASES=[
+  {
+    label:'케이스 1',
+    input:'5 4\n1 2\n1 3\n2 4\n3 5',
+    q:'이 입력에 가장 적합한 저장 방법은?',
+    opts:['무방향 인접 행렬','문자 격자','숫자 격자','방향 인접 행렬'],
+    ans:0,
+    result:'무방향 그래프 인접 행렬',
+    code:'graph[a][b]=1;\ngraph[b][a]=1;',
+    reason:'N M 다음에 두 정점 쌍이 나오면 그래프 입력. 방향 여부 명시가 없으면 대부분 무방향.'
+  },
+  {
+    label:'케이스 2',
+    input:'3 4\n1101\n1011\n0110',
+    q:'이 입력에 가장 적합한 저장 방법은?',
+    opts:['무방향 인접 행렬','문자 격자 char map[][]','숫자 격자 int map[][]','인접 리스트'],
+    ans:1,
+    result:'문자 격자 (char)',
+    code:'scanf("%s", map[i]);',
+    reason:'행 m열이 나오고 공백 없이 붙어서 오면 문자 격자. char로 읽고 \'0\'/\'1\'로 비교.'
+  },
+  {
+    label:'케이스 3',
+    input:'3 3\n1 0 1\n1 1 0\n0 1 1',
+    q:'이 입력에 가장 적합한 저장 방법은?',
+    opts:['무방향 인접 행렬','문자 격자 char map[][]','숫자 격자 int map[][]','방향 인접 행렬'],
+    ans:2,
+    result:'숫자 격자 (int)',
+    code:'scanf("%d", &map[i][j]);',
+    reason:'격자인데 숫자가 공백으로 띄어져 있으면 int 격자. 비교는 숫자 1, 0으로.'
+  },
+  {
+    label:'케이스 4',
+    input:'4 4\n1 2\n1 3\n2 4\n3 4\n(a→b 방향)',
+    q:'이 입력에 가장 적합한 저장 방법은?',
+    opts:['무방향 인접 행렬','문자 격자','숫자 격자','방향 인접 행렬'],
+    ans:3,
+    result:'방향 그래프 인접 행렬',
+    code:'graph[a][b]=1;\n// graph[b][a] 안 함',
+    reason:'방향이 있다고 명시된 경우 graph[a][b]=1만 저장. 반대 방향은 넣지 않습니다.'
+  }
+];
+
+let decideSel=[];
+function renderDecide(){
+  decideSel=new Array(DECIDE_CASES.length).fill(-1);
+  const el=document.getElementById('decide-area');
+  el.innerHTML=DECIDE_CASES.map((c,ci)=>`
+    <div style="margin-bottom:16px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px;">
+      <div style="font-size:12px;font-weight:500;color:#534AB7;margin-bottom:6px;">${c.label}</div>
+      <div style="font-family:var(--font-mono);font-size:12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 10px;margin-bottom:8px;line-height:1.7;color:var(--color-text-secondary);">${c.input.replace(/\n/g,'<br>')}</div>
+      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;">${c.q}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;" id="dopts-${ci}">
+        ${c.opts.map((o,oi)=>`<button class="dopt" onclick="pickDecide(${ci},${oi})">${o}</button>`).join('')}
+      </div>
+      <div id="dresult-${ci}" style="display:none;margin-top:8px;background:#E1F5EE;border:1px solid #1D9E75;border-radius:var(--border-radius-md);padding:10px 12px;">
+        <div style="font-size:13px;font-weight:500;color:#085041;margin-bottom:4px;">정답: ${c.result}</div>
+        <div style="font-family:var(--font-mono);font-size:12px;color:#0F6E56;white-space:pre;">${c.code}</div>
+        <div style="font-size:12px;color:#085041;margin-top:6px;">${c.reason}</div>
+      </div>
+    </div>
+  `).join('');
+}
+function pickDecide(ci,oi){
+  decideSel[ci]=oi;
+  const c=DECIDE_CASES[ci];
+  document.querySelectorAll(`#dopts-${ci} .dopt`).forEach((b,i)=>{
+    b.classList.toggle('sel',i===oi);
+  });
+  const r=document.getElementById(`dresult-${ci}`);
+  r.style.display='block';
+  if(oi!==c.ans){r.style.background='#FCEBEB';r.style.borderColor='#E24B4A';r.querySelector('div').style.color='#791F1F';r.querySelector('div').textContent=`틀렸습니다. 정답은 "${c.result}"입니다.`;}
+}
+
+const qs=[
+  {q:'무방향 그래프에서 간선 "1 2"를 저장할 때 올바른 코드는?',opts:['graph[1][2]=1;','graph[1][2]=1; graph[2][1]=1;','graph[1][2]=1; graph[1][2]=2;','graph[2][1]=1;'],ans:1,ex:'무방향 그래프는 양쪽 다 저장합니다. graph[1][2]=1과 graph[2][1]=1 모두 필요.'},
+  {q:'입력이 "1101" 처럼 공백 없이 붙어서 나올 때 올바른 읽기 방법은?',opts:['scanf("%d", &map[i][j])','scanf("%s", map[i])','scanf("%c", &map[i])','scanf("%d %d", &n, &m)'],ans:1,ex:'공백 없이 붙어서 오는 격자는 문자열처럼 scanf("%s", map[i])로 한 줄씩 읽습니다.'},
+  {q:'char map으로 저장한 격자에서 올바른 비교 방법은?',opts:['if(map[x][y]==1)','if(map[x][y]=="1")','if(map[x][y]==\'1\')','if(map[x][y]==true)'],ans:2,ex:"char 배열에는 문자 '1'이 저장됩니다. 숫자 1이 아니라 문자 '1'로 비교해야 합니다."},
+  {q:'격자 BFS에서 상하좌우 이동 시 가장 먼저 확인해야 할 조건은?',opts:['방문 여부','벽인지 여부','배열 범위를 벗어나는지','dist 값'],ans:2,ex:'범위 체크를 먼저 해야 배열 밖 접근(런타임 오류)을 막을 수 있습니다. 그 다음 벽, 방문 순서로 확인.'},
+  {q:'인접 행렬에서 그래프 탐색 시 next를 어떻게 확인하는가?',opts:['while(graph[now]++)','for(next=1;next<=n;next++) if(graph[now][next]==1)','graph[now].forEach()','adj[now][i]'],ans:1,ex:'인접 행렬에서는 1번부터 n번까지 순서대로 확인합니다. 이 순서 덕분에 번호 작은 정점부터 자동 방문됩니다.'},
+  {q:'방향 그래프에서 "a b"를 저장할 때 올바른 코드는?',opts:['graph[a][b]=1; graph[b][a]=1;','graph[a][b]=1;','graph[b][a]=1;','graph[a]=b;'],ans:1,ex:'방향 그래프는 a→b 방향만 있으므로 graph[a][b]=1만 저장합니다. 반대 방향은 저장하지 않습니다.'},
+  {q:'격자 문제에서 map 배열과 visited 배열의 차이는?',opts:['같은 배열이다','map=지도 정보, visited=탐색 여부','visited=지도 정보, map=탐색 여부','둘 다 방문 여부를 저장한다'],ans:1,ex:'map은 원본 지도(길/벽, 변경 X), visited는 탐색 중 상태(이미 방문했는지, 변경 O). 역할이 완전히 다릅니다.'},
+  {q:'숫자 격자(1 0 1처럼 공백 있음)를 읽는 올바른 방법은?',opts:['scanf("%s", map[i])','scanf("%d", &map[i][j]) 이중 for문','scanf("%c", &map[i][j])','fgets(map[i])'],ans:1,ex:'공백으로 띄어진 숫자 격자는 이중 for문으로 scanf("%d", &map[i][j])를 써서 칸 단위로 읽습니다.'},
+];
+let qcur=0,qscore=0;
+function rq(){
+  const qa=document.getElementById('qarea');
+  if(qcur>=qs.length){
+    const p=Math.round(qscore/qs.length*100);
+    const m=p>=90?'완벽합니다!':p>=75?'잘 이해하고 있습니다!':p>=50?'조금 더 복습해 보세요.':'개념부터 다시 확인하세요.';
+    qa.innerHTML=`<div class="sc"><div class="scn">${qscore}/${qs.length}</div><div class="scl">정답률 ${p}%</div><div class="scm">${m}</div><button class="nb btnp" style="margin-top:18px;padding:8px 20px;border-radius:var(--border-radius-md);" onclick="qcur=0;qscore=0;rq()">다시 풀기</button></div>`;
+    return;
+  }
+  const q=qs[qcur];
+  const opts=q.opts.map((o,i)=>`<button class="qi" id="qi${i}" onclick="qa(${i})">${o}</button>`).join('');
+  qa.innerHTML=`<div class="qn">문제 ${qcur+1} / ${qs.length}</div><div style="font-size:15px;font-weight:500;margin:10px 0 14px;line-height:1.5;">${q.q}</div><div>${opts}</div><div id="qfb"></div><div style="display:flex;justify-content:flex-end;margin-top:8px;"><button class="nb btnp" id="nb" style="display:none;padding:7px 16px;border-radius:var(--border-radius-md);" onclick="qcur++;rq()">다음 →</button></div>`;
+}
+function qa(i){
+  const q=qs[qcur];
+  document.querySelectorAll('.qi').forEach(b=>b.disabled=true);
+  if(i===q.ans){qscore++;document.getElementById('qi'+i).classList.add('ok');document.getElementById('qfb').innerHTML=`<div class="qfb ok">정답입니다! ${q.ex}</div>`;}
+  else{document.getElementById('qi'+i).classList.add('ng');document.getElementById('qi'+q.ans).classList.add('ok');document.getElementById('qfb').innerHTML=`<div class="qfb ng">틀렸습니다. ${q.ex}</div>`;}
+  document.getElementById('nb').style.display='block';
+}
+</script>
