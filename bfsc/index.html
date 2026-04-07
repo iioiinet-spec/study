@@ -1,0 +1,460 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+.w{max-width:760px;margin:0 auto;padding:1.5rem 1rem}
+.hd{text-align:center;padding:1.5rem 0 1.8rem}
+.hd h1{font-size:22px;font-weight:500;margin-bottom:5px}
+.hd p{font-size:14px;color:var(--color-text-secondary)}
+.nav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
+.nb{padding:6px 14px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:transparent;cursor:pointer;font-size:13px;color:var(--color-text-secondary);font-family:var(--font-sans);transition:all .15s}
+.nb:hover{background:var(--color-background-secondary)}
+.nb.on{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
+.sec{display:none}.sec.on{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
+.st{font-size:16px;font-weight:500;margin-bottom:10px}
+.sb{font-size:14px;color:var(--color-text-secondary);line-height:1.65;margin-bottom:10px}
+.hl{border-left:3px solid #7F77DD;padding:9px 14px;background:#EEEDFE;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;margin:10px 0}
+.hl p{font-size:13px;color:#3C3489;line-height:1.6}
+.hl.tl{border-left-color:#1D9E75;background:#E1F5EE}.hl.tl p{color:#085041}
+.hl.cl{border-left-color:#D85A30;background:#FAECE7}.hl.cl p{color:#712B13}
+.code-area{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:1rem 1.25rem;font-family:var(--font-mono);font-size:12px;line-height:1.85;margin:10px 0;overflow-x:auto;white-space:pre}
+.kw{color:#534AB7;font-weight:500}.fn{color:#0F6E56}.cm{color:var(--color-text-tertiary)}.nm{color:#BA7517}.pp{color:#D85A30}
+.hl-line{background:#FAEEDA;border-radius:3px;padding:0 3px;color:#412402;font-weight:500}
+.btn{padding:8px 18px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;cursor:pointer;font-size:13px;font-family:var(--font-sans);color:var(--color-text-primary);transition:all .15s}
+.btn:hover{background:var(--color-background-secondary)}.btn:active{transform:scale(.98)}
+.btnp{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}.btnp:hover{background:#CECBF6}
+.btnd{opacity:.35;pointer-events:none}
+.step-nav{display:flex;justify-content:space-between;align-items:center;margin:12px 0 6px}
+.step-info{font-size:13px;color:var(--color-text-secondary)}
+.prog-bar{height:5px;background:var(--color-border-tertiary);border-radius:3px;margin-bottom:1.2rem}
+.prog-fill{height:100%;background:#7F77DD;border-radius:3px;transition:width .35s}
+.step-badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:10px;font-weight:500;margin-bottom:8px;background:#EEEDFE;color:#3C3489}
+.step-title{font-size:17px;font-weight:500;margin-bottom:10px;line-height:1.4}
+.step-body{font-size:14px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:10px}
+.step-body code{font-family:var(--font-mono);font-size:12px;background:var(--color-background-secondary);padding:1px 5px;border-radius:4px;color:var(--color-text-primary)}
+.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:10px 0}
+.cmp{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px}
+.cl2{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.si{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.sn{width:22px;height:22px;border-radius:50%;background:#EEEDFE;color:#3C3489;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.sx{font-size:13px;line-height:1.6;color:var(--color-text-secondary)}
+.sx code{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;color:var(--color-text-primary)}
+.node-row{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0;min-height:36px;align-items:center}
+.node{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;border:1.5px solid;transition:all .3s;font-family:var(--font-mono)}
+.nd{background:var(--color-background-secondary);border-color:var(--color-border-secondary);color:var(--color-text-secondary)}
+.nv{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.nc{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
+.nq{background:#FAEEDA;border-color:#BA7517;color:#412402}
+.queue-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:4px 0;min-height:28px}
+.qc{padding:3px 11px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;font-family:var(--font-mono)}
+.qcf{background:#E1F5EE;border:1px solid #1D9E75;color:#085041}
+.qcr{background:#FAEEDA;border:1px solid #BA7517;color:#412402}
+.trace-row{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:9px 12px;margin:4px 0;font-size:13px;color:var(--color-text-secondary);line-height:1.6;font-family:var(--font-mono);white-space:pre-wrap;min-height:44px}
+.io-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.io-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px}
+.io-label{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+.io-val{font-family:var(--font-mono);font-size:13px;color:var(--color-text-primary);line-height:1.7}
+.mistake-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.mistake-item:last-child{border-bottom:none}
+.mn{font-size:12px;font-weight:500;color:#712B13;background:#FAECE7;padding:2px 8px;border-radius:10px;flex-shrink:0}
+.mt{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+.mt code{font-family:var(--font-mono);font-size:12px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;color:var(--color-text-primary)}
+</style>
+
+<div class="w">
+  <div class="hd">
+    <h1>BFS 코드 — 한 줄씩 완성하기</h1>
+    <p>문제 해석 → 배열 설계 → 함수 한 줄씩 → 전체 완성 → 시뮬레이션</p>
+  </div>
+
+  <nav class="nav">
+    <button class="nb on" onclick="show('build')">코드 완성 과정</button>
+    <button class="nb" onclick="show('sim')">실행 시뮬레이터</button>
+    <button class="nb" onclick="show('full')">완성 코드</button>
+    <button class="nb" onclick="show('mistakes')">자주 하는 실수</button>
+  </nav>
+
+  <!-- 코드 완성 과정 -->
+  <div id="s-build" class="sec on">
+    <div class="prog-bar"><div class="prog-fill" id="build-prog" style="width:9%"></div></div>
+    <div class="card" id="build-card"></div>
+    <div class="step-nav">
+      <button class="btn" id="build-prev" onclick="buildMove(-1)">← 이전</button>
+      <span class="step-info" id="build-info">1 / 11</span>
+      <button class="btn btnp" id="build-next" onclick="buildMove(1)">다음 →</button>
+    </div>
+  </div>
+
+  <!-- 실행 시뮬레이터 -->
+  <div id="s-sim" class="sec">
+    <div class="card">
+      <div class="st">BFS 단계별 실행 추적</div>
+      <div class="sb">입력: 5 5 / 간선: 1-2, 1-3, 2-4, 2-5, 3-5 / 기댓값: 1 2 3 4 5</div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;">
+        <div style="flex:1;min-width:160px;">
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">정점 상태</div>
+          <div class="node-row" id="sim-nodes"></div>
+          <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--color-text-secondary)"><span style="color:#3C3489;font-weight:500;">■</span> 현재</span>
+            <span style="font-size:11px;color:var(--color-text-secondary)"><span style="color:#085041;font-weight:500;">■</span> 방문</span>
+            <span style="font-size:11px;color:var(--color-text-secondary)"><span style="color:#412402;font-weight:500;">■</span> 큐 대기</span>
+          </div>
+        </div>
+        <div style="flex:1;min-width:160px;">
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;">큐 상태 (앞→뒤)</div>
+          <div class="queue-row" id="sim-queue"></div>
+          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:6px;">front&lt;rear → 비어 있지 않음</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--color-text-tertiary);margin:8px 0 3px;text-transform:uppercase;letter-spacing:.05em;">실행 로그</div>
+      <div class="trace-row" id="sim-log">시작 버튼을 눌러 BFS를 시작하세요.</div>
+      <div style="font-size:11px;color:var(--color-text-tertiary);margin:8px 0 3px;text-transform:uppercase;letter-spacing:.05em;">출력 결과</div>
+      <div class="trace-row" id="sim-out" style="color:#534AB7;font-weight:500;min-height:32px;"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btnp" onclick="simStep()">다음 단계</button>
+        <button class="btn" onclick="simReset()">처음부터</button>
+        <span style="font-size:13px;color:var(--color-text-secondary);" id="sim-label">단계 0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 완성 코드 -->
+  <div id="s-full" class="sec">
+    <div class="card">
+      <div class="st">완성된 BFS 코드 전체</div>
+      <div class="code-area"><span class="pp">#include</span> &lt;stdio.h&gt;
+
+<span class="pp">#define</span> MAX <span class="nm">101</span>
+
+<span class="cm">// ① 그래프, 방문, 큐 배열</span>
+<span class="kw">int</span> graph[MAX][MAX];   <span class="cm">// 인접 행렬</span>
+<span class="kw">int</span> visited[MAX];      <span class="cm">// 방문 여부</span>
+<span class="kw">int</span> queue[MAX];        <span class="cm">// BFS 큐</span>
+<span class="kw">int</span> front = <span class="nm">0</span>, rear = <span class="nm">0</span>;  <span class="cm">// 큐 앞뒤 포인터</span>
+<span class="kw">int</span> n, m;
+
+<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
+    <span class="cm">// ② 시작점 처리</span>
+    queue[rear++] = start;
+    visited[start] = <span class="nm">1</span>;
+
+    <span class="cm">// ③ 큐가 빌 때까지 반복</span>
+    <span class="kw">while</span> (front &lt; rear) {
+        <span class="cm">// ④ 앞에서 하나 꺼내기</span>
+        <span class="kw">int</span> now = queue[front++];
+        <span class="fn">printf</span>(<span class="nm">"%d "</span>, now);
+
+        <span class="cm">// ⑤ 연결된 정점 확인 (작은 번호부터)</span>
+        <span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
+            <span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; visited[next] == <span class="nm">0</span>) {
+                visited[next] = <span class="nm">1</span>;   <span class="cm">// ⑥ 방문 처리</span>
+                queue[rear++] = next;  <span class="cm">// ⑦ 큐에 삽입</span>
+            }
+        }
+    }
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;n, &amp;m);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; m; i++) {
+        <span class="kw">int</span> a, b;
+        <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;a, &amp;b);
+        <span class="cm">// ⑧ 무방향: 양쪽 다 저장</span>
+        graph[a][b] = <span class="nm">1</span>;
+        graph[b][a] = <span class="nm">1</span>;
+    }
+
+    <span class="fn">bfs</span>(<span class="nm">1</span>);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}</div>
+      <div class="hl tl"><p>7개 핵심 포인트: ①배열 선언 → ②시작점 삽입 → ③while 반복 → ④꺼내기 → ⑤연결 확인 → ⑥방문 처리 → ⑦삽입. 이 순서가 BFS의 뼈대입니다.</p></div>
+    </div>
+    <div class="card">
+      <div class="st">입출력 예제</div>
+      <div class="io-grid">
+        <div class="io-box"><div class="io-label">입력</div><div class="io-val">5 5
+1 2
+1 3
+2 4
+2 5
+3 5</div></div>
+        <div class="io-box"><div class="io-label">출력</div><div class="io-val">1 2 3 4 5</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 자주 하는 실수 -->
+  <div id="s-mistakes" class="sec">
+    <div class="card">
+      <div class="st">이 문제에서 자주 하는 실수 4가지</div>
+      <div style="margin-top:4px;">
+        <div class="mistake-item">
+          <div class="mn">실수 1</div>
+          <div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">무방향 그래프를 한쪽만 저장</span><br><code>graph[a][b]=1</code>만 하고 <code>graph[b][a]=1</code>을 빠뜨리면 탐색이 제대로 안 됩니다.</div>
+        </div>
+        <div class="mistake-item">
+          <div class="mn">실수 2</div>
+          <div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">방문 처리를 늦게 하는 실수</span><br>큐에 넣을 때 즉시 <code>visited[next]=1</code>을 해야 합니다. 꺼낼 때 하면 같은 정점이 큐에 여러 번 삽입될 수 있습니다.</div>
+        </div>
+        <div class="mistake-item">
+          <div class="mn">실수 3</div>
+          <div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">front, rear 혼동</span><br><code>rear</code>는 넣는 쪽(뒤), <code>front</code>는 꺼내는 쪽(앞)입니다. <code>front &lt; rear</code>면 큐에 원소가 있습니다.</div>
+        </div>
+        <div class="mistake-item">
+          <div class="mn">실수 4</div>
+          <div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">작은 번호부터 방문 조건 누락</span><br><code>for(next=1; next&lt;=n; next++)</code>로 순서대로 확인해야 번호가 작은 정점부터 방문합니다.</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="st">이 문제에서 확장할 수 있는 것</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:4px;">
+        <div style="font-size:13px;color:var(--color-text-secondary);padding:7px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">시작 정점을 입력으로 받게 바꾸기</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);padding:7px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">방문 순서 대신 각 정점까지 거리 출력하기 → <code>dist[next]=dist[now]+1</code></div>
+        <div style="font-size:13px;color:var(--color-text-secondary);padding:7px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">연결 요소 개수 세기 → 미방문 정점마다 BFS 시작</div>
+        <div style="font-size:13px;color:var(--color-text-secondary);padding:7px 12px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">인접 행렬 → 인접 리스트로 바꿔보기</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const BUILD_STEPS=[
+  {
+    badge:'문제 이해',
+    title:'이 문제가 BFS인 이유',
+    body:`1번 정점에서 시작해 가까운 정점부터 차례대로 방문하는 탐색을 하라는 의미입니다.
+
+BFS의 특징과 딱 맞습니다.
+• 시작점과 직접 연결된 정점들을 먼저 봄
+• 그다음 그 정점들과 연결된 정점들을 봄
+• 번호가 작은 정점부터 방문하는 조건도 자연스럽게 처리 가능`,
+    code:null,
+    hl:null
+  },
+  {
+    badge:'배열 설계',
+    title:'필요한 변수 4가지 정하기',
+    body:`코드를 짜기 전에 무엇이 필요한지 먼저 정합니다.
+
+① 그래프 저장 배열 — 두 정점이 연결됐는지 기록
+② 방문 배열 — 이미 간 정점인지 표시
+③ 큐 배열 — BFS에 사용할 순서 저장소
+④ front, rear — 큐의 앞(꺼내는 쪽)과 뒤(넣는 쪽)`,
+    code:`<span class="pp">#include</span> &lt;stdio.h&gt;
+<span class="pp">#define</span> MAX <span class="nm">101</span>
+
+<span class="hl-line"><span class="kw">int</span> graph[MAX][MAX];   </span><span class="cm">// 인접 행렬</span>
+<span class="hl-line"><span class="kw">int</span> visited[MAX];      </span><span class="cm">// 방문 여부</span>
+<span class="hl-line"><span class="kw">int</span> queue[MAX];        </span><span class="cm">// BFS 큐</span>
+<span class="hl-line"><span class="kw">int</span> front = <span class="nm">0</span>, rear = <span class="nm">0</span>;</span><span class="cm">// 큐 포인터</span>
+<span class="kw">int</span> n, m;`,
+    hl:{type:'tl',text:'MAX=101로 잡은 이유: 정점 번호를 1번부터 사용하므로 인덱스 0은 비워두고 1~100을 사용합니다.'}
+  },
+  {
+    badge:'BFS 함수 1',
+    title:'함수 틀 만들기',
+    body:`BFS는 시작 정점을 받아서 탐색을 수행합니다.
+아직 내부는 비어 있어도 됩니다. 틀을 먼저 잡습니다.`,
+    code:`<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
+
+}`,
+    hl:null
+  },
+  {
+    badge:'BFS 함수 2',
+    title:'시작점을 큐에 넣고 방문 처리',
+    body:`BFS에서 가장 먼저 할 일은 시작점을 큐에 넣는 것입니다.
+동시에 바로 방문 처리도 합니다.
+
+왜 큐에 넣을 때 방문 처리할까요?
+→ 늦게 하면 같은 정점이 큐에 여러 번 들어갈 수 있습니다.`,
+    code:`<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
+    <span class="hl-line">queue[rear++] = start;</span>  <span class="cm">// rear 위치에 넣고 rear++</span>
+    <span class="hl-line">visited[start] = <span class="nm">1</span>;</span>      <span class="cm">// 즉시 방문 처리</span>
+}`,
+    hl:{type:'',text:'queue[rear++] = start 는 "rear 위치에 넣고, rear를 1 증가"라는 뜻입니다.'}
+  },
+  {
+    badge:'BFS 함수 3',
+    title:'큐가 빌 때까지 반복하는 while 추가',
+    body:`BFS는 큐가 비어 있지 않는 동안 계속 반복합니다.
+
+큐에 원소가 있는 조건: front < rear
+→ rear - front = 큐 안의 원소 수`,
+    code:`<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
+    queue[rear++] = start;
+    visited[start] = <span class="nm">1</span>;
+
+    <span class="hl-line"><span class="kw">while</span> (front &lt; rear) {</span>  <span class="cm">// 큐가 안 비었으면 반복</span>
+    <span class="hl-line">    </span>
+    <span class="hl-line">}</span>
+}`,
+    hl:{type:'',text:'while(front < rear) → front = rear이면 큐가 빈 것. front < rear이면 꺼낼 원소가 남아 있습니다.'}
+  },
+  {
+    badge:'BFS 함수 4',
+    title:'큐에서 하나 꺼내기',
+    body:`반복문 안에서 가장 먼저 할 일은 큐의 맨 앞에서 하나 꺼내는 것입니다.
+
+queue[front++] 은 "front 위치 값을 읽고, front를 1 증가"입니다.
+꺼낸 값이 now — 지금 탐색할 정점입니다.`,
+    code:`<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
+    queue[rear++] = start;
+    visited[start] = <span class="nm">1</span>;
+
+    <span class="kw">while</span> (front &lt; rear) {
+        <span class="hl-line"><span class="kw">int</span> now = queue[front++];</span>  <span class="cm">// 앞에서 꺼내기</span>
+        <span class="hl-line"><span class="fn">printf</span>(<span class="nm">"%d "</span>, now);</span>         <span class="cm">// 방문 순서 출력</span>
+    }
+}`,
+    hl:{type:'tl',text:'꺼낸 순간 출력합니다. BFS는 큐에서 꺼내는 순서 = 방문 순서이기 때문입니다.'}
+  },
+  {
+    badge:'BFS 함수 5',
+    title:'연결된 정점을 1번부터 순서대로 확인',
+    body:`now와 연결된 정점들을 확인해야 합니다.
+번호가 작은 정점부터 방문해야 하므로 1부터 n까지 순서대로 확인합니다.`,
+    code:`<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
+    queue[rear++] = start;
+    visited[start] = <span class="nm">1</span>;
+
+    <span class="kw">while</span> (front &lt; rear) {
+        <span class="kw">int</span> now = queue[front++];
+        <span class="fn">printf</span>(<span class="nm">"%d "</span>, now);
+
+        <span class="hl-line"><span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {</span>
+        <span class="hl-line">    </span><span class="cm">// 조건 확인 예정</span>
+        <span class="hl-line">}</span>
+    }
+}`,
+    hl:{type:'',text:'for(next=1; next<=n; next++) 로 1번부터 n번까지 차례대로 확인하면 자동으로 번호가 작은 것부터 방문됩니다.'}
+  },
+  {
+    badge:'BFS 함수 6',
+    title:'두 가지 조건 확인: 연결 + 미방문',
+    body:`next가 큐에 들어갈 수 있으려면 두 가지 조건이 모두 필요합니다.
+
+① now와 next가 연결되어 있어야 한다 → graph[now][next] == 1
+② next를 아직 방문하지 않았어야 한다 → visited[next] == 0`,
+    code:`        <span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
+            <span class="hl-line"><span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; visited[next] == <span class="nm">0</span>) {</span>
+            <span class="hl-line">    </span><span class="cm">// 여기서 무엇을 할까요?</span>
+            <span class="hl-line">}</span>
+        }`,
+    hl:{type:'cl',text:'두 조건이 모두 참일 때만 next를 새로 탐색할 정점으로 봅니다.'}
+  },
+  {
+    badge:'BFS 함수 7 — 완성',
+    title:'방문 처리 후 큐에 삽입 — BFS 함수 완성!',
+    body:`조건을 만족하면 새 정점을 발견한 것입니다.
+할 일은 두 가지입니다.
+① 방문 처리: visited[next] = 1
+② 큐에 삽입: queue[rear++] = next`,
+    code:`<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
+    queue[rear++] = start;
+    visited[start] = <span class="nm">1</span>;
+
+    <span class="kw">while</span> (front &lt; rear) {
+        <span class="kw">int</span> now = queue[front++];
+        <span class="fn">printf</span>(<span class="nm">"%d "</span>, now);
+
+        <span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
+            <span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; visited[next] == <span class="nm">0</span>) {
+                <span class="hl-line">visited[next] = <span class="nm">1</span>;</span>       <span class="cm">// 방문 처리</span>
+                <span class="hl-line">queue[rear++] = next;</span>   <span class="cm">// 큐에 삽입</span>
+            }
+        }
+    }
+}`,
+    hl:{type:'tl',text:'BFS 함수가 완성됐습니다. 이 7줄 패턴이 BFS의 완전한 뼈대입니다.'}
+  },
+  {
+    badge:'main 함수 1',
+    title:'입력받고 그래프에 저장하기',
+    body:`이제 main 함수를 만들겠습니다.
+N, M을 입력받고 간선 M개를 인접 행렬에 저장합니다.
+
+무방향 그래프이므로 양쪽 다 1로 설정해야 합니다.`,
+    code:`<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;n, &amp;m);
+
+    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; m; i++) {
+        <span class="kw">int</span> a, b;
+        <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;a, &amp;b);
+        <span class="hl-line">graph[a][b] = <span class="nm">1</span>;</span>  <span class="cm">// a→b 연결</span>
+        <span class="hl-line">graph[b][a] = <span class="nm">1</span>;</span>  <span class="cm">// b→a 연결 (무방향!)</span>
+    }
+
+    <span class="fn">bfs</span>(<span class="nm">1</span>);
+    <span class="kw">return</span> <span class="nm">0</span>;
+}`,
+    hl:{type:'cl',text:'무방향 그래프에서 graph[a][b]=1만 하면 b→a 이동을 탐색하지 못합니다. 반드시 둘 다!'}
+  },
+  {
+    badge:'완성!',
+    title:'사고 흐름 7단계 — 코드 작성 순서 정리',
+    body:`BFS 문제를 보면 항상 이 순서로 생각합니다.`,
+    code:null,
+    steps:[
+      'BFS 문제인지 판단한다 (가까운 것부터, 최소 횟수 등)',
+      '그래프 저장 방법을 정한다 (인접 행렬 또는 리스트)',
+      '방문 배열이 필요하다는 것을 떠올린다',
+      '큐(front, rear)가 필요하다는 것을 떠올린다',
+      '시작점을 큐에 넣고 방문 처리한다',
+      '큐가 빌 때까지 → 꺼내고 → 연결된 미방문 정점 넣는다',
+      '출력 형식에 맞게 결과를 출력한다'
+    ],
+    hl:{type:'tl',text:'이 7단계를 반복 연습하면 BFS 코드를 스스로 작성할 수 있게 됩니다.'}
+  }
+];
+
+const SIM_STEPS=[
+  {vis:[1],q:[1],cur:null,out:[],log:'bfs(1) 시작\nqueue[rear++]=1 → rear=1\nvisited[1]=1\n큐: [1]'},
+  {vis:[1,2,3],q:[2,3],cur:1,out:[1],log:'1 꺼냄 (front=1) → 출력: 1\n1과 연결: 2(미방문)→삽입, 3(미방문)→삽입\nvisited[2]=1, visited[3]=1\n큐: [2, 3]'},
+  {vis:[1,2,3,4,5],q:[3,4,5],cur:2,out:[1,2],log:'2 꺼냄 (front=2) → 출력: 2\n2와 연결: 1(방문)→skip, 4(미방문)→삽입, 5(미방문)→삽입\nvisited[4]=1, visited[5]=1\n큐: [3, 4, 5]'},
+  {vis:[1,2,3,4,5],q:[4,5],cur:3,out:[1,2,3],log:'3 꺼냄 (front=3) → 출력: 3\n3과 연결: 1(방문)→skip, 5(방문)→skip\n새로 삽입 없음\n큐: [4, 5]'},
+  {vis:[1,2,3,4,5],q:[5],cur:4,out:[1,2,3,4],log:'4 꺼냄 (front=4) → 출력: 4\n4와 연결: 2(방문)→skip\n큐: [5]'},
+  {vis:[1,2,3,4,5],q:[],cur:5,out:[1,2,3,4,5],log:'5 꺼냄 (front=5) → 출력: 5\n5와 연결: 2(방문), 3(방문) → 모두 skip\n큐: [] → front==rear → BFS 완료!\n최종 출력: 1 2 3 4 5'},
+];
+
+let buildIdx=0;
+function renderBuild(){
+  const s=BUILD_STEPS[buildIdx];
+  let html=`<span class="step-badge">${s.badge} — ${buildIdx+1}/${BUILD_STEPS.length}</span>
+<div class="step-title">${s.title}</div>
+<div class="step-body" style="white-space:pre-wrap;">${s.body}</div>`;
+  if(s.steps){
+    html+=`<div style="display:flex;flex-direction:column;gap:7px;margin:10px 0;">`;
+    s.steps.forEach((t,i)=>{html+=`<div class="si"><div class="sn">${i+1}</div><div class="sx">${t}</div></div>`;});
+    html+=`</div>`;
+  }
+  if(s.code){html+=`<div class="code-area">${s.code}</div>`;}
+  if(s.hl){html+=`<div class="hl ${s.hl.type}"><p>${s.hl.text}</p></div>`;}
+  document.getElementById('build-card').innerHTML=html;
+  document.getElementById('build-info').textContent=(buildIdx+1)+' / '+BUILD_STEPS.length;
+  document.getElementById('build-prog').style.width=Math.round((buildIdx+1)/BUILD_STEPS.length*100)+'%';
+  document.getElementById('build-prev').classList.toggle('btnd',buildIdx===0);
+  document.getElementById('build-next').classList.toggle('btnd',buildIdx===BUILD_STEPS.length-1);
+}
+function buildMove(d){buildIdx=Math.max(0,Math.min(BUILD_STEPS.length-1,buildIdx+d));renderBuild();}
+
+let simIdx=0;
+function simReset(){simIdx=0;document.getElementById('sim-label').textContent='단계 0';document.getElementById('sim-log').textContent='시작 버튼을 눌러 BFS를 시작하세요.';document.getElementById('sim-out').textContent='';renderSimNodes([],[],null);renderSimQueue([]);}
+function simStep(){if(simIdx>=SIM_STEPS.length)return;const s=SIM_STEPS[simIdx];document.getElementById('sim-label').textContent='단계 '+(simIdx+1);document.getElementById('sim-log').textContent=s.log;document.getElementById('sim-out').textContent=s.out.join(' ');renderSimNodes(s.vis,s.q,s.cur);renderSimQueue(s.q);simIdx++;}
+function renderSimNodes(vis,q,cur){const el=document.getElementById('sim-nodes');el.innerHTML=[1,2,3,4,5].map(v=>{let cls='nd';if(v===cur)cls='nc';else if(q.includes(v))cls='nq';else if(vis.includes(v))cls='nv';return `<div class="node ${cls}">${v}</div>`;}).join('');}
+function renderSimQueue(q){const el=document.getElementById('sim-queue');if(!q.length){el.innerHTML='<span style="font-size:12px;color:var(--color-text-tertiary);">빈 큐 (front==rear)</span>';return;}el.innerHTML=q.map((v,i)=>`<div class="qc ${i===0?'qcf':'qcr'}">${v}</div>`).join('<span style="color:var(--color-text-tertiary);font-size:12px;">→</span>');}
+
+function show(n){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s-'+n).classList.add('on');
+  const ns=['build','sim','full','mistakes'];
+  document.querySelectorAll('.nav .nb').forEach((b,i)=>b.classList.toggle('on',ns[i]===n));
+  if(n==='sim'){simReset();}
+}
+
+renderBuild();
+simReset();
+</script>
