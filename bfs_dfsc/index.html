@@ -1,510 +1,582 @@
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans);color:var(--color-text-primary)}
-.w{max-width:760px;margin:0 auto;padding:1.5rem 1rem}
-.hd{text-align:center;padding:1.5rem 0 1.8rem}
-.hd h1{font-size:22px;font-weight:500;margin-bottom:5px}
-.hd p{font-size:14px;color:var(--color-text-secondary)}
-.nav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:2rem}
-.nb{padding:6px 14px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:transparent;cursor:pointer;font-size:13px;color:var(--color-text-secondary);font-family:var(--font-sans);transition:all .15s}
-.nb:hover{background:var(--color-background-secondary)}
-.nb.on{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
-.sec{display:none}.sec.on{display:block}
-.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;margin-bottom:1rem}
-.st{font-size:16px;font-weight:500;margin-bottom:10px}
-.sb{font-size:14px;color:var(--color-text-secondary);line-height:1.65;margin-bottom:10px}
-.hl{border-left:3px solid #7F77DD;padding:9px 14px;background:#EEEDFE;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;margin:10px 0}
-.hl p{font-size:13px;color:#3C3489;line-height:1.6}
-.hl.tl{border-left-color:#1D9E75;background:#E1F5EE}.hl.tl p{color:#085041}
-.hl.cl{border-left-color:#D85A30;background:#FAECE7}.hl.cl p{color:#712B13}
-.hl.bl{border-left-color:#185FA5;background:#E6F1FB}.hl.bl p{color:#0C447C}
-.code{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:1rem 1.25rem;font-family:var(--font-mono);font-size:12px;line-height:1.85;margin:8px 0;overflow-x:auto;white-space:pre;color:var(--color-text-primary)}
-.kw{color:#534AB7;font-weight:500}.fn{color:#0F6E56}.cm{color:var(--color-text-tertiary)}.nm{color:#BA7517}.pp{color:#D85A30}
-.hl-line{background:#FAEEDA;border-radius:3px;padding:0 2px;color:#412402;font-weight:500}
-.g2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:10px 0}
-.cmp{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 12px}
-.cl2{font-size:11px;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
-.si{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
-.sn{width:22px;height:22px;border-radius:50%;background:#EEEDFE;color:#3C3489;font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.sx{font-size:13px;line-height:1.6;color:var(--color-text-secondary)}
-.sx code{font-family:var(--font-mono);font-size:11px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;color:var(--color-text-primary)}
-.btn{padding:8px 18px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:transparent;cursor:pointer;font-size:13px;font-family:var(--font-sans);color:var(--color-text-primary);transition:all .15s}
-.btn:hover{background:var(--color-background-secondary)}.btn:active{transform:scale(.98)}
-.btnp{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}.btnp:hover{background:#CECBF6}
-.btnt{background:#E1F5EE;border-color:#1D9E75;color:#085041}.btnt:hover{background:#9FE1CB}
-.btnd{opacity:.35;pointer-events:none}
-.mat{border-collapse:collapse;font-family:var(--font-mono);font-size:12px;margin:8px auto}
-.mat td,.mat th{border:0.5px solid var(--color-border-secondary);padding:6px 10px;text-align:center;color:var(--color-text-primary)}
-.mat th{background:var(--color-background-secondary);font-weight:500}
-.mat .hi{background:#EEEDFE;color:#3C3489;font-weight:500}
-.mat .hg{background:#E1F5EE;color:#085041;font-weight:500}
-.mat .hb{background:#E6F1FB;color:#0C447C;font-weight:500}
-.node-row{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0;min-height:36px;align-items:center}
-.node{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;border:1.5px solid;transition:all .3s;font-family:var(--font-mono)}
-.nd{background:var(--color-background-secondary);border-color:var(--color-border-secondary);color:var(--color-text-secondary)}
-.nv{background:#E1F5EE;border-color:#1D9E75;color:#085041}
-.nc{background:#EEEDFE;border-color:#7F77DD;color:#3C3489}
-.nq{background:#FAEEDA;border-color:#BA7517;color:#412402}
-.queue-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin:4px 0;min-height:28px}
-.qc{padding:3px 11px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;font-family:var(--font-mono)}
-.qcf{background:#E1F5EE;border:1px solid #1D9E75;color:#085041}
-.qcr{background:#FAEEDA;border:1px solid #BA7517;color:#412402}
-.call-stack{display:flex;flex-direction:column-reverse;gap:3px;margin:6px 0;min-height:28px}
-.cframe{padding:4px 12px;border-radius:var(--border-radius-md);font-size:12px;font-family:var(--font-mono);border:1px solid}
-.cfa{background:#EEEDFE;border-color:#7F77DD;color:#3C3489;font-weight:500}
-.cfw{background:var(--color-background-secondary);border-color:var(--color-border-tertiary);color:var(--color-text-tertiary)}
-.trace-log{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;margin:6px 0;font-size:12px;line-height:1.75;color:var(--color-text-secondary);font-family:var(--font-mono);white-space:pre-wrap;min-height:48px}
-.out-log{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:7px 12px;margin:4px 0;font-size:14px;font-weight:500;font-family:var(--font-mono);min-height:30px}
-.out-d{color:#534AB7}
-.out-b{color:#1D9E75}
-.badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:10px;font-weight:500;margin-bottom:8px}
-.bp{background:#EEEDFE;color:#3C3489}.bt{background:#E1F5EE;color:#085041}
-.mistake-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
-.mistake-item:last-child{border-bottom:none}
-.mn{font-size:12px;font-weight:500;color:#712B13;background:#FAECE7;padding:2px 8px;border-radius:10px;flex-shrink:0}
-.mt{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
-.mt code{font-family:var(--font-mono);font-size:12px;background:var(--color-background-secondary);padding:1px 4px;border-radius:3px;color:var(--color-text-primary)}
-.qi{padding:9px 13px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;font-size:13px;font-family:var(--font-sans);background:transparent;color:var(--color-text-primary);text-align:left;transition:all .15s;width:100%;margin-bottom:7px}
-.qi:hover:not(:disabled){background:var(--color-background-secondary)}
-.qi.ok{background:#E1F5EE;border-color:#1D9E75;color:#085041}
-.qi.ng{background:#FCEBEB;border-color:#E24B4A;color:#501313}
-.qfb{font-size:13px;padding:9px 13px;border-radius:var(--border-radius-md);margin-bottom:10px;line-height:1.55}
-.qfb.ok{background:#E1F5EE;color:#085041}.qfb.ng{background:#FCEBEB;color:#501313}
-.qn{font-size:13px;color:var(--color-text-secondary)}
-.sc{text-align:center;padding:2rem}
-.scn{font-size:48px;font-weight:500;color:#534AB7}
-.scl{font-size:14px;color:var(--color-text-secondary);margin-top:5px}
-.scm{font-size:15px;margin-top:14px}
-.prog-bar{height:5px;background:var(--color-border-tertiary);border-radius:3px;margin-bottom:1.2rem}
-.prog-fill{height:100%;border-radius:3px;transition:width .35s}
-.pf-d{background:#7F77DD}
-.pf-b{background:#1D9E75}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); }
+
+  .container { padding: 1.5rem 0; max-width: 680px; }
+
+  .tabs { display: flex; gap: 4px; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 1.5rem; }
+  .tab { padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--color-text-secondary); border-bottom: 2px solid transparent; transition: all .2s; }
+  .tab.active { color: var(--color-text-primary); border-bottom-color: var(--color-text-primary); }
+  .tab:hover:not(.active) { color: var(--color-text-primary); }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .concept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+  .concept-card { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1rem; border: 0.5px solid var(--color-border-tertiary); }
+  .concept-card h3 { font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--color-text-secondary); }
+  .concept-card p { font-size: 13px; line-height: 1.6; color: var(--color-text-primary); }
+
+  .matrix-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .matrix-wrapper { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .matrix-table { border-collapse: collapse; font-size: 13px; }
+  .matrix-table td, .matrix-table th { width: 32px; height: 32px; text-align: center; vertical-align: middle; border: 0.5px solid var(--color-border-tertiary); }
+  .matrix-table th { font-weight: 500; font-size: 11px; color: var(--color-text-secondary); background: var(--color-background-secondary); }
+  .matrix-table td.one { background: #E6F1FB; color: #0C447C; font-weight: 500; }
+  .matrix-table td.highlighted { background: #FAEEDA; color: #854F0B; font-weight: 500; }
+  @media (prefers-color-scheme: dark) {
+    .matrix-table td.one { background: #0C447C; color: #B5D4F4; }
+    .matrix-table td.highlighted { background: #854F0B; color: #FAC775; }
+  }
+
+  .edges-list { font-size: 12px; color: var(--color-text-secondary); line-height: 2; }
+  .edge-tag { display: inline-block; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 4px; padding: 2px 8px; margin: 2px; font-size: 12px; }
+
+  .graph-svg-wrap { display: flex; justify-content: center; margin-bottom: 1rem; }
+
+  .viz-area { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem; background: var(--color-background-secondary); margin-bottom: 1rem; }
+  .viz-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+  .viz-label { font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; }
+  .queue-box { display: flex; gap: 4px; flex-wrap: wrap; }
+  .q-item { font-size: 12px; font-weight: 500; background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: 4px; padding: 3px 10px; }
+  .q-item.current { background: #FAEEDA; border-color: #854F0B; color: #854F0B; }
+  @media (prefers-color-scheme: dark) { .q-item.current { background: #412402; border-color: #FAC775; color: #FAC775; } }
+
+  .step-info { font-size: 13px; color: var(--color-text-primary); line-height: 1.6; padding: 8px 12px; background: var(--color-background-primary); border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); min-height: 44px; }
+
+  .btn-row { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  button.btn { font-size: 13px; padding: 7px 16px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-primary); cursor: pointer; transition: all .15s; }
+  button.btn:hover { background: var(--color-background-secondary); }
+  button.btn:active { transform: scale(.98); }
+  button.btn.primary { background: var(--color-text-primary); color: var(--color-background-primary); border-color: transparent; }
+  button.btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  .visit-order { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .v-node { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); transition: all .3s; }
+  .v-node.visited { background: #3B8BD4; border-color: #185FA5; color: #fff; }
+  .v-node.current { background: #EF9F27; border-color: #854F0B; color: #fff; }
+  .v-node-arrow { font-size: 12px; color: var(--color-text-tertiary); }
+
+  .code-block { font-family: var(--font-mono); font-size: 12px; line-height: 1.8; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 16px; overflow-x: auto; white-space: pre; }
+  .code-block .hl { background: #FAEEDA; border-radius: 2px; padding: 0 2px; }
+  @media (prefers-color-scheme: dark) { .code-block .hl { background: #412402; } }
+  .code-kw { color: #534AB7; }
+  .code-fn { color: #185FA5; }
+  .code-cm { color: var(--color-text-tertiary); }
+  .code-num { color: #0F6E56; }
+
+  .diff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1rem; }
+  .diff-card { padding: 1rem; border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); }
+  .diff-card.dfs { background: #E6F1FB; border-color: #B5D4F4; }
+  .diff-card.bfs { background: #E1F5EE; border-color: #9FE1CB; }
+  @media (prefers-color-scheme: dark) {
+    .diff-card.dfs { background: #042C53; border-color: #0C447C; }
+    .diff-card.bfs { background: #04342C; border-color: #085041; }
+  }
+  .diff-card h3 { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+  .diff-card.dfs h3 { color: #185FA5; }
+  .diff-card.bfs h3 { color: #0F6E56; }
+  @media (prefers-color-scheme: dark) {
+    .diff-card.dfs h3 { color: #85B7EB; }
+    .diff-card.bfs h3 { color: #5DCAA5; }
+  }
+  .diff-card ul { list-style: none; }
+  .diff-card li { font-size: 12px; line-height: 1.8; color: var(--color-text-primary); padding-left: 12px; position: relative; }
+  .diff-card li::before { content: "·"; position: absolute; left: 0; color: var(--color-text-tertiary); }
+
+  .mistake-list { display: flex; flex-direction: column; gap: 8px; }
+  .mistake-item { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 14px; border-left: 2px solid #E24B4A; }
+  .mistake-item h4 { font-size: 13px; font-weight: 500; color: #A32D2D; margin-bottom: 4px; }
+  @media (prefers-color-scheme: dark) { .mistake-item h4 { color: #F09595; } }
+  .mistake-item p { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+
+  .quiz-area { }
+  .quiz-q { font-size: 14px; font-weight: 500; margin-bottom: 12px; line-height: 1.6; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .quiz-opt { text-align: left; padding: 10px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); font-size: 13px; cursor: pointer; transition: all .15s; color: var(--color-text-primary); }
+  .quiz-opt:hover { background: var(--color-background-secondary); }
+  .quiz-opt.correct { background: #EAF3DE; border-color: #639922; color: #27500A; }
+  .quiz-opt.wrong { background: #FCEBEB; border-color: #E24B4A; color: #501313; }
+  @media (prefers-color-scheme: dark) {
+    .quiz-opt.correct { background: #173404; border-color: #3B6D11; color: #C0DD97; }
+    .quiz-opt.wrong { background: #501313; border-color: #A32D2D; color: #F7C1C1; }
+  }
+  .quiz-result { font-size: 13px; padding: 10px 14px; border-radius: var(--border-radius-md); margin-bottom: 12px; }
+  .quiz-result.ok { background: #EAF3DE; color: #27500A; }
+  .quiz-result.fail { background: #FCEBEB; color: #501313; }
+  @media (prefers-color-scheme: dark) {
+    .quiz-result.ok { background: #173404; color: #C0DD97; }
+    .quiz-result.fail { background: #501313; color: #F7C1C1; }
+  }
+  .progress-bar { height: 4px; background: var(--color-border-tertiary); border-radius: 2px; margin-bottom: 1rem; }
+  .progress-fill { height: 100%; background: #1D9E75; border-radius: 2px; transition: width .3s; }
 </style>
 
-<div class="w">
-  <div class="hd">
-    <h1>인접 행렬로 DFS/BFS 코드 짜기</h1>
-    <p>그래프 연결 정보를 2차원 배열에 저장 → DFS(재귀) + BFS(큐) 완전 정복</p>
-  </div>
+<div class="container">
+<h2 style="sr-only">인접 행렬 DFS/BFS 대화형 학습</h2>
 
-  <nav class="nav">
-    <button class="nb on" onclick="show('matrix')">인접 행렬</button>
-    <button class="nb" onclick="show('dfs')">DFS 코드 완성</button>
-    <button class="nb" onclick="show('bfs')">BFS 코드 완성</button>
-    <button class="nb" onclick="show('sim')">시뮬레이터</button>
-    <button class="nb" onclick="show('full')">전체 코드</button>
-    <button class="nb" onclick="show('mistakes')">실수 & 비교</button>
-    <button class="nb" onclick="show('quiz')">퀴즈</button>
-  </nav>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('개념')">① 개념</button>
+  <button class="tab" onclick="showTab('행렬')">② 인접 행렬</button>
+  <button class="tab" onclick="showTab('dfs')">③ DFS 탐색</button>
+  <button class="tab" onclick="showTab('bfs')">④ BFS 탐색</button>
+  <button class="tab" onclick="showTab('비교')">⑤ 비교</button>
+  <button class="tab" onclick="showTab('퀴즈')">⑥ 퀴즈</button>
+</div>
 
-  <!-- 인접 행렬 -->
-  <div id="s-matrix" class="sec on">
-    <div class="card">
-      <div class="st">인접 행렬이란?</div>
-      <div class="sb">그래프의 연결 정보를 2차원 배열로 저장하는 방법. graph[a][b]=1이면 a와 b가 연결됨.</div>
-      <div class="g2">
-        <div>
-          <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">연결 정보: 1-2, 1-3, 2-4, 2-5, 3-5</div>
-          <div style="overflow-x:auto;">
-            <table class="mat">
-              <tr><th></th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr>
-              <tr><th>1</th><td class="hi">0</td><td class="hi">1</td><td class="hi">1</td><td>0</td><td>0</td></tr>
-              <tr><th>2</th><td class="hi">1</td><td>0</td><td>0</td><td class="hi">1</td><td class="hi">1</td></tr>
-              <tr><th>3</th><td class="hi">1</td><td>0</td><td>0</td><td>0</td><td class="hi">1</td></tr>
-              <tr><th>4</th><td>0</td><td class="hi">1</td><td>0</td><td>0</td><td>0</td></tr>
-              <tr><th>5</th><td>0</td><td class="hi">1</td><td class="hi">1</td><td>0</td><td>0</td></tr>
-            </table>
-          </div>
-        </div>
-        <div>
-          <div style="font-size:13px;color:var(--color-text-secondary);margin-bottom:8px;">그래프 시각화</div>
-          <svg width="100%" viewBox="0 0 240 200">
-            <line x1="70" y1="100" x2="140" y2="50" stroke="#7F77DD" stroke-width="1.5" fill="none"/>
-            <line x1="70" y1="100" x2="140" y2="150" stroke="#7F77DD" stroke-width="1.5" fill="none"/>
-            <line x1="140" y1="50" x2="210" y2="30" stroke="#7F77DD" stroke-width="1.5" fill="none"/>
-            <line x1="140" y1="50" x2="210" y2="80" stroke="#7F77DD" stroke-width="1.5" fill="none"/>
-            <line x1="140" y1="150" x2="210" y2="80" stroke="#7F77DD" stroke-width="1.5" fill="none"/>
-            <circle cx="70" cy="100" r="20" fill="#EEEDFE" stroke="#534AB7" stroke-width="2"/>
-            <circle cx="140" cy="50" r="20" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.5"/>
-            <circle cx="140" cy="150" r="20" fill="#EEEDFE" stroke="#7F77DD" stroke-width="1.5"/>
-            <circle cx="210" cy="30" r="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
-            <circle cx="210" cy="80" r="18" fill="#E1F5EE" stroke="#1D9E75" stroke-width="1.5"/>
-            <text x="70" y="100" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#3C3489">1</text>
-            <text x="140" y="50" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#3C3489">2</text>
-            <text x="140" y="150" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#3C3489">3</text>
-            <text x="210" y="30" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">4</text>
-            <text x="210" y="80" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#085041">5</text>
-          </svg>
-        </div>
-      </div>
-      <div class="hl tl"><p>무방향 그래프 → 행렬이 대각선 기준으로 대칭. graph[a][b] = graph[b][a] = 1</p></div>
+<!-- ① 개념 -->
+<div class="section active" id="tab-개념">
+  <div class="concept-grid">
+    <div class="concept-card">
+      <h3>인접 행렬이란?</h3>
+      <p>정점 간 연결 정보를 2차원 배열에 저장하는 방식. <br>graph[a][b] = 1이면 a와 b가 연결됨.</p>
     </div>
-    <div class="card">
-      <div class="st">입력 저장 코드</div>
-      <div class="code"><span class="pp">#define</span> MAX <span class="nm">101</span>
-<span class="kw">int</span> graph[MAX][MAX];
-<span class="kw">int</span> n, m;
-
-<span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;n, &amp;m);
-<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; m; i++) {
-    <span class="kw">int</span> a, b;
-    <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;a, &amp;b);
-    <span class="hl-line">graph[a][b] = <span class="nm">1</span>;</span>  <span class="cm">// a→b</span>
-    <span class="hl-line">graph[b][a] = <span class="nm">1</span>;</span>  <span class="cm">// b→a (무방향!)</span>
-}</div>
-      <div class="card" style="margin:0;background:var(--color-background-secondary);border-color:var(--color-border-tertiary);">
-        <div style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">이웃 정점 탐색 패턴</div>
-        <div class="code" style="margin:0;background:transparent;border:none;padding:0;"><span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
-    <span class="kw">if</span> (graph[now][next] == <span class="nm">1</span>) { ... }
-}</div>
-      </div>
-      <div class="hl"><p>1번부터 n번까지 순서대로 확인 → 자동으로 번호 작은 정점부터 방문!</p></div>
+    <div class="concept-card">
+      <h3>무방향 그래프</h3>
+      <p>a↔b이면 graph[a][b] = 1과 graph[b][a] = 1을 <strong style="font-weight:500">동시에</strong> 저장해야 함.</p>
+    </div>
+    <div class="concept-card">
+      <h3>DFS (깊이 우선)</h3>
+      <p>한 방향으로 끝까지 파고들었다가 돌아오는 방식. <br>재귀 함수로 구현.</p>
+    </div>
+    <div class="concept-card">
+      <h3>BFS (너비 우선)</h3>
+      <p>가까운 정점부터 넓게 탐색하는 방식. <br>큐(queue)로 구현.</p>
     </div>
   </div>
-
-  <!-- DFS 코드 완성 -->
-  <div id="s-dfs" class="sec">
-    <div class="prog-bar"><div class="prog-fill pf-d" id="dfs-prog" style="width:20%"></div></div>
-    <div class="card" id="dfs-card"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0;">
-      <button class="btn" id="dfs-prev" onclick="dfsMove(-1)">← 이전</button>
-      <span style="font-size:13px;color:var(--color-text-secondary);" id="dfs-info">1 / 5</span>
-      <button class="btn btnp" id="dfs-next" onclick="dfsMove(1)">다음 →</button>
+  <div class="concept-card" style="margin-bottom:1rem">
+    <h3>예제 그래프 (정점 5개, 간선 5개)</h3>
+    <p style="margin-bottom:8px">1-2, 1-3, 2-4, 2-5, 3-5 연결</p>
+    <div class="graph-svg-wrap">
+      <svg width="260" height="200" viewBox="0 0 260 200">
+        <defs><marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+        <!-- edges -->
+        <line x1="130" y1="40" x2="60" y2="120" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+        <line x1="130" y1="40" x2="200" y2="120" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+        <line x1="60" y1="120" x2="30" y2="180" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+        <line x1="60" y1="120" x2="130" y2="180" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+        <line x1="200" y1="120" x2="130" y2="180" stroke="var(--color-border-secondary)" stroke-width="1.5"/>
+        <!-- nodes -->
+        <g><circle cx="130" cy="40" r="18" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/><text x="130" y="44" text-anchor="middle" font-size="13" font-weight="500" fill="#185FA5">1</text></g>
+        <g><circle cx="60" cy="120" r="18" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/><text x="60" y="124" text-anchor="middle" font-size="13" font-weight="500" fill="#185FA5">2</text></g>
+        <g><circle cx="200" cy="120" r="18" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/><text x="200" y="124" text-anchor="middle" font-size="13" font-weight="500" fill="#185FA5">3</text></g>
+        <g><circle cx="30" cy="180" r="18" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/><text x="30" y="184" text-anchor="middle" font-size="13" font-weight="500" fill="#185FA5">4</text></g>
+        <g><circle cx="130" cy="180" r="18" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/><text x="130" y="184" text-anchor="middle" font-size="13" font-weight="500" fill="#185FA5">5</text></g>
+      </svg>
+    </div>
+    <div class="edges-list">
+      <span class="edge-tag">1-2</span><span class="edge-tag">1-3</span><span class="edge-tag">2-4</span><span class="edge-tag">2-5</span><span class="edge-tag">3-5</span>
     </div>
   </div>
-
-  <!-- BFS 코드 완성 -->
-  <div id="s-bfs" class="sec">
-    <div class="prog-bar"><div class="prog-fill pf-b" id="bfs-prog" style="width:16%"></div></div>
-    <div class="card" id="bfs-card"></div>
-    <div style="display:flex;justify-content:space-between;align-items:center;margin:10px 0;">
-      <button class="btn" id="bfs-prev" onclick="bfsMove(-1)">← 이전</button>
-      <span style="font-size:13px;color:var(--color-text-secondary);" id="bfs-info">1 / 6</span>
-      <button class="btn btnt" id="bfs-next" onclick="bfsMove(1)">다음 →</button>
-    </div>
-  </div>
-
-  <!-- 시뮬레이터 -->
-  <div id="s-sim" class="sec">
-    <div style="display:flex;gap:8px;margin-bottom:1rem;justify-content:center;">
-      <button class="btn btnp" id="sim-mode-dfs" onclick="setSimMode('dfs')">DFS 모드</button>
-      <button class="btn" id="sim-mode-bfs" onclick="setSimMode('bfs')">BFS 모드</button>
-    </div>
-    <div class="card">
-      <div class="st" id="sim-title">DFS 단계별 시뮬레이터</div>
-      <div class="sb">그래프: 1-2, 1-3, 2-4, 2-5, 3-5. 1번에서 시작.</div>
-      <div class="g2" style="align-items:start;margin-bottom:6px;">
-        <div>
-          <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;">정점 상태</div>
-          <div class="node-row" id="sim-nodes"></div>
-          <div style="display:flex;gap:10px;margin-top:5px;">
-            <span style="font-size:11px;color:var(--color-text-secondary);"><span style="color:#3C3489;font-weight:500;">■</span> 현재</span>
-            <span style="font-size:11px;color:var(--color-text-secondary);"><span style="color:#085041;font-weight:500;">■</span> 방문</span>
-            <span style="font-size:11px;color:var(--color-text-secondary);" id="queue-legend"></span>
-          </div>
-          <div style="font-size:11px;color:var(--color-text-tertiary);margin:8px 0 3px;text-transform:uppercase;letter-spacing:.05em;" id="stack-label">호출 스택</div>
-          <div id="sim-stack" class="call-stack"></div>
-        </div>
-        <div>
-          <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em;" id="queue-label">큐 상태</div>
-          <div class="queue-row" id="sim-queue"></div>
-          <div style="font-size:11px;color:var(--color-text-tertiary);margin-top:8px;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">출력 결과</div>
-          <div class="out-log" id="sim-out"></div>
-        </div>
-      </div>
-      <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;">로그</div>
-      <div class="trace-log" id="sim-log">모드를 선택하고 시작 버튼을 누르세요.</div>
-      <div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap;">
-        <button class="btn btnp" onclick="simStep()" id="sim-step-btn">다음 단계</button>
-        <button class="btn" onclick="simReset()">처음부터</button>
-        <span style="font-size:13px;color:var(--color-text-secondary);" id="sim-label">단계 0</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- 전체 코드 -->
-  <div id="s-full" class="sec">
-    <div class="card">
-      <div class="st">DFS + BFS 전체 코드</div>
-      <div class="code"><span class="pp">#include</span> &lt;stdio.h&gt;
-<span class="pp">#define</span> MAX <span class="nm">101</span>
-
-<span class="kw">int</span> graph[MAX][MAX];   <span class="cm">// 인접 행렬</span>
-<span class="kw">int</span> visited[MAX];      <span class="cm">// 방문 배열</span>
-<span class="kw">int</span> queue[MAX];        <span class="cm">// BFS 큐</span>
-<span class="kw">int</span> front = <span class="nm">0</span>, rear = <span class="nm">0</span>;
-<span class="kw">int</span> n, m;
-
-<span class="cm">// ─── DFS ─────────────────────────────</span>
-<span class="kw">void</span> <span class="fn">dfs</span>(<span class="kw">int</span> now) {
-    visited[now] = <span class="nm">1</span>;       <span class="cm">// ① 방문 처리</span>
-    <span class="fn">printf</span>(<span class="nm">"%d "</span>, now);     <span class="cm">// ② 출력</span>
-
-    <span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
-        <span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; visited[next] == <span class="nm">0</span>) {
-            <span class="fn">dfs</span>(next);       <span class="cm">// ③ 재귀 호출</span>
-        }
-    }
-}
-
-<span class="cm">// ─── BFS ─────────────────────────────</span>
-<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
-    queue[rear++] = start;  <span class="cm">// ① 시작점 삽입</span>
-    visited[start] = <span class="nm">1</span>;    <span class="cm">// ② 방문 처리</span>
-
-    <span class="kw">while</span> (front &lt; rear) {
-        <span class="kw">int</span> now = queue[front++]; <span class="cm">// ③ 꺼내기</span>
-        <span class="fn">printf</span>(<span class="nm">"%d "</span>, now);
-
-        <span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
-            <span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; visited[next] == <span class="nm">0</span>) {
-                visited[next] = <span class="nm">1</span>;     <span class="cm">// ④ 방문 처리</span>
-                queue[rear++] = next;   <span class="cm">// ⑤ 큐 삽입</span>
-            }
-        }
-    }
-}
-
-<span class="kw">int</span> <span class="fn">main</span>() {
-    <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;n, &amp;m);
-    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">0</span>; i &lt; m; i++) {
-        <span class="kw">int</span> a, b;
-        <span class="fn">scanf</span>(<span class="nm">"%d %d"</span>, &amp;a, &amp;b);
-        graph[a][b] = graph[b][a] = <span class="nm">1</span>;
-    }
-
-    <span class="fn">dfs</span>(<span class="nm">1</span>);      <span class="cm">// → 1 2 4 5 3</span>
-    <span class="fn">printf</span>(<span class="nm">"\n"</span>);
-
-    <span class="cm">// BFS 전에 초기화 필수!</span>
-    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nm">1</span>; i &lt;= n; i++) visited[i] = <span class="nm">0</span>;
-    front = rear = <span class="nm">0</span>;
-
-    <span class="fn">bfs</span>(<span class="nm">1</span>);      <span class="cm">// → 1 2 3 4 5</span>
-    <span class="fn">printf</span>(<span class="nm">"\n"</span>);
-    <span class="kw">return</span> <span class="nm">0</span>;
-}</div>
-      <div class="hl cl"><p>DFS 후 BFS 전에 반드시: ①visited 초기화 ②front=rear=0. 안 하면 BFS가 작동 안 합니다!</p></div>
-    </div>
-  </div>
-
-  <!-- 실수 & 비교 -->
-  <div id="s-mistakes" class="sec">
-    <div class="card">
-      <div class="st">DFS vs BFS 핵심 차이</div>
-      <div class="g2">
-        <div class="cmp" style="background:#EEEDFE;border-color:#AFA9EC;">
-          <div class="cl2" style="color:#534AB7;">DFS — 깊이 우선</div>
-          <div style="font-size:13px;color:#3C3489;line-height:1.8;font-family:var(--font-mono);">재귀 함수<br>방문처리+출력 먼저<br>dfs(next) 호출<br>결과: 1 2 4 5 3</div>
-        </div>
-        <div class="cmp" style="background:#E1F5EE;border-color:#5DCAA5;">
-          <div class="cl2" style="color:#0F6E56;">BFS — 너비 우선</div>
-          <div style="font-size:13px;color:#085041;line-height:1.8;font-family:var(--font-mono);">큐(front/rear)<br>삽입 시 방문처리<br>queue[rear++]=next<br>결과: 1 2 3 4 5</div>
-        </div>
-      </div>
-      <div class="hl"><p>둘 다 인접 행렬을 쓰지만, 다음 정점 처리 방식이 다릅니다. DFS=재귀, BFS=큐.</p></div>
-    </div>
-    <div class="card">
-      <div class="st">자주 하는 실수 6가지</div>
-      <div style="margin-top:4px;">
-        <div class="mistake-item"><div class="mn">실수 1</div><div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">무방향 그래프를 한쪽만 저장</span><br><code>graph[a][b]=1</code>만 하고 <code>graph[b][a]=1</code> 빠뜨리기.</div></div>
-        <div class="mistake-item"><div class="mn">실수 2</div><div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">DFS 후 visited 초기화 안 함</span><br>BFS 전에 <code>for(i=1;i&lt;=n;i++) visited[i]=0;</code> 필수.</div></div>
-        <div class="mistake-item"><div class="mn">실수 3</div><div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">BFS 큐 초기화 안 함</span><br><code>front = rear = 0;</code>으로 초기화해야 합니다.</div></div>
-        <div class="mistake-item"><div class="mn">실수 4</div><div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">DFS 방문 처리를 늦게 함</span><br>함수 시작하자마자 <code>visited[now]=1</code>을 해야 합니다.</div></div>
-        <div class="mistake-item"><div class="mn">실수 5</div><div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">BFS 방문 처리를 늦게 함</span><br>큐에 넣을 때 즉시 <code>visited[next]=1</code>. 꺼낼 때 하면 중복 삽입 발생.</div></div>
-        <div class="mistake-item"><div class="mn">실수 6</div><div class="mt"><span style="font-weight:500;color:var(--color-text-primary);">front/rear 혼동</span><br><code>front</code>=꺼내는 쪽, <code>rear</code>=넣는 쪽. <code>front&lt;rear</code>이면 큐에 원소 있음.</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="st">코딩 사고 순서 8단계</div>
-      <div class="si"><div class="sn">1</div><div class="sx">정점 수와 간선 수 확인</div></div>
-      <div class="si"><div class="sn">2</div><div class="sx"><code>graph[][]</code> 배열 만들기</div></div>
-      <div class="si"><div class="sn">3</div><div class="sx">간선 입력받아 양쪽 저장</div></div>
-      <div class="si"><div class="sn">4</div><div class="sx"><code>visited[]</code> 준비 (0으로 초기화됨)</div></div>
-      <div class="si"><div class="sn">5</div><div class="sx">DFS → 재귀 함수 틀 만들기</div></div>
-      <div class="si"><div class="sn">6</div><div class="sx">BFS → 큐 배열 + front/rear 선언</div></div>
-      <div class="si"><div class="sn">7</div><div class="sx">이웃 탐색은 <code>for(next=1;next&lt;=n;next++)</code></div></div>
-      <div class="si"><div class="sn">8</div><div class="sx">DFS 후 visited·큐 초기화 후 BFS</div></div>
-    </div>
-  </div>
-
-  <!-- 퀴즈 -->
-  <div id="s-quiz" class="sec">
-    <div class="card" id="qbox"><div id="qarea"></div></div>
+  <div class="concept-card">
+    <h3>visited[ ] 배열이 필요한 이유</h3>
+    <p>그래프는 순환이 가능해서, 방문 기록 없이 탐색하면 1→2→1→2→... 무한 반복이 됩니다. visited[i] = 1로 체크해 방지합니다.</p>
   </div>
 </div>
 
+<!-- ② 인접 행렬 -->
+<div class="section" id="tab-행렬">
+  <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:1rem; line-height:1.6">아래 인접 행렬에서 파란색 셀(1)은 두 정점이 연결되어 있음을 뜻합니다. 무방향이므로 대각선 기준으로 대칭입니다.</p>
+  <div class="matrix-wrapper">
+    <div>
+      <div class="matrix-label">graph[a][b] — 행: 출발, 열: 도착</div>
+      <table class="matrix-table" id="matrix-tbl"></table>
+    </div>
+    <div>
+      <div class="matrix-label">입력 코드</div>
+      <div class="code-block"><span class="code-kw">for</span> (<span class="code-kw">int</span> i = <span class="code-num">0</span>; i &lt; m; i++) {
+    <span class="code-kw">int</span> a, b;
+    scanf(<span class="code-num">"%d %d"</span>, &amp;a, &amp;b);
+    graph[a][b] = <span class="code-num">1</span>;
+    graph[b][a] = <span class="code-num">1</span>; <span class="code-cm">// 무방향!</span>
+}</div>
+    </div>
+  </div>
+  <div class="concept-card">
+    <h3>이웃 정점 찾기</h3>
+    <p style="margin-bottom:8px">현재 정점 <code style="font-family:var(--font-mono);font-size:12px">now</code>에서 연결된 정점을 찾으려면 1번부터 n번까지 전부 확인합니다:</p>
+    <div class="code-block"><span class="code-kw">for</span> (<span class="code-kw">int</span> next = <span class="code-num">1</span>; next &lt;= n; next++) {
+    <span class="code-kw">if</span> (graph[now][next] == <span class="code-num">1</span>) {
+        <span class="code-cm">// now와 next가 연결됨</span>
+    }
+}</div>
+  </div>
+</div>
+
+<!-- ③ DFS -->
+<div class="section" id="tab-dfs">
+  <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:1rem; line-height:1.6">1번 정점에서 DFS를 단계별로 실행해 보세요. 번호가 작은 정점부터 방문합니다.</p>
+  <div class="viz-area">
+    <div class="viz-row">
+      <span class="viz-label">방문 순서:</span>
+      <div class="visit-order" id="dfs-visit"></div>
+    </div>
+    <div class="viz-row">
+      <span class="viz-label">콜 스택:</span>
+      <div class="queue-box" id="dfs-stack"></div>
+    </div>
+    <div class="step-info" id="dfs-info">시작 버튼을 누르세요.</div>
+  </div>
+  <div class="btn-row">
+    <button class="btn primary" onclick="dfsReset()">처음부터</button>
+    <button class="btn" id="dfs-next-btn" onclick="dfsStep()">다음 단계 ▶</button>
+  </div>
+  <div class="graph-svg-wrap"><svg id="dfs-graph" width="260" height="200" viewBox="0 0 260 200"></svg></div>
+  <div class="code-block" id="dfs-code"></div>
+</div>
+
+<!-- ④ BFS -->
+<div class="section" id="tab-bfs">
+  <p style="font-size:13px; color:var(--color-text-secondary); margin-bottom:1rem; line-height:1.6">1번 정점에서 BFS를 단계별로 실행해 보세요. 큐(Queue)의 변화를 살펴보세요.</p>
+  <div class="viz-area">
+    <div class="viz-row">
+      <span class="viz-label">방문 순서:</span>
+      <div class="visit-order" id="bfs-visit"></div>
+    </div>
+    <div class="viz-row">
+      <span class="viz-label">큐(Queue):</span>
+      <div class="queue-box" id="bfs-queue"></div>
+    </div>
+    <div class="step-info" id="bfs-info">시작 버튼을 누르세요.</div>
+  </div>
+  <div class="btn-row">
+    <button class="btn primary" onclick="bfsReset()">처음부터</button>
+    <button class="btn" id="bfs-next-btn" onclick="bfsStep()">다음 단계 ▶</button>
+  </div>
+  <div class="graph-svg-wrap"><svg id="bfs-graph" width="260" height="200" viewBox="0 0 260 200"></svg></div>
+  <div class="code-block" id="bfs-code"></div>
+</div>
+
+<!-- ⑤ 비교 -->
+<div class="section" id="tab-비교">
+  <div class="diff-grid">
+    <div class="diff-card dfs">
+      <h3>DFS — 깊이 우선</h3>
+      <ul>
+        <li>재귀 함수 사용</li>
+        <li>한 방향으로 끝까지 파고듦</li>
+        <li>방문 즉시 출력, 즉시 재귀</li>
+        <li>콜 스택이 사용됨</li>
+        <li>미로 찾기, 경로 탐색에 유용</li>
+      </ul>
+    </div>
+    <div class="diff-card bfs">
+      <h3>BFS — 너비 우선</h3>
+      <ul>
+        <li>큐(배열) 사용</li>
+        <li>가까운 것부터 넓게 탐색</li>
+        <li>큐에 넣을 때 방문 처리</li>
+        <li>큐 배열이 사용됨</li>
+        <li>최단 경로 탐색에 유용</li>
+      </ul>
+    </div>
+  </div>
+  <div style="margin-bottom:1rem">
+    <div class="matrix-label" style="margin-bottom:8px">예제 결과 비교</div>
+    <div class="concept-card">
+      <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap">
+        <div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px">DFS 방문 순서</div>
+          <div style="display:flex;gap:4px">
+            <span class="v-node visited">1</span><span class="v-node-arrow">→</span>
+            <span class="v-node visited">2</span><span class="v-node-arrow">→</span>
+            <span class="v-node visited">4</span><span class="v-node-arrow">→</span>
+            <span class="v-node visited">5</span><span class="v-node-arrow">→</span>
+            <span class="v-node visited">3</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:4px">BFS 방문 순서</div>
+          <div style="display:flex;gap:4px">
+            <span class="v-node" style="background:#1D9E75;border-color:#0F6E56;color:#fff">1</span><span class="v-node-arrow">→</span>
+            <span class="v-node" style="background:#1D9E75;border-color:#0F6E56;color:#fff">2</span><span class="v-node-arrow">→</span>
+            <span class="v-node" style="background:#1D9E75;border-color:#0F6E56;color:#fff">3</span><span class="v-node-arrow">→</span>
+            <span class="v-node" style="background:#1D9E75;border-color:#0F6E56;color:#fff">4</span><span class="v-node-arrow">→</span>
+            <span class="v-node" style="background:#1D9E75;border-color:#0F6E56;color:#fff">5</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="matrix-label" style="margin-bottom:8px">자주 하는 실수</div>
+  <div class="mistake-list">
+    <div class="mistake-item"><h4>무방향인데 한쪽만 저장</h4><p>graph[a][b] = 1만 넣고 graph[b][a] = 1을 빠뜨리는 실수.</p></div>
+    <div class="mistake-item"><h4>DFS 후 visited 초기화 안 함</h4><p>BFS 전에 visited[i] = 0으로 모두 초기화해야 합니다.</p></div>
+    <div class="mistake-item"><h4>BFS에서 큐 초기화 안 함</h4><p>front = rear = 0으로 다시 설정해야 합니다.</p></div>
+    <div class="mistake-item"><h4>BFS 방문 처리를 늦게 함</h4><p>큐에 넣을 때 바로 visited = 1 해야 합니다. 꺼낼 때 하면 중복 삽입 발생.</p></div>
+  </div>
+</div>
+
+<!-- ⑥ 퀴즈 -->
+<div class="section" id="tab-퀴즈">
+  <div class="progress-bar"><div class="progress-fill" id="quiz-progress" style="width:0%"></div></div>
+  <div id="quiz-body"></div>
+</div>
+
+</div>
+
 <script>
-const DFS_STEPS=[
-  {badge:'DFS 1단계',title:'함수 틀 + 방문 처리',body:'DFS 함수에 들어오면 가장 먼저 현재 정점을 방문 처리합니다.\n방문 처리를 안 하면 1↔2 무한 반복이 생깁니다.',
-   code:`<span class="kw">void</span> <span class="fn">dfs</span>(<span class="kw">int</span> now) {
-    <span class="hl-line">visited[now] = <span class="nm">1</span>;</span>  <span class="cm">// 들어오자마자!</span>
-}`,hl:{type:'cl',text:'방문 처리가 늦으면 같은 정점이 여러 번 방문됩니다. 첫 줄에 써야 합니다.'}},
-  {badge:'DFS 2단계',title:'출력 추가',body:'방문 순서를 출력해야 하므로 방문 처리 직후 바로 출력합니다.',
-   code:`<span class="kw">void</span> <span class="fn">dfs</span>(<span class="kw">int</span> now) {
-    visited[now] = <span class="nm">1</span>;
-    <span class="hl-line"><span class="fn">printf</span>(<span class="nm">"%d "</span>, now);</span>  <span class="cm">// 도착 즉시 출력</span>
-}`,hl:null},
-  {badge:'DFS 3단계',title:'이웃 정점 순회',body:'1번부터 n번까지 순서대로 확인합니다.\n이렇게 하면 자동으로 번호 작은 정점부터 방문합니다.',
-   code:`<span class="kw">void</span> <span class="fn">dfs</span>(<span class="kw">int</span> now) {
-    visited[now] = <span class="nm">1</span>;
-    <span class="fn">printf</span>(<span class="nm">"%d "</span>, now);
+const N = 5;
+const edges = [[1,2],[1,3],[2,4],[2,5],[3,5]];
+const adj = Array.from({length:6}, () => Array(6).fill(0));
+edges.forEach(([a,b]) => { adj[a][b]=1; adj[b][a]=1; });
 
-    <span class="hl-line"><span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {</span>
-    <span class="hl-line">    <span class="cm">// 조건 확인 예정</span></span>
-    <span class="hl-line">}</span>
-}`,hl:{type:'',text:'for(next=1; next<=n; next++) 순서가 "번호 작은 것부터 방문" 조건을 만족시킵니다.'}},
-  {badge:'DFS 4단계',title:'조건: 연결 + 미방문',body:'연결되어 있고 아직 방문하지 않은 정점만 들어갑니다.',
-   code:`        <span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
-            <span class="hl-line"><span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; visited[next] == <span class="nm">0</span>) {</span>
-            <span class="hl-line">    <span class="cm">// 재귀 호출 예정</span></span>
-            <span class="hl-line">}</span>
-        }`,hl:{type:'cl',text:'두 조건 모두 필요: ① 연결됨 ② 아직 방문 안 함'}},
-  {badge:'DFS 완성!',title:'재귀 호출 = DFS 완성',body:'dfs(next) 한 줄이 "더 깊이 들어가기 + 자동 돌아오기"를 모두 합니다.',
-   code:`<span class="kw">void</span> <span class="fn">dfs</span>(<span class="kw">int</span> now) {
-    visited[now] = <span class="nm">1</span>;
-    <span class="fn">printf</span>(<span class="nm">"%d "</span>, now);
+const nodePos = {1:[130,40],2:[60,120],3:[200,120],4:[30,180],5:[130,180]};
 
-    <span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
-        <span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; visited[next] == <span class="nm">0</span>) {
-            <span class="hl-line"><span class="fn">dfs</span>(next);</span>  <span class="cm">// 재귀 = 들어가기</span>
-        }           <span class="cm">// ← 돌아올 때 자동으로 여기</span>
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const names = ['개념','행렬','dfs','bfs','비교','퀴즈'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// Build matrix table
+(function() {
+  const tbl = document.getElementById('matrix-tbl');
+  const header = document.createElement('tr');
+  header.innerHTML = '<th></th>' + [1,2,3,4,5].map(i=>`<th>${i}</th>`).join('');
+  tbl.appendChild(header);
+  for (let r=1;r<=5;r++) {
+    const row = document.createElement('tr');
+    row.innerHTML = `<th>${r}</th>` + [1,2,3,4,5].map(c=>{
+      const v = adj[r][c];
+      return `<td class="${v?'one':''}">${v}</td>`;
+    }).join('');
+    tbl.appendChild(row);
+  }
+})();
+
+// Graph SVG renderer
+function renderGraph(svgId, visited, current, queued) {
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = '';
+  edges.forEach(([a,b]) => {
+    const [ax,ay] = nodePos[a], [bx,by] = nodePos[b];
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',ax); line.setAttribute('y1',ay);
+    line.setAttribute('x2',bx); line.setAttribute('y2',by);
+    line.setAttribute('stroke','var(--color-border-secondary)');
+    line.setAttribute('stroke-width','1.5');
+    svg.appendChild(line);
+  });
+  for (let i=1;i<=5;i++) {
+    const [cx,cy] = nodePos[i];
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',18);
+    let fill='var(--color-background-primary)', stroke='var(--color-border-secondary)', textColor='var(--color-text-primary)';
+    if (i === current) { fill='#EF9F27'; stroke='#854F0B'; textColor='#fff'; }
+    else if (queued && queued.includes(i)) { fill='#FAEEDA'; stroke='#BA7517'; textColor='#633806'; }
+    else if (visited.includes(i)) { fill='#3B8BD4'; stroke='#185FA5'; textColor='#fff'; }
+    c.setAttribute('fill',fill); c.setAttribute('stroke',stroke); c.setAttribute('stroke-width','1.5');
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',cx); t.setAttribute('y',cy+5);
+    t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','13');
+    t.setAttribute('font-weight','500'); t.setAttribute('fill',textColor);
+    t.textContent = i;
+    g.appendChild(c); g.appendChild(t);
+    svg.appendChild(g);
+  }
+}
+
+// DFS state
+let dfsSteps = [], dfsIdx = 0;
+function buildDfsSteps() {
+  const steps = [];
+  const vis = Array(6).fill(false);
+  const stack = [];
+  function dfs(now) {
+    vis[now] = true;
+    stack.push(now);
+    steps.push({
+      action: 'visit', node: now,
+      visited: vis.slice(), stack: stack.slice(),
+      info: `정점 ${now} 방문 처리 및 출력`
+    });
+    for (let next=1;next<=N;next++) {
+      if (adj[now][next] && !vis[next]) {
+        steps.push({
+          action: 'check', node: now, next,
+          visited: vis.slice(), stack: stack.slice(),
+          info: `graph[${now}][${next}]=1, visited[${next}]=0 → dfs(${next}) 호출`
+        });
+        dfs(next);
+      }
     }
-}`,hl:{type:'tl',text:'DFS 완성! 예제 출력: 1 2 4 5 3'}}
-];
+    stack.pop();
+    steps.push({
+      action: 'return', node: now,
+      visited: vis.slice(), stack: stack.slice(),
+      info: `정점 ${now}에서 돌아옴 (더 갈 곳 없음)`
+    });
+  }
+  dfs(1);
+  return steps;
+}
 
-const BFS_STEPS=[
-  {badge:'BFS 1단계',title:'변수 선언 — DFS와 다른 점',body:'BFS는 큐가 필요합니다. front(꺼내는 쪽)와 rear(넣는 쪽)로 관리합니다.',
-   code:`<span class="kw">int</span> queue[MAX];
-<span class="hl-line"><span class="kw">int</span> front = <span class="nm">0</span>, rear = <span class="nm">0</span>;</span>  <span class="cm">// front=꺼내는쪽, rear=넣는쪽</span>`,hl:{type:'',text:'front < rear이면 큐에 원소가 있음. front == rear이면 빈 큐.'}},
-  {badge:'BFS 2단계',title:'시작점 삽입 + 방문 처리',body:'BFS는 시작점을 큐에 넣는 것으로 시작합니다.\n큐에 넣을 때 즉시 방문 처리합니다.',
-   code:`<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
-    <span class="hl-line">queue[rear++] = start;</span>  <span class="cm">// 뒤에 넣기</span>
-    <span class="hl-line">visited[start] = <span class="nm">1</span>;</span>     <span class="cm">// 즉시 방문 처리</span>
-}`,hl:{type:'cl',text:'방문 처리를 늦게 하면 같은 정점이 여러 번 큐에 들어갑니다.'}},
-  {badge:'BFS 3단계',title:'while — 큐가 빌 때까지 반복',body:'front < rear이면 아직 꺼낼 원소가 있다는 뜻입니다.',
-   code:`<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
-    queue[rear++] = start;
-    visited[start] = <span class="nm">1</span>;
+function dfsReset() {
+  dfsSteps = buildDfsSteps();
+  dfsIdx = 0;
+  document.getElementById('dfs-visit').innerHTML = [1,2,3,4,5].map(i=>`<span class="v-node" id="dv${i}">${i}</span>`).join('<span class="v-node-arrow">→</span>');
+  document.getElementById('dfs-stack').innerHTML = '';
+  document.getElementById('dfs-info').textContent = '시작 버튼을 누르세요.';
+  document.getElementById('dfs-next-btn').disabled = false;
+  renderGraph('dfs-graph',[],null,null);
+  updateDfsCode(-1,null);
+}
 
-    <span class="hl-line"><span class="kw">while</span> (front &lt; rear) {</span>  <span class="cm">// 큐가 안 비었으면</span>
-    <span class="hl-line">    </span>
-    <span class="hl-line">}</span>
-}`,hl:null},
-  {badge:'BFS 4단계',title:'큐에서 꺼내기 + 출력',body:'맨 앞에서 하나 꺼내서 탐색합니다.',
-   code:`    <span class="kw">while</span> (front &lt; rear) {
-        <span class="hl-line"><span class="kw">int</span> now = queue[front++];</span>  <span class="cm">// 앞에서 꺼냄</span>
-        <span class="hl-line"><span class="fn">printf</span>(<span class="nm">"%d "</span>, now);</span>
-    }`,hl:{type:'',text:'queue[front++] = front 위치 값을 읽고 front를 1 증가시킵니다.'}},
-  {badge:'BFS 5단계',title:'이웃 탐색 + 큐 삽입',body:'연결된 미방문 정점을 모두 큐에 넣습니다.',
-   code:`        <span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
-            <span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; visited[next] == <span class="nm">0</span>) {
-                <span class="hl-line">visited[next] = <span class="nm">1</span>;</span>     <span class="cm">// 즉시 방문 처리</span>
-                <span class="hl-line">queue[rear++] = next;</span>  <span class="cm">// 큐에 삽입</span>
-            }
-        }`,hl:{type:'cl',text:'DFS와 달리 BFS는 재귀 없이 큐에 넣는 것으로 끝입니다.'}},
-  {badge:'BFS 완성!',title:'BFS 함수 완성',body:'완성된 BFS 함수입니다. DFS와 비교해보세요.',
-   code:`<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> start) {
-    queue[rear++] = start;
-    visited[start] = <span class="nm">1</span>;
+function dfsStep() {
+  if (dfsIdx >= dfsSteps.length) { document.getElementById('dfs-next-btn').disabled = true; return; }
+  const s = dfsSteps[dfsIdx++];
+  const visited = [];
+  for(let i=1;i<=5;i++) if(s.visited[i]) visited.push(i);
+  const current = s.action==='visit' ? s.node : (s.action==='check' ? s.node : null);
+  for(let i=1;i<=5;i++) {
+    const el = document.getElementById('dv'+i);
+    if(el) { el.className='v-node'+(s.visited[i]?' visited':'')+(i===s.node&&s.action==='visit'?' current':''); }
+  }
+  document.getElementById('dfs-stack').innerHTML = s.stack.map((n,i)=>`<span class="q-item${i===s.stack.length-1?' current':''}">${n}</span>`).join('');
+  document.getElementById('dfs-info').textContent = s.info;
+  renderGraph('dfs-graph', visited, s.action==='visit'?s.node:null, null);
+  updateDfsCode(s.action, s);
+  if (dfsIdx >= dfsSteps.length) document.getElementById('dfs-next-btn').disabled = true;
+}
 
-    <span class="kw">while</span> (front &lt; rear) {
-        <span class="kw">int</span> now = queue[front++];
-        <span class="fn">printf</span>(<span class="nm">"%d "</span>, now);
+function updateDfsCode(action, s) {
+  const lines = [
+    `<span class="code-kw">void</span> <span class="code-fn">dfs</span>(<span class="code-kw">int</span> now) {`,
+    `    visited[now] = <span class="code-num">1</span>;`,
+    `    printf(<span class="code-num">"%d "</span>, now);`,
+    `    <span class="code-kw">for</span> (<span class="code-kw">int</span> next = <span class="code-num">1</span>; next &lt;= n; next++) {`,
+    `        <span class="code-kw">if</span> (graph[now][next] == <span class="code-num">1</span> &amp;&amp; visited[next] == <span class="code-num">0</span>) {`,
+    `            <span class="code-fn">dfs</span>(next);`,
+    `        }`,
+    `    }`,
+    `}`
+  ];
+  let hl = -1;
+  if (action==='visit') hl = 1;
+  if (action==='check') hl = 5;
+  if (action==='return') hl = 8;
+  document.getElementById('dfs-code').innerHTML = lines.map((l,i)=>i===hl?`<span class="hl">${l}</span>`:l).join('\n');
+}
 
-        <span class="kw">for</span> (<span class="kw">int</span> next = <span class="nm">1</span>; next &lt;= n; next++) {
-            <span class="kw">if</span> (graph[now][next] == <span class="nm">1</span> &amp;&amp; visited[next] == <span class="nm">0</span>) {
-                visited[next] = <span class="nm">1</span>;
-                queue[rear++] = next;
-            }
-        }
+// BFS state
+let bfsSteps = [], bfsIdx = 0;
+function buildBfsSteps() {
+  const steps = [];
+  const vis = Array(6).fill(false);
+  const q = [];
+  vis[1]=true; q.push(1);
+  steps.push({action:'enqueue',node:1,queue:q.slice(),visited:vis.slice(),info:'시작 정점 1을 큐에 넣고 방문 처리'});
+  while (q.length) {
+    const now = q.shift();
+    steps.push({action:'dequeue',node:now,queue:q.slice(),visited:vis.slice(),info:`큐에서 ${now} 꺼내서 출력`});
+    for(let next=1;next<=N;next++) {
+      if(adj[now][next] && !vis[next]) {
+        vis[next]=true; q.push(next);
+        steps.push({action:'enqueue',node:next,queue:q.slice(),visited:vis.slice(),info:`graph[${now}][${next}]=1, visited[${next}]=0 → ${next} 큐에 삽입 + 방문 처리`});
+      }
     }
-}`,hl:{type:'tl',text:'BFS 완성! 예제 출력: 1 2 3 4 5'}}
-];
+  }
+  return steps;
+}
 
-let dfsIdx=0,bfsIdx=0;
-function renderBuildStep(steps,idx,cardId){
-  const s=steps[idx];
-  document.getElementById(cardId).innerHTML=`
-    <span style="display:inline-block;font-size:11px;padding:2px 9px;border-radius:10px;font-weight:500;margin-bottom:8px;background:#EEEDFE;color:#3C3489;">${s.badge} — ${idx+1}/${steps.length}</span>
-    <div style="font-size:17px;font-weight:500;margin-bottom:10px;">${s.title}</div>
-    <div style="font-size:14px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:10px;white-space:pre-wrap;">${s.body}</div>
-    ${s.code?`<div class="code">${s.code}</div>`:''}
-    ${s.hl?`<div class="hl ${s.hl.type}"><p>${s.hl.text}</p></div>`:''}
+function bfsReset() {
+  bfsSteps = buildBfsSteps();
+  bfsIdx = 0;
+  document.getElementById('bfs-visit').innerHTML = [1,2,3,4,5].map(i=>`<span class="v-node" id="bv${i}">${i}</span>`).join('<span class="v-node-arrow">→</span>');
+  document.getElementById('bfs-queue').innerHTML = '';
+  document.getElementById('bfs-info').textContent = '시작 버튼을 누르세요.';
+  document.getElementById('bfs-next-btn').disabled = false;
+  renderGraph('bfs-graph',[],null,null);
+  updateBfsCode(-1);
+}
+
+function bfsStep() {
+  if (bfsIdx >= bfsSteps.length) { document.getElementById('bfs-next-btn').disabled = true; return; }
+  const s = bfsSteps[bfsIdx++];
+  const visited = [];
+  for(let i=1;i<=5;i++) if(s.visited[i]) visited.push(i);
+  for(let i=1;i<=5;i++) {
+    const el = document.getElementById('bv'+i);
+    if(el) { el.className='v-node'+(s.visited[i]?' visited':'')+(i===s.node&&s.action==='dequeue'?' current':''); }
+  }
+  document.getElementById('bfs-queue').innerHTML = s.queue.map((n,i)=>`<span class="q-item${i===0?' current':''}">${n}</span>`).join('');
+  document.getElementById('bfs-info').textContent = s.info;
+  const cur = s.action==='dequeue' ? s.node : null;
+  renderGraph('bfs-graph', visited, cur, s.queue);
+  updateBfsCode(s.action);
+  if (bfsIdx >= bfsSteps.length) document.getElementById('bfs-next-btn').disabled = true;
+}
+
+function updateBfsCode(action) {
+  const lines = [
+    `<span class="code-kw">void</span> <span class="code-fn">bfs</span>(<span class="code-kw">int</span> start) {`,
+    `    queue[rear++] = start; visited[start] = <span class="code-num">1</span>;`,
+    `    <span class="code-kw">while</span> (front &lt; rear) {`,
+    `        <span class="code-kw">int</span> now = queue[front++];`,
+    `        printf(<span class="code-num">"%d "</span>, now);`,
+    `        <span class="code-kw">for</span> (<span class="code-kw">int</span> next=<span class="code-num">1</span>; next&lt;=n; next++) {`,
+    `            <span class="code-kw">if</span> (graph[now][next]==<span class="code-num">1</span> &amp;&amp; visited[next]==<span class="code-num">0</span>) {`,
+    `                visited[next]=<span class="code-num">1</span>; queue[rear++]=next;`,
+    `            }`,
+    `        }`,
+    `    }`,
+    `}`
+  ];
+  let hl = -1;
+  if (action==='enqueue' && bfsIdx===1) hl=1;
+  else if (action==='dequeue') hl=3;
+  else if (action==='enqueue') hl=7;
+  document.getElementById('bfs-code').innerHTML = lines.map((l,i)=>i===hl?`<span class="hl">${l}</span>`:l).join('\n');
+}
+
+// Quiz
+const quizzes = [
+  {q:'무방향 그래프에서 1-2가 연결되면 어떻게 저장해야 하나요?', opts:['graph[1][2]=1만 저장','graph[2][1]=1만 저장','graph[1][2]=1과 graph[2][1]=1 모두 저장','graph[1][2]=2로 저장'], ans:2, exp:'무방향 그래프는 양방향 이동이 가능하므로 반드시 양쪽 모두 저장해야 합니다.'},
+  {q:'DFS 구현에서 방문 처리(visited[now]=1)는 언제 해야 할까요?', opts:['재귀 호출이 끝난 후','함수 시작 직후 바로','모든 이웃 확인 후','출력한 다음'], ans:1, exp:'DFS 함수 시작 직후 visited[now]=1을 해야 같은 정점으로 무한 재귀가 방지됩니다.'},
+  {q:'BFS에서 visited 처리를 언제 해야 중복 삽입을 막을 수 있나요?', opts:['큐에서 꺼낼 때','큐에 넣을 때','printf 출력 후','for 루프 시작 전'], ans:1, exp:'큐에 넣을 때 즉시 visited=1을 해야 같은 정점이 큐에 여러 번 들어가지 않습니다.'},
+  {q:'DFS를 먼저 실행한 뒤 BFS를 실행하려면 무엇을 꼭 해야 하나요?', opts:['graph 배열 초기화','visited 배열을 0으로 초기화 + front=rear=0 초기화','n과 m 값 재입력','아무것도 할 필요 없다'], ans:1, exp:'DFS 후 visited가 이미 1로 채워져 있으므로 BFS 전에 반드시 초기화해야 합니다. 큐도 마찬가지입니다.'},
+  {q:'예제 그래프(1-2,1-3,2-4,2-5,3-5)에서 1번부터 BFS 방문 순서는?', opts:['1 2 4 5 3','1 2 3 4 5','1 3 2 5 4','1 2 3 5 4'], ans:1, exp:'BFS는 1 출력→2,3 삽입→2 출력→4,5 삽입→3 출력(5이미방문)→4 출력→5 출력 순서입니다.'},
+];
+let qIdx=0, qScore=0, qDone=false;
+
+function renderQuiz() {
+  const body = document.getElementById('quiz-body');
+  document.getElementById('quiz-progress').style.width = (qIdx/quizzes.length*100)+'%';
+  if (qIdx >= quizzes.length) {
+    body.innerHTML = `<div class="viz-area" style="text-align:center;padding:2rem"><p style="font-size:24px;font-weight:500;margin-bottom:8px">${qScore}/${quizzes.length}</p><p style="font-size:14px;color:var(--color-text-secondary);margin-bottom:1rem">${qScore===quizzes.length?'완벽합니다! 🎉':qScore>=3?'잘 했어요! 복습해보세요.':'다시 한 번 도전해보세요.'}</p><button class="btn primary" onclick="qIdx=0;qScore=0;renderQuiz()">다시 풀기</button></div>`;
+    document.getElementById('quiz-progress').style.width='100%';
+    return;
+  }
+  const quiz = quizzes[qIdx];
+  body.innerHTML = `
+    <div class="quiz-q">Q${qIdx+1}. ${quiz.q}</div>
+    <div class="quiz-opts">${quiz.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('')}</div>
+    <div id="quiz-res"></div>
+    <div id="quiz-next-row"></div>
   `;
 }
-function dfsMove(d){dfsIdx=Math.max(0,Math.min(DFS_STEPS.length-1,dfsIdx+d));renderBuildStep(DFS_STEPS,dfsIdx,'dfs-card');document.getElementById('dfs-info').textContent=(dfsIdx+1)+' / '+DFS_STEPS.length;document.getElementById('dfs-prog').style.width=Math.round((dfsIdx+1)/DFS_STEPS.length*100)+'%';document.getElementById('dfs-prev').classList.toggle('btnd',dfsIdx===0);document.getElementById('dfs-next').classList.toggle('btnd',dfsIdx===DFS_STEPS.length-1);}
-function bfsMove(d){bfsIdx=Math.max(0,Math.min(BFS_STEPS.length-1,bfsIdx+d));renderBuildStep(BFS_STEPS,bfsIdx,'bfs-card');document.getElementById('bfs-info').textContent=(bfsIdx+1)+' / '+BFS_STEPS.length;document.getElementById('bfs-prog').style.width=Math.round((bfsIdx+1)/BFS_STEPS.length*100)+'%';document.getElementById('bfs-prev').classList.toggle('btnd',bfsIdx===0);document.getElementById('bfs-next').classList.toggle('btnd',bfsIdx===BFS_STEPS.length-1);}
 
-const DFS_SIM=[
-  {vis:[1],cur:1,stack:['dfs(1)'],q:[],out:[1],log:'dfs(1) 호출\nvisited[1]=1, 출력: 1\n연결: 2, 3 → 2 먼저'},
-  {vis:[1,2],cur:2,stack:['dfs(1)','dfs(2)'],q:[],out:[1,2],log:'dfs(2) 호출\nvisited[2]=1, 출력: 2\n연결: 1(방문), 4, 5 → 4 먼저'},
-  {vis:[1,2,4],cur:4,stack:['dfs(1)','dfs(2)','dfs(4)'],q:[],out:[1,2,4],log:'dfs(4) 호출\nvisited[4]=1, 출력: 4\n연결: 2(방문) → 더 갈 곳 없음\n종료 → dfs(2) 복귀'},
-  {vis:[1,2,4,5],cur:5,stack:['dfs(1)','dfs(2)','dfs(5)'],q:[],out:[1,2,4,5],log:'dfs(2) 복귀 → 5 발견\ndfs(5) 호출\nvisited[5]=1, 출력: 5\n연결: 2(방문), 3 → 3으로'},
-  {vis:[1,2,3,4,5],cur:3,stack:['dfs(1)','dfs(2)','dfs(5)','dfs(3)'],q:[],out:[1,2,4,5,3],log:'dfs(3) 호출\nvisited[3]=1, 출력: 3\n연결: 1(방문), 5(방문) → 완료\n모두 복귀 → 완료!'},
-];
-const BFS_SIM=[
-  {vis:[1,2,3],cur:1,stack:[],q:[2,3],out:[1],log:'bfs(1) 시작\nvisited[1]=1, queue에 1 삽입\n1 꺼냄, 출력: 1\n연결: 2(미방문)→삽입, 3(미방문)→삽입\n큐: [2, 3]'},
-  {vis:[1,2,3,4,5],cur:2,stack:[],q:[3,4,5],out:[1,2],log:'2 꺼냄, 출력: 2\n연결: 1(방문), 4(미방문)→삽입, 5(미방문)→삽입\n큐: [3, 4, 5]'},
-  {vis:[1,2,3,4,5],cur:3,stack:[],q:[4,5],out:[1,2,3],log:'3 꺼냄, 출력: 3\n연결: 1(방문), 5(방문) → 새로 삽입 없음\n큐: [4, 5]'},
-  {vis:[1,2,3,4,5],cur:4,stack:[],q:[5],out:[1,2,3,4],log:'4 꺼냄, 출력: 4\n연결: 2(방문) → 삽입 없음\n큐: [5]'},
-  {vis:[1,2,3,4,5],cur:5,stack:[],q:[],out:[1,2,3,4,5],log:'5 꺼냄, 출력: 5\n연결: 2(방문), 3(방문) → 삽입 없음\n큐: [] 비어있음 → BFS 완료!\n최종 출력: 1 2 3 4 5'},
-];
-
-let simMode='dfs',simIdx=0;
-function setSimMode(m){
-  simMode=m;
-  document.getElementById('sim-mode-dfs').className='btn '+(m==='dfs'?'btnp':'');
-  document.getElementById('sim-mode-bfs').className='btn '+(m==='bfs'?'btnt':'');
-  document.getElementById('sim-title').textContent=m==='dfs'?'DFS 단계별 시뮬레이터':'BFS 단계별 시뮬레이터';
-  document.getElementById('sim-step-btn').className='btn '+(m==='dfs'?'btnp':'btnt');
-  document.getElementById('stack-label').textContent=m==='dfs'?'호출 스택':'(DFS만 해당)';
-  document.getElementById('queue-label').textContent=m==='dfs'?'(BFS만 해당)':'큐 상태 (앞→뒤)';
-  document.getElementById('queue-legend').textContent=m==='bfs'?'■ 큐 대기':'';
-  simReset();
-}
-function simReset(){simIdx=0;document.getElementById('sim-label').textContent='단계 0';document.getElementById('sim-log').textContent='시작 버튼을 눌러 '+（simMode==='dfs'?'DFS':'BFS')+'를 시작하세요.';document.getElementById('sim-out').textContent='';document.getElementById('sim-out').className='out-log '+(simMode==='dfs'?'out-d':'out-b');renderSimNodes([],null,[]);renderSimStack([]);renderSimQueue([]);}
-function simStep(){
-  const steps=simMode==='dfs'?DFS_SIM:BFS_SIM;
-  if(simIdx>=steps.length)return;
-  const s=steps[simIdx];
-  document.getElementById('sim-label').textContent='단계 '+(simIdx+1)+' / '+steps.length;
-  document.getElementById('sim-log').textContent=s.log;
-  document.getElementById('sim-out').textContent=s.out.join(' ');
-  renderSimNodes(s.vis,s.cur,s.q);
-  renderSimStack(s.stack);
-  renderSimQueue(s.q);
-  simIdx++;
-}
-function renderSimNodes(vis,cur,q){const el=document.getElementById('sim-nodes');el.innerHTML=[1,2,3,4,5].map(v=>{let cls='nd';if(v===cur)cls='nc';else if(q&&q.includes(v))cls='nq';else if(vis.includes(v))cls='nv';return `<div class="node ${cls}">${v}</div>`;}).join('');}
-function renderSimStack(stack){const el=document.getElementById('sim-stack');if(!stack||!stack.length){el.innerHTML='<div style="font-size:12px;color:var(--color-text-tertiary);">빈 스택</div>';return;}el.innerHTML=stack.map((f,i)=>`<div class="cframe ${i===stack.length-1?'cfa':'cfw'}">${f}</div>`).join('');}
-function renderSimQueue(q){const el=document.getElementById('sim-queue');if(!q||!q.length){el.innerHTML='<span style="font-size:12px;color:var(--color-text-tertiary);">빈 큐</span>';return;}el.innerHTML=q.map((v,i)=>`<div class="qc ${i===0?'qcf':'qcr'}">${v}</div>`).join('<span style="color:var(--color-text-tertiary);font-size:12px;">→</span>');}
-
-function show(n){
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
-  document.getElementById('s-'+n).classList.add('on');
-  const ns=['matrix','dfs','bfs','sim','full','mistakes','quiz'];
-  document.querySelectorAll('.nav .nb').forEach((b,i)=>b.classList.toggle('on',ns[i]===n));
-  if(n==='sim'){setSimMode('dfs');}
-  if(n==='quiz')rq();
+function answerQuiz(i) {
+  const quiz = quizzes[qIdx];
+  document.querySelectorAll('.quiz-opt').forEach((b,j) => {
+    b.disabled = true;
+    if (j === quiz.ans) b.classList.add('correct');
+    else if (j === i) b.classList.add('wrong');
+  });
+  const correct = i === quiz.ans;
+  if (correct) qScore++;
+  document.getElementById('quiz-res').innerHTML = `<div class="quiz-result ${correct?'ok':'fail'}">${correct?'✓ 정답입니다!':'✗ 오답입니다.'} ${quiz.exp}</div>`;
+  document.getElementById('quiz-next-row').innerHTML = `<button class="btn primary" onclick="qIdx++;renderQuiz()">${qIdx+1<quizzes.length?'다음 문제':'결과 보기'} ▶</button>`;
 }
 
-const qs=[
-  {q:'인접 행렬에서 graph[a][b]=1의 의미는?',opts:['a번 정점에서 b번 정점까지 거리가 1','a번과 b번이 연결됨','a번의 차수가 1','b번을 방문했음'],ans:1,ex:'graph[a][b]=1은 a와 b가 연결되어 있다는 뜻입니다. 0이면 연결되지 않음.'},
-  {q:'무방향 그래프에서 간선 "3 5"를 저장하는 올바른 코드는?',opts:['graph[3][5]=1;','graph[3][5]=1; graph[5][3]=1;','graph[5][3]=1;','graph[3][5]=graph[5][3]=0;'],ans:1,ex:'무방향 그래프는 양쪽 다 저장: graph[3][5]=1, graph[5][3]=1.'},
-  {q:'DFS에서 방문 처리(visited[now]=1)는 언제 해야 하는가?',opts:['for 반복문 안에서','재귀 호출 전에','함수에 들어오자마자 첫 줄에','함수 끝에'],ans:2,ex:'DFS는 함수 시작 즉시 visited[now]=1을 해야 무한 재귀를 막습니다.'},
-  {q:'BFS에서 방문 처리는 언제 해야 하는가?',opts:['큐에서 꺼낼 때','큐에 넣을 때 즉시','for 반복문이 끝날 때','while 시작할 때'],ans:1,ex:'BFS는 큐에 넣을 때 즉시 visited=1. 꺼낼 때 하면 같은 정점이 여러 번 삽입됩니다.'},
-  {q:'front=3, rear=7일 때 큐의 원소 수는?',opts:['3개','4개','7개','10개'],ans:1,ex:'큐 원소 수 = rear - front = 7-3 = 4개.'},
-  {q:'DFS 후 BFS를 실행하기 전에 반드시 해야 할 것은?',opts:['graph 배열 초기화','visited 초기화 + front=rear=0','n,m 재입력','dfs 재호출'],ans:1,ex:'DFS 후 visited가 모두 1로 채워져 있어 BFS 전에 visited 초기화 + 큐 초기화가 필수.'},
-  {q:'같은 그래프에서 DFS와 BFS의 방문 결과가 다를 수 있는 이유는?',opts:['정점 번호가 달라서','DFS는 깊이 우선, BFS는 너비 우선이라 방문 순서가 다름','visited 배열이 달라서','인접 행렬이 달라서'],ans:1,ex:'DFS=한 방향 끝까지(1 2 4 5 3), BFS=가까운 것부터(1 2 3 4 5). 같은 그래프라도 결과가 다릅니다.'},
-  {q:'인접 행렬로 이웃 정점을 찾는 올바른 코드는?',opts:['if(graph[now]>0)','for(next=1;next<=n;next++) if(graph[now][next]==1)','while(graph[next]++)','adj[now][i]'],ans:1,ex:'for(next=1; next<=n; next++) if(graph[now][next]==1) 패턴이 인접 행렬의 이웃 탐색 핵심입니다.'},
-];
-let qcur=0,qscore=0;
-function rq(){const qa=document.getElementById('qarea');if(qcur>=qs.length){const p=Math.round(qscore/qs.length*100);const m=p>=90?'완벽합니다!':p>=75?'잘 이해하고 있습니다!':p>=50?'조금 더 복습해 보세요.':'개념부터 다시 확인하세요.';qa.innerHTML=`<div class="sc"><div class="scn">${qscore}/${qs.length}</div><div class="scl">정답률 ${p}%</div><div class="scm">${m}</div><button class="btn btnp" style="margin-top:18px;" onclick="qcur=0;qscore=0;rq()">다시 풀기</button></div>`;return;}const q=qs[qcur];const opts=q.opts.map((o,i)=>`<button class="qi" id="qi${i}" onclick="qa(${i})">${o}</button>`).join('');qa.innerHTML=`<div class="qn">문제 ${qcur+1} / ${qs.length}</div><div style="font-size:15px;font-weight:500;margin:10px 0 14px;line-height:1.5;">${q.q}</div><div>${opts}</div><div id="qfb"></div><div style="display:flex;justify-content:flex-end;margin-top:8px;"><button class="btn btnp" id="nb" style="display:none;" onclick="qcur++;rq()">다음 →</button></div>`;}
-function qa(i){const q=qs[qcur];document.querySelectorAll('.qi').forEach(b=>b.disabled=true);if(i===q.ans){qscore++;document.getElementById('qi'+i).classList.add('ok');document.getElementById('qfb').innerHTML=`<div class="qfb ok">정답입니다! ${q.ex}</div>`;}else{document.getElementById('qi'+i).classList.add('ng');document.getElementById('qi'+q.ans).classList.add('ok');document.getElementById('qfb').innerHTML=`<div class="qfb ng">틀렸습니다. ${q.ex}</div>`;}document.getElementById('nb').style.display='block';}
-
-renderBuildStep(DFS_STEPS,0,'dfs-card');
-renderBuildStep(BFS_STEPS,0,'bfs-card');
-setSimMode('dfs');
+// Init
+dfsReset();
+bfsReset();
+renderQuiz();
 </script>

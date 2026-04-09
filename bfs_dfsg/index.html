@@ -1,0 +1,590 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.wrap{padding:1.5rem 0;font-family:var(--font-sans)}
+.tabs{display:flex;gap:4px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1.5rem}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent;transition:all .2s}
+.tab.on{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary)}
+.tab:hover:not(.on){color:var(--color-text-primary)}
+.sec{display:none}.sec.on{display:block}
+.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.card h3{font-size:13px;font-weight:500;margin-bottom:6px;color:var(--color-text-secondary)}
+.card p,.card li{font-size:13px;line-height:1.7;color:var(--color-text-primary)}
+.card ul{list-style:none;padding-left:12px}
+.card li::before{content:"· ";color:var(--color-text-tertiary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.code{font-family:var(--font-mono);font-size:12px;line-height:1.9;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:12px 16px;overflow-x:auto;white-space:pre;margin-bottom:1rem}
+.hl{background:#FAEEDA;border-radius:2px;padding:0 2px}
+.kw{color:#534AB7}.fn{color:#185FA5}.cm{color:var(--color-text-tertiary)}.nu{color:#0F6E56}
+.btn-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+button.btn{font-size:13px;padding:7px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;transition:all .15s}
+button.btn:hover{background:var(--color-background-secondary)}
+button.btn:active{transform:scale(.98)}
+button.btn.pri{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+button.btn:disabled{opacity:.4;cursor:not-allowed}
+.grid-wrap{display:flex;justify-content:center;margin-bottom:1rem;gap:24px;align-items:flex-start;flex-wrap:wrap}
+.grid-tbl{border-collapse:collapse}
+.grid-tbl td{width:36px;height:36px;text-align:center;vertical-align:middle;font-size:12px;font-weight:500;border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .15s;position:relative}
+.cell-0{background:var(--color-background-secondary);color:var(--color-text-tertiary)}
+.cell-1{background:var(--color-background-primary);color:var(--color-text-primary)}
+.cell-cur{background:#EF9F27;color:#412402}
+.cell-vis{background:#378ADD;color:#042C53}
+.cell-queue{background:#FAEEDA;color:#633806}
+.cell-start{background:#1D9E75;color:#04342C}
+.cell-end{background:#E24B4A;color:#501313}
+.cell-dist{background:#B5D4F4;color:#042C53;font-size:11px}
+.info-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 14px;font-size:13px;color:var(--color-text-primary);line-height:1.6;min-height:44px;margin-bottom:1rem}
+.dir-grid{display:grid;grid-template-columns:36px 36px 36px;gap:4px;margin:0 auto;width:116px}
+.dir-cell{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:12px;border-radius:4px;border:0.5px solid var(--color-border-tertiary)}
+.dir-active{background:#E6F1FB;border-color:#185FA5;color:#0C447C;font-weight:500}
+.dir-center{background:var(--color-background-secondary)}
+.queue-row{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.q-chip{font-size:12px;font-weight:500;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:4px;padding:3px 8px}
+.q-chip.cur{background:#FAEEDA;border-color:#BA7517;color:#412402}
+.legend-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-secondary)}
+.legend-dot{width:14px;height:14px;border-radius:3px;border:0.5px solid var(--color-border-tertiary)}
+.mistake-item{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-left:2px solid #E24B4A;border-radius:var(--border-radius-md);padding:10px 14px;margin-bottom:8px}
+.mistake-item h4{font-size:13px;font-weight:500;color:#A32D2D;margin-bottom:4px}
+.mistake-item p{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.quiz-q{font-size:14px;font-weight:500;margin-bottom:12px;line-height:1.6}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.quiz-opt{text-align:left;padding:10px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:13px;cursor:pointer;transition:all .15s;color:var(--color-text-primary)}
+.quiz-opt:hover{background:var(--color-background-secondary)}
+.quiz-opt.ok{background:#EAF3DE;border-color:#639922;color:#173404}
+.quiz-opt.ng{background:#FCEBEB;border-color:#E24B4A;color:#501313}
+.quiz-res{font-size:13px;padding:10px 14px;border-radius:var(--border-radius-md);margin-bottom:12px}
+.quiz-res.ok{background:#EAF3DE;color:#173404}
+.quiz-res.ng{background:#FCEBEB;color:#501313}
+.prog{height:4px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:1rem}
+.prog-fill{height:100%;background:#1D9E75;border-radius:2px;transition:width .3s}
+.step-label{font-size:11px;color:var(--color-text-secondary);margin-bottom:4px}
+</style>
+
+<div class="wrap">
+<h2 style="position:absolute;opacity:0;pointer-events:none">격자 BFS/DFS 대화형 학습</h2>
+
+<div class="tabs">
+  <button class="tab on" onclick="ST('개념')">① 개념</button>
+  <button class="tab" onclick="ST('입력')">② 격자 입력</button>
+  <button class="tab" onclick="ST('dfs')">③ DFS 탐색</button>
+  <button class="tab" onclick="ST('bfs')">④ BFS 탐색</button>
+  <button class="tab" onclick="ST('dist')">⑤ 최단거리</button>
+  <button class="tab" onclick="ST('비교')">⑥ 비교</button>
+  <button class="tab" onclick="ST('퀴즈')">⑦ 퀴즈</button>
+</div>
+
+<!-- ① 개념 -->
+<div class="sec on" id="tab-개념">
+  <div class="two">
+    <div class="card"><h3>격자 = 그래프</h3><p>각 칸을 정점으로, 상하좌우 이동 가능하면 간선이 있다고 생각합니다. 2차원 배열 위에서 BFS/DFS를 수행합니다.</p></div>
+    <div class="card"><h3>대표 문제 유형</h3><ul><li>미로 길 찾기</li><li>섬/영역 개수 세기</li><li>최단거리 구하기</li><li>도달 가능한 칸 찾기</li></ul></div>
+  </div>
+  <div class="card" style="margin-bottom:1rem">
+    <h3>방향 배열 — 상하좌우 이동의 핵심</h3>
+    <p style="margin-bottom:12px">현재 위치 (x, y)에서 네 방향을 이렇게 계산합니다: <code style="font-family:var(--font-mono);font-size:12px">nx = x + dx[i], ny = y + dy[i]</code></p>
+    <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+      <div class="dir-grid">
+        <div class="dir-cell"></div><div class="dir-cell dir-active">위<br><span style="font-size:10px">(x-1,y)</span></div><div class="dir-cell"></div>
+        <div class="dir-cell dir-active">좌<br><span style="font-size:10px">(x,y-1)</span></div><div class="dir-cell dir-center" style="font-size:11px">현재<br>(x,y)</div><div class="dir-cell dir-active">우<br><span style="font-size:10px">(x,y+1)</span></div>
+        <div class="dir-cell"></div><div class="dir-cell dir-active">아래<br><span style="font-size:10px">(x+1,y)</span></div><div class="dir-cell"></div>
+      </div>
+      <div class="code" style="margin:0">dx[4] = {<span class="nu">-1</span>, <span class="nu">1</span>, <span class="nu">0</span>, <span class="nu">0</span>};
+dy[4] = {<span class="nu">0</span>, <span class="nu">0</span>, <span class="nu">-1</span>, <span class="nu">1</span>};</div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>이동 전 반드시 확인할 3가지</h3>
+    <div class="code" style="margin:0"><span class="kw">if</span> (nx &lt; <span class="nu">0</span> || ny &lt; <span class="nu">0</span> || nx &gt;= n || ny &gt;= m) <span class="kw">continue</span>; <span class="cm">// ① 범위 초과</span>
+<span class="kw">if</span> (map[nx][ny] == <span class="nu">'0'</span>) <span class="kw">continue</span>;                       <span class="cm">// ② 벽</span>
+<span class="kw">if</span> (visited[nx][ny]) <span class="kw">continue</span>;                             <span class="cm">// ③ 이미 방문</span></div>
+  </div>
+</div>
+
+<!-- ② 격자 입력 -->
+<div class="sec" id="tab-입력">
+  <div class="two">
+    <div class="card"><h3>문자열형 (붙어서 입력)</h3><p style="margin-bottom:6px">예: <code style="font-family:var(--font-mono);font-size:12px">11010</code></p><p><code style="font-family:var(--font-mono);font-size:12px">char map[MAX][MAX]</code>로 저장.<br>비교할 때 반드시 <code style="font-family:var(--font-mono);font-size:12px">'1'</code>, <code style="font-family:var(--font-mono);font-size:12px">'0'</code> (문자) 사용.</p></div>
+    <div class="card"><h3>숫자형 (띄어쓰기로 입력)</h3><p style="margin-bottom:6px">예: <code style="font-family:var(--font-mono);font-size:12px">1 1 0 1 0</code></p><p><code style="font-family:var(--font-mono);font-size:12px">int map[MAX][MAX]</code>로 저장.<br>비교할 때 숫자 <code style="font-family:var(--font-mono);font-size:12px">1</code>, <code style="font-family:var(--font-mono);font-size:12px">0</code> 사용.</p></div>
+  </div>
+  <div class="code"><span class="cm">// 문자열형 격자 입력</span>
+<span class="kw">char</span> map[MAX][MAX];
+<span class="kw">int</span> visited[MAX][MAX];
+<span class="kw">int</span> n, m;
+
+scanf(<span class="nu">"%d %d"</span>, &amp;n, &amp;m);
+
+<span class="kw">for</span> (<span class="kw">int</span> i = <span class="nu">0</span>; i &lt; n; i++) {
+    scanf(<span class="nu">"%s"</span>, map[i]);  <span class="cm">// 한 줄 통째로</span>
+}</div>
+  <div class="card">
+    <h3>예제 격자 시각화 — 클릭해서 0/1 바꾸기</h3>
+    <p style="margin-bottom:12px;font-size:12px;color:var(--color-text-secondary)">칸을 클릭해 0(벽)/1(길)을 직접 편집하고 저장되는 배열을 확인하세요.</p>
+    <div class="grid-wrap">
+      <table class="grid-tbl" id="edit-grid"></table>
+      <div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:6px">map[][] 배열 값</div>
+        <div class="code" style="margin:0;min-width:160px" id="arr-display"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ DFS -->
+<div class="sec" id="tab-dfs">
+  <div class="legend-row">
+    <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>시작</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#EF9F27"></span>현재</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>방문완료</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary)"></span>미방문 길</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--color-background-secondary)"></span>벽(0)</span>
+  </div>
+  <div class="info-box" id="dfs-info">시작 버튼을 누르세요.</div>
+  <div class="step-label">콜 스택:</div>
+  <div class="queue-row" id="dfs-stack" style="margin-bottom:1rem"></div>
+  <div class="btn-row">
+    <button class="btn pri" onclick="dfsReset()">처음부터</button>
+    <button class="btn" id="dfs-nb" onclick="dfsStep()">다음 단계 ▶</button>
+  </div>
+  <div class="grid-wrap">
+    <table class="grid-tbl" id="dfs-grid"></table>
+    <div>
+      <div class="step-label">방문 순서:</div>
+      <div id="dfs-order" style="display:flex;flex-wrap:wrap;gap:4px;max-width:200px"></div>
+    </div>
+  </div>
+  <div class="code" id="dfs-code"></div>
+</div>
+
+<!-- ④ BFS -->
+<div class="sec" id="tab-bfs">
+  <div class="legend-row">
+    <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>시작</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#EF9F27"></span>현재</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#378ADD"></span>방문완료</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#FAEEDA;border-color:#BA7517"></span>큐 대기중</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--color-background-secondary)"></span>벽(0)</span>
+  </div>
+  <div class="info-box" id="bfs-info">시작 버튼을 누르세요.</div>
+  <div class="step-label">큐(Queue):</div>
+  <div class="queue-row" id="bfs-queue" style="margin-bottom:1rem"></div>
+  <div class="btn-row">
+    <button class="btn pri" onclick="bfsReset()">처음부터</button>
+    <button class="btn" id="bfs-nb" onclick="bfsStep()">다음 단계 ▶</button>
+  </div>
+  <div class="grid-wrap">
+    <table class="grid-tbl" id="bfs-grid"></table>
+    <div>
+      <div class="step-label">방문 순서:</div>
+      <div id="bfs-order" style="display:flex;flex-wrap:wrap;gap:4px;max-width:200px"></div>
+    </div>
+  </div>
+  <div class="code" id="bfs-code"></div>
+</div>
+
+<!-- ⑤ 최단거리 -->
+<div class="sec" id="tab-dist">
+  <div class="card" style="margin-bottom:1rem">
+    <h3>BFS + dist[ ][ ] 배열로 최단거리 구하기</h3>
+    <p>각 칸까지의 거리를 dist 배열에 저장. 다음 칸으로 이동할 때 <code style="font-family:var(--font-mono);font-size:12px">dist[nx][ny] = dist[x][y] + 1</code></p>
+  </div>
+  <div class="legend-row">
+    <span class="legend-item"><span class="legend-dot" style="background:#1D9E75"></span>시작(거리 0)</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#E24B4A"></span>도착점</span>
+    <span class="legend-item"><span class="legend-dot" style="background:#B5D4F4;border-color:#185FA5"></span>거리값</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--color-background-secondary)"></span>벽(0)</span>
+  </div>
+  <div class="info-box" id="dist-info">시작 버튼을 누르세요.</div>
+  <div class="btn-row">
+    <button class="btn pri" onclick="distReset()">처음부터</button>
+    <button class="btn" id="dist-nb" onclick="distStep()">다음 단계 ▶</button>
+  </div>
+  <div class="grid-wrap">
+    <table class="grid-tbl" id="dist-grid"></table>
+    <div style="max-width:220px">
+      <div class="step-label">dist[ ][ ] 배열:</div>
+      <div class="code" style="margin:0;font-size:11px" id="dist-arr"></div>
+    </div>
+  </div>
+  <div class="code" id="dist-code"></div>
+</div>
+
+<!-- ⑥ 비교 -->
+<div class="sec" id="tab-비교">
+  <div class="two" style="margin-bottom:1rem">
+    <div class="card" style="border-left:2px solid #185FA5;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0">
+      <h3 style="color:#185FA5">DFS — 깊이 우선</h3>
+      <ul><li>재귀 함수 사용</li><li>한 방향으로 끝까지 파고듦</li><li>방문 즉시 재귀 호출</li><li>영역 개수 세기에 자주 사용</li><li>스택(콜 스택) 사용</li></ul>
+    </div>
+    <div class="card" style="border-left:2px solid #0F6E56;border-radius:0 var(--border-radius-lg) var(--border-radius-lg) 0">
+      <h3 style="color:#0F6E56">BFS — 너비 우선</h3>
+      <ul><li>큐(배열) 사용</li><li>가까운 칸부터 넓게 탐색</li><li>큐 삽입 시 방문 처리</li><li>최단거리 구할 때 사용</li><li>dist[][]와 조합 가능</li></ul>
+    </div>
+  </div>
+  <div style="margin-bottom:1rem">
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:8px">자주 하는 실수</div>
+    <div class="mistake-item"><h4>범위 검사 누락</h4><p>nx, ny가 배열 범위를 벗어나면 런타임 에러 발생. 반드시 <code style="font-family:var(--font-mono);font-size:11px">nx&lt;0||ny&lt;0||nx&gt;=n||ny&gt;=m</code> 체크.</p></div>
+    <div class="mistake-item"><h4>문자 격자에서 숫자로 비교</h4><p><code style="font-family:var(--font-mono);font-size:11px">map[x][y]==1</code>(틀림) → <code style="font-family:var(--font-mono);font-size:11px">map[x][y]=='1'</code>(맞음). char 배열은 문자로 비교.</p></div>
+    <div class="mistake-item"><h4>BFS에서 큐 삽입 시 방문 처리 안 함</h4><p>꺼낼 때 처리하면 같은 칸이 큐에 여러 번 삽입되어 중복 방문 발생.</p></div>
+    <div class="mistake-item"><h4>visited[][] 초기화 누락</h4><p>전역 배열은 자동으로 0이지만, 여러 번 실행하는 경우 반드시 초기화 확인.</p></div>
+  </div>
+</div>
+
+<!-- ⑦ 퀴즈 -->
+<div class="sec" id="tab-퀴즈">
+  <div class="prog"><div class="prog-fill" id="qprog" style="width:0%"></div></div>
+  <div id="quiz-body"></div>
+</div>
+
+</div>
+
+<script>
+const MAP = ["11010","11110","00110","11101"];
+const NR=4,NC=5;
+const dx=[-1,1,0,0],dy=[0,0,-1,1];
+
+function cell(r,c,map2d){
+  const v=map2d[r][c];
+  return v==='0'||v===0?'cell-0':'cell-1';
+}
+
+function ST(name){
+  document.querySelectorAll('.tab').forEach((t,i)=>{
+    const ns=['개념','입력','dfs','bfs','dist','비교','퀴즈'];
+    t.classList.toggle('on',ns[i]===name);
+  });
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.getElementById('tab-'+name).classList.add('on');
+}
+
+function makeGrid(tbId,map2d,cellClass){
+  const tb=document.getElementById(tbId);
+  if(!tb)return;
+  tb.innerHTML='';
+  for(let r=0;r<NR;r++){
+    const tr=document.createElement('tr');
+    for(let c=0;c<NC;c++){
+      const td=document.createElement('td');
+      td.id=tbId+'_'+r+'_'+c;
+      td.className=cellClass(r,c);
+      td.textContent=map2d[r][c];
+      tr.appendChild(td);
+    }
+    tb.appendChild(tr);
+  }
+}
+
+function setCell(tbId,r,c,cls,txt){
+  const td=document.getElementById(tbId+'_'+r+'_'+c);
+  if(!td)return;
+  td.className=cls;
+  if(txt!==undefined)td.textContent=txt;
+}
+
+const editMap=MAP.map(row=>row.split(''));
+function buildEditGrid(){
+  const tb=document.getElementById('edit-grid');
+  if(!tb)return;
+  tb.innerHTML='';
+  for(let r=0;r<NR;r++){
+    const tr=document.createElement('tr');
+    for(let c=0;c<NC;c++){
+      const td=document.createElement('td');
+      td.id='eg_'+r+'_'+c;
+      td.className=editMap[r][c]==='1'?'cell-1':'cell-0';
+      td.textContent=editMap[r][c];
+      td.onclick=()=>{
+        editMap[r][c]=editMap[r][c]==='1'?'0':'1';
+        td.className=editMap[r][c]==='1'?'cell-1':'cell-0';
+        td.textContent=editMap[r][c];
+        updateArrDisplay();
+      };
+      tr.appendChild(td);
+    }
+    tb.appendChild(tr);
+  }
+  updateArrDisplay();
+}
+function updateArrDisplay(){
+  const d=document.getElementById('arr-display');
+  if(!d)return;
+  d.innerHTML=editMap.map((row,i)=>`map[${i}] = "${row.join('')}"`).join('\n');
+}
+
+let dfsSteps=[],dfsIdx=0;
+function buildDfsSteps(){
+  const steps=[];
+  const vis=Array.from({length:NR},()=>Array(NC).fill(false));
+  const stk=[];
+  function dfs(x,y){
+    vis[x][y]=true;
+    stk.push([x,y]);
+    steps.push({type:'visit',x,y,vis:vis.map(r=>r.slice()),stk:stk.map(p=>[...p]),info:`(${x},${y}) 방문 처리 및 출력`});
+    for(let i=0;i<4;i++){
+      const nx=x+dx[i],ny=y+dy[i];
+      if(nx<0||ny<0||nx>=NR||ny>=NC)continue;
+      if(MAP[nx][ny]==='0')continue;
+      if(vis[nx][ny])continue;
+      steps.push({type:'check',x,y,nx,ny,vis:vis.map(r=>r.slice()),stk:stk.map(p=>[...p]),info:`graph[${nx}][${ny}]='1', visited=0 → dfs(${nx},${ny}) 재귀 호출`});
+      dfs(nx,ny);
+    }
+    stk.pop();
+    steps.push({type:'ret',x,y,vis:vis.map(r=>r.slice()),stk:stk.map(p=>[...p]),info:`(${x},${y}) 에서 돌아옴`});
+  }
+  if(MAP[0][0]==='1')dfs(0,0);
+  return steps;
+}
+
+function dfsReset(){
+  dfsSteps=buildDfsSteps();
+  dfsIdx=0;
+  makeGrid('dfs-grid',MAP.map(r=>r.split('')),(r,c)=>MAP[r][c]==='0'?'cell-0':'cell-1');
+  setCell('dfs-grid',0,0,'cell-start','S');
+  document.getElementById('dfs-info').textContent='시작 버튼을 누르세요.';
+  document.getElementById('dfs-stack').innerHTML='';
+  document.getElementById('dfs-order').innerHTML='';
+  document.getElementById('dfs-nb').disabled=false;
+  updateDfsCode(-1);
+}
+
+function dfsStep(){
+  if(dfsIdx>=dfsSteps.length){document.getElementById('dfs-nb').disabled=true;return;}
+  const s=dfsSteps[dfsIdx++];
+  for(let r=0;r<NR;r++) for(let c=0;c<NC;c++){
+    if(MAP[r][c]==='0'){setCell('dfs-grid',r,c,'cell-0','0');continue;}
+    if(s.vis[r][c]) setCell('dfs-grid',r,c,'cell-vis','1');
+    else setCell('dfs-grid',r,c,'cell-1','1');
+  }
+  if(s.type==='visit'){
+    setCell('dfs-grid',s.x,s.y,'cell-cur',`${s.x},${s.y}`);
+    const ord=document.getElementById('dfs-order');
+    const chip=document.createElement('span');
+    chip.className='q-chip';chip.textContent=`(${s.x},${s.y})`;
+    ord.appendChild(chip);
+  }
+  setCell('dfs-grid',0,0,s.vis[0][0]?'cell-vis':'cell-start','S');
+  document.getElementById('dfs-stack').innerHTML=s.stk.map((p,i)=>`<span class="q-chip${i===s.stk.length-1?' cur':''}">(${p[0]},${p[1]})</span>`).join('');
+  document.getElementById('dfs-info').textContent=s.info;
+  updateDfsCode(s.type);
+  if(dfsIdx>=dfsSteps.length)document.getElementById('dfs-nb').disabled=true;
+}
+
+function updateDfsCode(t){
+  const L=[
+    `<span class="kw">void</span> <span class="fn">dfs</span>(<span class="kw">int</span> x, <span class="kw">int</span> y) {`,
+    `    visited[x][y] = <span class="nu">1</span>;`,
+    `    printf(<span class="nu">"(%d,%d) "</span>, x, y);`,
+    `    <span class="kw">for</span> (<span class="kw">int</span> i = <span class="nu">0</span>; i &lt; <span class="nu">4</span>; i++) {`,
+    `        <span class="kw">int</span> nx = x + dx[i], ny = y + dy[i];`,
+    `        <span class="kw">if</span> (범위초과 || 벽 || 방문) <span class="kw">continue</span>;`,
+    `        <span class="fn">dfs</span>(nx, ny);`,
+    `    }`,
+    `}`
+  ];
+  let hl=-1;
+  if(t==='visit')hl=1;
+  else if(t==='check')hl=6;
+  else if(t==='ret')hl=8;
+  document.getElementById('dfs-code').innerHTML=L.map((l,i)=>i===hl?`<span class="hl">${l}</span>`:l).join('\n');
+}
+
+let bfsSteps=[],bfsIdx=0;
+function buildBfsSteps(){
+  const steps=[];
+  const vis=Array.from({length:NR},()=>Array(NC).fill(false));
+  const q=[[0,0]];
+  vis[0][0]=true;
+  const inq=Array.from({length:NR},()=>Array(NC).fill(false));
+  inq[0][0]=true;
+  steps.push({type:'enq',x:0,y:0,vis:vis.map(r=>r.slice()),q:q.map(p=>[...p]),inq:inq.map(r=>r.slice()),info:'시작점 (0,0)을 큐에 삽입 + 방문 처리'});
+  let fi=0;
+  while(fi<q.length){
+    const [cx,cy]=q[fi++];
+    steps.push({type:'deq',x:cx,y:cy,vis:vis.map(r=>r.slice()),q:q.slice(fi).map(p=>[...p]),inq:inq.map(r=>r.slice()),info:`큐에서 (${cx},${cy}) 꺼내서 출력`});
+    for(let i=0;i<4;i++){
+      const nx=cx+dx[i],ny=cy+dy[i];
+      if(nx<0||ny<0||nx>=NR||ny>=NC)continue;
+      if(MAP[nx][ny]==='0')continue;
+      if(vis[nx][ny])continue;
+      vis[nx][ny]=true;inq[nx][ny]=true;
+      q.push([nx,ny]);
+      steps.push({type:'enq',x:nx,y:ny,vis:vis.map(r=>r.slice()),q:q.slice(fi).map(p=>[...p]),inq:inq.map(r=>r.slice()),info:`(${nx},${ny}) 큐 삽입 + 방문 처리`});
+    }
+  }
+  return steps;
+}
+
+function bfsReset(){
+  bfsSteps=buildBfsSteps();
+  bfsIdx=0;
+  makeGrid('bfs-grid',MAP.map(r=>r.split('')),(r,c)=>MAP[r][c]==='0'?'cell-0':'cell-1');
+  setCell('bfs-grid',0,0,'cell-start','S');
+  document.getElementById('bfs-info').textContent='시작 버튼을 누르세요.';
+  document.getElementById('bfs-queue').innerHTML='';
+  document.getElementById('bfs-order').innerHTML='';
+  document.getElementById('bfs-nb').disabled=false;
+  updateBfsCode(-1);
+}
+
+function bfsStep(){
+  if(bfsIdx>=bfsSteps.length){document.getElementById('bfs-nb').disabled=true;return;}
+  const s=bfsSteps[bfsIdx++];
+  for(let r=0;r<NR;r++) for(let c=0;c<NC;c++){
+    if(MAP[r][c]==='0'){setCell('bfs-grid',r,c,'cell-0','0');continue;}
+    if(s.vis[r][c]&&!s.inq[r][c]) setCell('bfs-grid',r,c,'cell-vis','1');
+    else if(s.inq[r][c]&&!s.vis[r][c]) setCell('bfs-grid',r,c,'cell-queue','Q');
+    else if(s.vis[r][c]) setCell('bfs-grid',r,c,'cell-vis','1');
+    else setCell('bfs-grid',r,c,'cell-1','1');
+  }
+  if(s.type==='deq') setCell('bfs-grid',s.x,s.y,'cell-cur',`${s.x},${s.y}`);
+  setCell('bfs-grid',0,0,s.vis[0][0]?'cell-vis':'cell-start','S');
+  if(s.type==='deq'){
+    const ord=document.getElementById('bfs-order');
+    const chip=document.createElement('span');
+    chip.className='q-chip';chip.textContent=`(${s.x},${s.y})`;
+    ord.appendChild(chip);
+  }
+  document.getElementById('bfs-queue').innerHTML=s.q.map((p,i)=>`<span class="q-chip${i===0?' cur':''}">(${p[0]},${p[1]})</span>`).join('');
+  document.getElementById('bfs-info').textContent=s.info;
+  updateBfsCode(s.type);
+  if(bfsIdx>=bfsSteps.length)document.getElementById('bfs-nb').disabled=true;
+}
+
+function updateBfsCode(t){
+  const L=[
+    `<span class="kw">void</span> <span class="fn">bfs</span>(<span class="kw">int</span> sx, <span class="kw">int</span> sy) {`,
+    `    qx[rear]=sx; qy[rear]=sy; rear++;`,
+    `    visited[sx][sy] = <span class="nu">1</span>;`,
+    `    <span class="kw">while</span> (front &lt; rear) {`,
+    `        <span class="kw">int</span> x=qx[front], y=qy[front]; front++;`,
+    `        printf(<span class="nu">"(%d,%d) "</span>, x, y);`,
+    `        <span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">0</span>; i&lt;<span class="nu">4</span>; i++) {`,
+    `            <span class="kw">int</span> nx=x+dx[i], ny=y+dy[i];`,
+    `            <span class="kw">if</span> (범위||벽||방문) <span class="kw">continue</span>;`,
+    `            visited[nx][ny]=<span class="nu">1</span>; qx[rear]=nx; qy[rear]=ny; rear++;`,
+    `        }`,
+    `    }`,
+    `}`
+  ];
+  let hl=-1;
+  if(t==='enq'&&bfsIdx===1)hl=1;
+  else if(t==='deq')hl=4;
+  else if(t==='enq')hl=9;
+  document.getElementById('bfs-code').innerHTML=L.map((l,i)=>i===hl?`<span class="hl">${l}</span>`:l).join('\n');
+}
+
+let distSteps=[],distIdx=0;
+function buildDistSteps(){
+  const steps=[];
+  const vis=Array.from({length:NR},()=>Array(NC).fill(false));
+  const dist=Array.from({length:NR},()=>Array(NC).fill(-1));
+  const q=[[0,0]];
+  vis[0][0]=true;dist[0][0]=0;
+  steps.push({vis:vis.map(r=>r.slice()),dist:dist.map(r=>r.slice()),cur:null,info:'시작점 (0,0) 삽입, dist[0][0]=0'});
+  let fi=0;
+  while(fi<q.length){
+    const [cx,cy]=q[fi++];
+    steps.push({vis:vis.map(r=>r.slice()),dist:dist.map(r=>r.slice()),cur:[cx,cy],info:`(${cx},${cy}) 처리, 거리=${dist[cx][cy]}`});
+    for(let i=0;i<4;i++){
+      const nx=cx+dx[i],ny=cy+dy[i];
+      if(nx<0||ny<0||nx>=NR||ny>=NC)continue;
+      if(MAP[nx][ny]==='0')continue;
+      if(vis[nx][ny])continue;
+      vis[nx][ny]=true;dist[nx][ny]=dist[cx][cy]+1;
+      q.push([nx,ny]);
+      steps.push({vis:vis.map(r=>r.slice()),dist:dist.map(r=>r.slice()),cur:[cx,cy],info:`(${nx},${ny}) 발견, dist=${dist[cx][cy]+1}`});
+    }
+  }
+  return steps;
+}
+
+function distReset(){
+  distSteps=buildDistSteps();
+  distIdx=0;
+  makeGrid('dist-grid',MAP.map(r=>r.split('')),(r,c)=>MAP[r][c]==='0'?'cell-0':'cell-1');
+  setCell('dist-grid',0,0,'cell-start','0');
+  setCell('dist-grid',NR-1,NC-1,'cell-end','?');
+  document.getElementById('dist-info').textContent='시작 버튼을 누르세요.';
+  document.getElementById('dist-nb').disabled=false;
+  updateDistArr(Array.from({length:NR},()=>Array(NC).fill(-1)));
+  updateDistCode(-1);
+}
+
+function distStep(){
+  if(distIdx>=distSteps.length){document.getElementById('dist-nb').disabled=true;return;}
+  const s=distSteps[distIdx++];
+  for(let r=0;r<NR;r++) for(let c=0;c<NC;c++){
+    if(MAP[r][c]==='0'){setCell('dist-grid',r,c,'cell-0','');continue;}
+    if(s.dist[r][c]>=0) setCell('dist-grid',r,c,'cell-dist',String(s.dist[r][c]));
+    else setCell('dist-grid',r,c,'cell-1','');
+  }
+  setCell('dist-grid',0,0,'cell-start','0');
+  if(s.cur){
+    const [cx,cy]=s.cur;
+    setCell('dist-grid',cx,cy,'cell-cur',String(s.dist[cx][cy]));
+  }
+  const fd=s.dist[NR-1][NC-1];
+  setCell('dist-grid',NR-1,NC-1,fd>=0?'cell-end':'cell-end',fd>=0?String(fd):'?');
+  document.getElementById('dist-info').textContent=s.info+(distIdx>=distSteps.length?`  →  도착점 거리: ${s.dist[NR-1][NC-1]}`:'');
+  updateDistArr(s.dist);
+  updateDistCode(s.cur?'proc':'enq');
+  if(distIdx>=distSteps.length)document.getElementById('dist-nb').disabled=true;
+}
+
+function updateDistArr(d){
+  const el=document.getElementById('dist-arr');
+  if(!el)return;
+  el.innerHTML=d.map((row,i)=>`[${i}]: ${row.map(v=>v<0?'-':String(v)).join(' ')}`).join('\n');
+}
+
+function updateDistCode(t){
+  const L=[
+    `dist[sx][sy] = <span class="nu">0</span>; visited[sx][sy] = <span class="nu">1</span>;`,
+    `<span class="cm">// 큐에서 꺼내서 처리</span>`,
+    `<span class="kw">for</span> (<span class="kw">int</span> i=<span class="nu">0</span>; i&lt;<span class="nu">4</span>; i++) {`,
+    `    <span class="kw">if</span> (범위||벽||방문) <span class="kw">continue</span>;`,
+    `    visited[nx][ny] = <span class="nu">1</span>;`,
+    `    dist[nx][ny] = dist[x][y] + <span class="nu">1</span>;  <span class="cm">// 핵심!</span>`,
+    `    큐에 (nx, ny) 삽입;`,
+    `}`
+  ];
+  let hl=-1;
+  if(t==='enq')hl=5;
+  else if(t==='proc')hl=1;
+  document.getElementById('dist-code').innerHTML=L.map((l,i)=>i===hl?`<span class="hl">${l}</span>`:l).join('\n');
+}
+
+const QZ=[
+  {q:'격자에서 상하좌우 이동을 처리하기 위해 필요한 것은?',opts:['인접 행렬 graph[][]','방향 배열 dx[], dy[]','큐 배열 qx[], qy[]','visited 배열'],ans:1,exp:'dx[], dy[]로 4방향을 계산합니다: nx=x+dx[i], ny=y+dy[i]'},
+  {q:'char map[][]으로 저장된 격자에서 길을 판별하는 올바른 코드는?',opts:["map[x][y] == 1","map[x][y] == '1'","map[x][y] == true","map[x][y] == 'one'"],ans:1,exp:"char 배열은 문자 비교. 숫자 1이 아니라 문자 '1'을 써야 합니다."},
+  {q:'이동 전 가장 먼저 확인해야 할 것은?',opts:['방문 여부','벽인지 여부','배열 범위 초과 여부','map 값이 1인지'],ans:2,exp:'범위를 먼저 체크하지 않으면 배열 인덱스 에러 발생. if(nx<0||ny<0||nx>=n||ny>=m) continue가 첫 번째.'},
+  {q:'BFS에서 visited 처리를 언제 해야 중복 삽입을 막을 수 있나요?',opts:['큐에서 꺼낼 때','printf 출력 직후','큐에 삽입할 때','for 루프 마지막에'],ans:2,exp:'삽입할 때 바로 visited=1을 해야 같은 칸이 큐에 여러 번 들어가지 않습니다.'},
+  {q:'최단거리를 구할 때 어떤 탐색과 어떤 배열을 함께 써야 하나요?',opts:['DFS + dist[][]','BFS + dist[][]','DFS + stack[]','BFS + visited[]만'],ans:1,exp:'BFS는 가까운 칸부터 탐색하므로 처음 방문 = 최단거리. dist[nx][ny]=dist[x][y]+1로 기록합니다.'},
+  {q:'격자 DFS 구현에서 틀린 것은?',opts:['방향 배열 dx,dy 사용','범위 초과 시 continue','재귀 함수로 구현','큐에 좌표를 삽입'],ans:3,exp:'큐에 삽입하는 것은 BFS입니다. DFS는 재귀 함수(또는 스택)를 사용합니다.'},
+];
+let qi=0,qs=0;
+function renderQ(){
+  document.getElementById('qprog').style.width=(qi/QZ.length*100)+'%';
+  const body=document.getElementById('quiz-body');
+  if(qi>=QZ.length){
+    body.innerHTML=`<div class="card" style="text-align:center;padding:2rem"><p style="font-size:22px;font-weight:500;margin-bottom:8px">${qs}/${QZ.length}</p><p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:1rem">${qs===QZ.length?'완벽합니다!':qs>=4?'잘 했어요! 틀린 부분을 복습해보세요.':'다시 한 번 도전해보세요.'}</p><button class="btn pri" onclick="qi=0;qs=0;renderQ()">다시 풀기</button></div>`;
+    document.getElementById('qprog').style.width='100%';
+    return;
+  }
+  const q=QZ[qi];
+  body.innerHTML=`<div class="quiz-q">Q${qi+1}. ${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="ansQ(${i})">${o}</button>`).join('')}</div><div id="qr"></div><div id="qn"></div>`;
+}
+function ansQ(i){
+  const q=QZ[qi];
+  document.querySelectorAll('.quiz-opt').forEach((b,j)=>{b.disabled=true;if(j===q.ans)b.classList.add('ok');else if(j===i)b.classList.add('ng');});
+  if(i===q.ans)qs++;
+  document.getElementById('qr').innerHTML=`<div class="quiz-res ${i===q.ans?'ok':'ng'}">${i===q.ans?'정답입니다!':'오답입니다.'} ${q.exp}</div>`;
+  document.getElementById('qn').innerHTML=`<button class="btn pri" onclick="qi++;renderQ()">${qi+1<QZ.length?'다음 문제':'결과 보기'} ▶</button>`;
+}
+
+buildEditGrid();
+dfsReset();
+bfsReset();
+distReset();
+renderQ();
+</script>
