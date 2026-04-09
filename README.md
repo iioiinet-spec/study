@@ -51,7 +51,10 @@ bfs와 dfs 에서 입력 배열 넣기 방법
 
 dfsc  문제 포함해서 올림
 
+19회차 알고리즘
 07. 인접 행렬로 DFS_BFS 코드 짜기
 bfs_dfsc
 08. 격자 입력으로 BFS_DFS 코드 짜기
 bfs_dfsg
+09. 인접 리스트로 DFS_BFS 바꾸기
+bfs_dfsl
