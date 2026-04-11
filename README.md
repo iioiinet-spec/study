@@ -58,3 +58,8 @@ bfs_dfsc
 bfs_dfsg
 09. 인접 리스트로 DFS_BFS 바꾸기
 bfs_dfsl
+
+
+배열패턴
+arr
+arr2
