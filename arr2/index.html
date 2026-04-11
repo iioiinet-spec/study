@@ -1,0 +1,531 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#0d0d1a;--bg1:#13132a;--bg2:#1c1c38;
+  --p:#7f77dd;--p2:#5dcaa5;--p3:#ef9f27;--p4:#d85a30;
+  --dim:rgba(255,255,255,.05);--brd:rgba(255,255,255,.09);
+  --txt:rgba(255,255,255,.9);--mut:rgba(255,255,255,.45);
+}
+body{background:var(--bg0);font-family:'Noto Sans KR',sans-serif;color:var(--txt);overflow-x:hidden}
+/* hero */
+.hero{padding:3rem 1.5rem 1.5rem;text-align:center;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(127,119,221,.15) 0%,transparent 70%)}
+.htag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--p);border:.5px solid rgba(127,119,221,.4);padding:4px 12px;border-radius:20px;margin-bottom:1.2rem;letter-spacing:.08em}
+.hero h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;line-height:1.2;margin-bottom:.6rem;background:linear-gradient(135deg,#fff 40%,var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--mut);font-size:14px;margin-bottom:1.8rem}
+.pills{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding-bottom:1.8rem}
+.pill{font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 14px;border-radius:20px;border:.5px solid var(--brd);background:var(--dim);color:var(--mut);cursor:pointer;transition:all .2s;user-select:none}
+.pill:hover,.pill.on{border-color:var(--p);color:var(--p);background:rgba(127,119,221,.1)}
+/* grid */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--brd);border-top:1px solid var(--brd)}
+.ccard{background:var(--bg0);padding:1.6rem;cursor:pointer;transition:background .18s;position:relative}
+.ccard:hover{background:var(--bg1)}
+.cnum{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);margin-bottom:.6rem}
+.ctitle{font-size:15px;font-weight:700;margin-bottom:.4rem;display:flex;align-items:center;gap:8px}
+.cbadge{font-size:10px;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:3px;font-weight:400}
+.cdesc{font-size:12px;color:var(--mut);line-height:1.6;margin-bottom:.9rem}
+.cprev{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.7;background:rgba(255,255,255,.04);border:.5px solid var(--brd);border-radius:6px;padding:9px 11px;color:#a0a0c0;overflow:hidden;max-height:70px;position:relative}
+.cprev::after{content:'';position:absolute;bottom:0;left:0;right:0;height:26px;background:linear-gradient(transparent,var(--bg0))}
+.ccard:hover .cprev::after{background:linear-gradient(transparent,var(--bg1))}
+.carr{position:absolute;top:1.6rem;right:1.6rem;color:var(--mut);font-size:15px;transition:transform .2s,color .2s}
+.ccard:hover .carr{transform:translateX(3px);color:var(--p)}
+/* modal */
+.mover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;overflow-y:auto;padding:1.5rem 1rem}
+.mover.open{display:flex;align-items:flex-start;justify-content:center}
+.modal{background:var(--bg1);border:.5px solid rgba(127,119,221,.3);border-radius:14px;width:100%;max-width:740px;overflow:hidden;animation:su .22s ease}
+@keyframes su{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mhead{padding:1.3rem 1.5rem;border-bottom:.5px solid var(--brd);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.mtitle{font-size:17px;font-weight:700}
+.msub{font-size:12px;color:var(--mut);margin-top:4px}
+.mclose{background:var(--dim);border:.5px solid var(--brd);color:var(--mut);width:30px;height:30px;border-radius:6px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mclose:hover{color:var(--txt)}
+.mbody{padding:1.5rem}
+/* tabs */
+.tabs{display:flex;border-bottom:.5px solid var(--brd);margin-bottom:1.4rem}
+.tab{font-family:'JetBrains Mono',monospace;font-size:11px;padding:8px 16px;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;user-select:none}
+.tab.on{color:var(--p);border-color:var(--p)}
+.tab:hover{color:var(--txt)}
+.tpanel{display:none}.tpanel.on{display:block}
+/* code */
+.cblock{background:var(--bg2);border:.5px solid var(--brd);border-radius:8px;overflow:hidden;margin-bottom:1.2rem}
+.chead{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-bottom:.5px solid var(--brd);background:rgba(255,255,255,.03)}
+.clang{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut)}
+.cbtn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;transition:all .15s}
+.cbtn:hover{background:var(--dim);color:var(--txt)}
+pre{padding:1.1rem 1.3rem;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.9}
+.kw{color:#c792ea}.fn{color:#82aaff}.str{color:#c3e88d}.num{color:#f78c6c}.cmt{color:#546e7a;font-style:italic}.ty{color:#5dcaa5}.op{color:#ef9f27}
+/* tips */
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.2rem}
+.tcard{background:rgba(255,255,255,.03);border:.5px solid var(--brd);border-radius:8px;padding:11px 13px}
+.tctt{font-size:12px;font-weight:700;margin-bottom:5px}
+.tctb{font-size:11px;color:var(--mut);line-height:1.6}
+/* sim */
+.sim-wrap{background:var(--bg2);border:.5px solid var(--brd);border-radius:8px;padding:1rem}
+.sim-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);letter-spacing:.1em;margin-bottom:.6rem}
+.grid2d{display:inline-grid;gap:2px;margin-bottom:1rem}
+.cell{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;border-radius:4px;border:.5px solid var(--brd);background:var(--bg1);transition:all .25s;color:var(--mut)}
+.cell.hot{background:rgba(127,119,221,.3);border-color:var(--p);color:var(--p);font-weight:600}
+.cell.cur{background:var(--p);border-color:var(--p);color:#fff;transform:scale(1.08)}
+.cell.done{background:rgba(93,202,165,.15);border-color:var(--p2);color:var(--p2)}
+.cell.src{background:rgba(239,159,39,.2);border-color:var(--p3);color:var(--p3)}
+.cell.ok{background:rgba(93,202,165,.25);border-color:var(--p2);color:var(--p2)}
+.cell.no{background:rgba(216,90,48,.2);border-color:var(--p4);color:var(--p4)}
+.sim-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.8rem}
+.sbtn{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 14px;border-radius:6px;border:.5px solid var(--brd);background:var(--dim);color:var(--mut);cursor:pointer;transition:all .18s}
+.sbtn:hover{border-color:var(--p);color:var(--p);background:rgba(127,119,221,.1)}
+.sbtn.prim{border-color:var(--p);color:var(--p)}
+.sinfo{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--p2);min-height:18px;margin-top:.4rem}
+/* quiz */
+.qwrap{margin-top:1.2rem}
+.slabel{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--mut);letter-spacing:.12em;margin-bottom:.6rem}
+.qq{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:.9rem;line-height:1.7;padding:13px;background:rgba(127,119,221,.08);border:.5px solid rgba(127,119,221,.2);border-radius:8px}
+.qopts{display:flex;flex-direction:column;gap:7px}
+.qo{font-family:'JetBrains Mono',monospace;font-size:12px;padding:9px 13px;background:var(--dim);border:.5px solid var(--brd);border-radius:6px;cursor:pointer;text-align:left;color:var(--txt);transition:all .15s}
+.qo:hover{border-color:var(--p);background:rgba(127,119,221,.1)}
+.qo.ok{border-color:var(--p2);background:rgba(93,202,165,.12);color:var(--p2)}
+.qo.no{border-color:var(--p4);background:rgba(216,90,48,.1);color:var(--p4)}
+.qres{margin-top:10px;padding:9px 13px;border-radius:6px;font-size:12px;display:none}
+.qres.show{display:block}
+.qres.ok{background:rgba(93,202,165,.1);color:var(--p2);border:.5px solid rgba(93,202,165,.3)}
+.qres.no{background:rgba(216,90,48,.1);color:var(--p4);border:.5px solid rgba(216,90,48,.3)}
+.foot{padding:1.8rem 1.5rem;text-align:center;border-top:1px solid var(--brd);color:var(--mut);font-size:12px;font-family:'JetBrains Mono',monospace}
+</style>
+
+<h2 class="sr-only">2차원 배열 심화 패턴 - 정보올림피아드 대비 인터랙티브 학습 홈페이지</h2>
+
+<div class="hero">
+  <div class="htag">2D ARRAY · ADVANCED PATTERNS</div>
+  <h1>2차원 배열<br>심화 패턴 정복</h1>
+  <p>회전 · 지그재그 · 달팽이 · 누적 합 — 시뮬레이터로 직접 체험</p>
+  <div class="pills">
+    <div class="pill on" onclick="filter('all',this)">전체</div>
+    <div class="pill" onclick="filter('safe',this)">안전</div>
+    <div class="pill" onclick="filter('traverse',this)">탐색</div>
+    <div class="pill" onclick="filter('sum',this)">최적화</div>
+  </div>
+</div>
+
+<div class="cgrid" id="cg"></div>
+
+<div class="mover" id="mo" onclick="oc(event)">
+  <div class="modal">
+    <div class="mhead">
+      <div><div class="mtitle" id="mt"></div><div class="msub" id="ms"></div></div>
+      <button class="mclose" onclick="cm()">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="tabs" id="tabrow"></div>
+      <div id="tpcont"></div>
+    </div>
+  </div>
+</div>
+
+<div class="foot">// 반드시 연습장에 좌표(i, j)를 써보며 규칙을 찾자!</div>
+
+<script>
+const D=[
+  {
+    num:'01', cat:'safe', badge:'필수', bc:'rgba(127,119,221,.2)', bt:'#7f77dd', col:'#7f77dd',
+    title:'테두리 및 범위 체크',
+    desc:'IndexOutOfBounds 방지. 이동 전 반드시 유효 범위를 먼저 확인하는 패턴입니다.',
+    prev:`int is_inside(int x, int y) {\n  return (x>=0 && x<n && y>=0 && y<m);\n}`,
+    code:`<span class="ty">int</span> n, m; <span class="cmt">// 행(n), 열(m)</span>
+
+<span class="cmt">// 유효 범위 체크 함수</span>
+<span class="ty">int</span> <span class="fn">is_inside</span>(<span class="ty">int</span> x, <span class="ty">int</span> y) {
+    <span class="kw">return</span> (x <span class="op">&gt;=</span> <span class="num">0</span> <span class="op">&&</span> x <span class="op">&lt;</span> n
+         <span class="op">&&</span> y <span class="op">&gt;=</span> <span class="num">0</span> <span class="op">&&</span> y <span class="op">&lt;</span> m);
+}
+
+<span class="cmt">// 방향 벡터와 함께 사용</span>
+<span class="ty">int</span> dx[] <span class="op">=</span> {<span class="op">-</span><span class="num">1</span>,<span class="num">1</span>,<span class="num">0</span>,<span class="num">0</span>};
+<span class="ty">int</span> dy[] <span class="op">=</span> {<span class="num">0</span>,<span class="num">0</span>,<span class="op">-</span><span class="num">1</span>,<span class="num">1</span>};
+
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;</span><span class="num">4</span>; i<span class="op">++</span>) {
+    <span class="ty">int</span> nx <span class="op">=</span> x <span class="op">+</span> dx[i];
+    <span class="ty">int</span> ny <span class="op">=</span> y <span class="op">+</span> dy[i];
+    <span class="kw">if</span>(<span class="fn">is_inside</span>(nx, ny)) {
+        <span class="cmt">// 안전하게 접근</span>
+    }
+}`,
+    tips:[
+      {t:'함수 분리 이유',b:'조건을 반복 쓰다 실수하는 것을 방지. 함수 하나로 통일'},
+      {t:'단락 평가',b:'&& 연산자는 앞이 거짓이면 뒤를 평가하지 않음. x<0이면 y는 체크 안 함'},
+      {t:'검사 순서',b:'x 범위 먼저, y 범위 나중. 일관된 순서 유지가 실수 방지의 핵심'},
+      {t:'음수 주의',b:'unsigned int 사용 시 x>=0 조건은 항상 참. signed int만 사용'}
+    ],
+    simKey:'bound',
+    quiz:{q:'5×4 배열(행=5, 열=4)에서 is_inside(4, 4) 결과는?',opts:['true (유효)','false (범위 초과)','런타임 에러','컴파일 에러'],ans:1,ok:'맞습니다! y<m 조건: 4<4는 거짓. 열 인덱스 범위는 0~3까지입니다.',fa:'틀렸습니다. y<m 조건에서 4<4는 거짓이므로 false를 반환합니다.'}
+  },
+  {
+    num:'02', cat:'traverse', badge:'기법', bc:'rgba(239,159,39,.2)', bt:'#ef9f27', col:'#ef9f27',
+    title:'2차원 배열 회전',
+    desc:'90도/180도 회전 공식을 외워두면 이미지·퍼즐 문제를 빠르게 해결할 수 있습니다.',
+    prev:`// 90도 시계방향\nrotated[j][n-1-i] = original[i][j];\n// 180도 회전\nrotated[n-1-i][n-1-j] = original[i][j];`,
+    code:`<span class="ty">int</span> n <span class="op">=</span> <span class="num">3</span>;
+<span class="ty">int</span> original[<span class="num">3</span>][<span class="num">3</span>], rotated[<span class="num">3</span>][<span class="num">3</span>];
+
+<span class="cmt">// 90도 시계방향 회전</span>
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;</span>n; i<span class="op">++</span>)
+    <span class="kw">for</span>(<span class="ty">int</span> j<span class="op">=</span><span class="num">0</span>; j<span class="op">&lt;</span>n; j<span class="op">++</span>)
+        rotated[j][n<span class="op">-</span><span class="num">1</span><span class="op">-</span>i] <span class="op">=</span> original[i][j];
+
+<span class="cmt">// 180도 회전</span>
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;</span>n; i<span class="op">++</span>)
+    <span class="kw">for</span>(<span class="ty">int</span> j<span class="op">=</span><span class="num">0</span>; j<span class="op">&lt;</span>n; j<span class="op">++</span>)
+        rotated[n<span class="op">-</span><span class="num">1</span><span class="op">-</span>i][n<span class="op">-</span><span class="num">1</span><span class="op">-</span>j] <span class="op">=</span> original[i][j];`,
+    tips:[
+      {t:'90도 공식 암기',b:'(i,j) → (j, n-1-i). "j가 행, n-1-i가 열"로 외우기'},
+      {t:'270도=90도×3',b:'시계방향 270도 = 반시계방향 90도. (i,j)→(n-1-j, i)'},
+      {t:'임시 배열 필수',b:'in-place 회전 시 값 덮어쓰기 주의. 별도 rotated 배열 사용 권장'},
+      {t:'정사각형만',b:'이 공식은 n×n 정사각형 전용. 직사각형은 행/열 크기가 바뀜'}
+    ],
+    simKey:'rotate',
+    quiz:{q:'3×3 배열에서 original[0][2] 값이 90도 시계방향 회전 후 어디로?',opts:['rotated[0][0]','rotated[2][2]','rotated[2][0]','rotated[0][2]'],ans:1,ok:'맞습니다! (i=0,j=2) → rotated[j][n-1-i] = rotated[2][3-1-0] = rotated[2][2]',fa:'틀렸습니다. 공식: rotated[j][n-1-i] = rotated[2][3-1-0] = rotated[2][2]'}
+  },
+  {
+    num:'03', cat:'traverse', badge:'탐색', bc:'rgba(93,202,165,.15)', bt:'#5dcaa5', col:'#5dcaa5',
+    title:'지그재그(Snaking) 탐색',
+    desc:'짝수 행은 좌→우, 홀수 행은 우→좌로 방향을 바꾸며 탐색하는 패턴입니다.',
+    prev:`if(i%2==0)\n  for(j=0;j<m;j++) ...\nelse\n  for(j=m-1;j>=0;j--) ...`,
+    code:`<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">0</span>; i<span class="op">&lt;</span>n; i<span class="op">++</span>) {
+    <span class="kw">if</span>(i <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span>) {
+        <span class="cmt">// 짝수 행: 왼쪽 → 오른쪽</span>
+        <span class="kw">for</span>(<span class="ty">int</span> j<span class="op">=</span><span class="num">0</span>; j<span class="op">&lt;</span>m; j<span class="op">++</span>)
+            <span class="fn">printf</span>(<span class="str">"%d "</span>, map[i][j]);
+    } <span class="kw">else</span> {
+        <span class="cmt">// 홀수 행: 오른쪽 → 왼쪽</span>
+        <span class="kw">for</span>(<span class="ty">int</span> j<span class="op">=</span>m<span class="op">-</span><span class="num">1</span>; j<span class="op">&gt;=</span><span class="num">0</span>; j<span class="op">--</span>)
+            <span class="fn">printf</span>(<span class="str">"%d "</span>, map[i][j]);
+    }
+}`,
+    tips:[
+      {t:'i%2 핵심',b:'짝수/홀수 판별의 핵심. 행 번호가 0부터 시작하면 0행이 짝수'},
+      {t:'1-indexed 주의',b:'행이 1부터 시작하면 홀수 행이 좌→우가 됨. 시작점 확인 필수'},
+      {t:'열 인덱스 계산',b:'역방향 j = (m-1-원래j). 실제 위치 계산 시 활용'},
+      {t:'응용: 1D 변환',b:'지그재그 순서로 1차원 배열에 저장할 때도 동일 패턴 사용'}
+    ],
+    simKey:'zigzag',
+    quiz:{q:'4×4 배열에서 2행(0-indexed)의 탐색 방향은?',opts:['오른쪽→왼쪽','왼쪽→오른쪽','위→아래','아래→위'],ans:1,ok:'맞습니다! 2는 짝수(2%2==0)이므로 좌→우(j=0부터 증가) 방향입니다.',fa:'틀렸습니다. 2%2==0이므로 짝수 행 → 왼쪽→오른쪽 방향입니다.'}
+  },
+  {
+    num:'04', cat:'traverse', badge:'응용', bc:'rgba(216,90,48,.15)', bt:'#d85a30', col:'#d85a30',
+    title:'달팽이(Snail) 배열',
+    desc:'방향 벡터 + 범위 체크를 조합해 소용돌이 형태로 배열을 채우는 패턴입니다.',
+    prev:`dir=(dir+1)%4; // 방향 전환\nif(!is_inside(nx,ny)||ans[nx][ny]!=0)\n  dir=(dir+1)%4;`,
+    code:`<span class="ty">int</span> dx[] <span class="op">=</span> {<span class="num">0</span>, <span class="num">1</span>, <span class="num">0</span>, <span class="op">-</span><span class="num">1</span>}; <span class="cmt">// 우하좌상</span>
+<span class="ty">int</span> dy[] <span class="op">=</span> {<span class="num">1</span>, <span class="num">0</span>, <span class="op">-</span><span class="num">1</span>, <span class="num">0</span>};
+<span class="ty">int</span> x<span class="op">=</span><span class="num">0</span>, y<span class="op">=</span><span class="num">0</span>, dir<span class="op">=</span><span class="num">0</span>;
+
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">1</span>; i<span class="op">&lt;=</span>n<span class="op">*</span>n; i<span class="op">++</span>) {
+    ans[x][y] <span class="op">=</span> i;
+    <span class="ty">int</span> nx <span class="op">=</span> x<span class="op">+</span>dx[dir];
+    <span class="ty">int</span> ny <span class="op">=</span> y<span class="op">+</span>dy[dir];
+
+    <span class="kw">if</span>(<span class="op">!</span><span class="fn">is_inside</span>(nx,ny) <span class="op">||</span>
+       ans[nx][ny] <span class="op">!=</span> <span class="num">0</span>) {
+        dir <span class="op">=</span> (dir<span class="op">+</span><span class="num">1</span>) <span class="op">%</span> <span class="num">4</span>;
+        nx <span class="op">=</span> x<span class="op">+</span>dx[dir];
+        ny <span class="op">=</span> y<span class="op">+</span>dy[dir];
+    }
+    x<span class="op">=</span>nx; y<span class="op">=</span>ny;
+}`,
+    tips:[
+      {t:'방향 순서',b:'우(0)→하(1)→좌(2)→상(3) 시계방향. (dir+1)%4로 순환'},
+      {t:'전환 조건',b:'범위 초과 OR 이미 채워진 칸. 두 조건 모두 체크해야 함'},
+      {t:'달팽이 크기',b:'n×n 정사각형이 기본. 직사각형은 n*m번 반복'},
+      {t:'시작 방향',b:'보통 우방향(0)에서 시작. 문제마다 다를 수 있으니 확인'}
+    ],
+    simKey:'snail',
+    quiz:{q:'달팽이 배열에서 방향 전환 시 dir=(dir+1)%4를 사용하는 이유는?',opts:['나눗셈이 빠름','4방향을 0~3으로 순환하기 위해','방향 배열이 4개라서','컴파일러 최적화'],ans:1,ok:'맞습니다! %4 연산으로 0→1→2→3→0→... 순환. 배열 범위 초과 없이 4방향을 무한 순환합니다.',fa:'틀렸습니다. (dir+1)%4는 0~3 범위를 순환시켜 방향 배열 인덱스를 안전하게 관리합니다.'}
+  },
+  {
+    num:'05', cat:'sum', badge:'최적화', bc:'rgba(93,202,165,.15)', bt:'#5dcaa5', col:'#5dcaa5',
+    title:'2차원 누적 합',
+    desc:'직사각형 구간 합을 O(n²)→O(1)로. 포함-배제 원리를 사용하는 강력한 패턴입니다.',
+    prev:`S[i][j] = A[i][j]+S[i-1][j]+S[i][j-1]-S[i-1][j-1];\n// 구간 합 = S[x2][y2]-S[x1-1][y2]-S[x2][y1-1]+S[x1-1][y1-1]`,
+    code:`<span class="cmt">// 배열 구성 (1-indexed)</span>
+<span class="kw">for</span>(<span class="ty">int</span> i<span class="op">=</span><span class="num">1</span>; i<span class="op">&lt;=</span>n; i<span class="op">++</span>)
+    <span class="kw">for</span>(<span class="ty">int</span> j<span class="op">=</span><span class="num">1</span>; j<span class="op">&lt;=</span>m; j<span class="op">++</span>)
+        S[i][j] <span class="op">=</span> A[i][j]
+               <span class="op">+</span> S[i<span class="op">-</span><span class="num">1</span>][j]
+               <span class="op">+</span> S[i][j<span class="op">-</span><span class="num">1</span>]
+               <span class="op">-</span> S[i<span class="op">-</span><span class="num">1</span>][j<span class="op">-</span><span class="num">1</span>];
+
+<span class="cmt">// (x1,y1)~(x2,y2) 구간 합</span>
+<span class="ty">int</span> result <span class="op">=</span>
+    S[x2][y2]
+  <span class="op">-</span> S[x1<span class="op">-</span><span class="num">1</span>][y2]
+  <span class="op">-</span> S[x2][y1<span class="op">-</span><span class="num">1</span>]
+  <span class="op">+</span> S[x1<span class="op">-</span><span class="num">1</span>][y1<span class="op">-</span><span class="num">1</span>];`,
+    tips:[
+      {t:'포함-배제',b:'더한 것을 빼고, 두 번 뺀 것을 한 번 더함. 벤 다이어그램으로 이해'},
+      {t:'1-indexed 필수',b:'S[0][...]=0, S[...][0]=0 조건을 위해 반드시 1부터 인덱싱'},
+      {t:'전처리 O(nm)',b:'한 번 구성 후 쿼리는 O(1). 쿼리가 많을수록 압도적으로 유리'},
+      {t:'2D→3D 확장',b:'3차원 배열에도 동일 원리 적용. 부호가 ±로 교대하는 패턴'}
+    ],
+    simKey:'prefix2d',
+    quiz:{q:'2D 누적 합 구성 시 S[i-1][j-1]을 빼는 이유는?',opts:['오버플로 방지','두 번 더해진 왼쪽 위 영역을 한 번 제거','속도 최적화','컴파일러 요구사항'],ans:1,ok:'맞습니다! S[i-1][j]와 S[i][j-1] 모두에 (i-1,j-1) 영역이 포함되어 두 번 더해짐. 한 번 빼서 보정합니다.',fa:'틀렸습니다. S[i-1][j]와 S[i][j-1] 두 항에 이미 (i-1,j-1) 구간이 포함되어 중복. 한 번 빼야 정확합니다.'}
+  }
+];
+
+let qAnswered=false;
+
+function filter(f,el){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  render(f);
+}
+
+function render(f='all'){
+  const g=document.getElementById('cg');
+  g.innerHTML='';
+  D.filter(d=>f==='all'||d.cat===f).forEach(d=>{
+    const c=document.createElement('div');
+    c.className='ccard';
+    c.onclick=()=>open(d);
+    c.innerHTML=`<div class="cnum">${d.num}</div>
+<div class="ctitle" style="color:${d.col}">${d.title}<span class="cbadge" style="background:${d.bc};color:${d.bt}">${d.badge}</span></div>
+<div class="cdesc">${d.desc}</div>
+<div class="cprev">${d.prev}</div>
+<div class="carr">→</div>`;
+    g.appendChild(c);
+  });
+}
+
+function open(d){
+  qAnswered=false;
+  document.getElementById('mt').textContent=`${d.num}. ${d.title}`;
+  document.getElementById('ms').textContent=d.desc;
+  document.getElementById('tabrow').innerHTML=
+    ['코드','시뮬레이터','핵심 포인트','퀴즈'].map((t,i)=>
+      `<div class="tab${i===0?' on':''}" onclick="switchTab(${i},this)">${t}</div>`
+    ).join('');
+  document.getElementById('tpcont').innerHTML=`
+<div class="tpanel on" id="tp0">
+  <div class="cblock"><div class="chead"><span class="clang">C Language</span><button class="cbtn" onclick="cp(this,'${encodeURIComponent(d.prev)}')">복사</button></div><pre>${d.code}</pre></div>
+</div>
+<div class="tpanel" id="tp1"><div id="simbox"></div></div>
+<div class="tpanel" id="tp2"><div class="tgrid">${d.tips.map(t=>`<div class="tcard"><div class="tctt" style="color:${d.col}">${t.t}</div><div class="tctb">${t.b}</div></div>`).join('')}</div></div>
+<div class="tpanel" id="tp3"><div class="qwrap">
+  <div class="slabel">확인 퀴즈</div>
+  <div class="qq">${d.quiz.q}</div>
+  <div class="qopts">${d.quiz.opts.map((o,i)=>`<button class="qo" onclick="chk(this,${i},${d.quiz.ans},'${encodeURIComponent(d.quiz.ok)}','${encodeURIComponent(d.quiz.fa)}')">${o}</button>`).join('')}</div>
+  <div class="qres" id="qr"></div>
+</div></div>`;
+  document.getElementById('mo').classList.add('open');
+  buildSim(d.simKey);
+}
+
+function switchTab(i,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tpanel').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('tp'+i).classList.add('on');
+  if(i===1){const sb=document.querySelector('#simbox');if(sb&&!sb.children.length)buildSim(window._sk);}
+}
+
+function cp(btn,enc){
+  navigator.clipboard.writeText(decodeURIComponent(enc)).then(()=>{btn.textContent='복사됨!';setTimeout(()=>btn.textContent='복사',1500);});
+}
+
+function chk(btn,ch,ans,okE,faE){
+  if(qAnswered)return;qAnswered=true;
+  btn.parentElement.querySelectorAll('.qo').forEach((o,i)=>{o.style.pointerEvents='none';if(i===ans)o.classList.add('ok');});
+  if(ch!==ans)btn.classList.add('no');
+  const r=document.getElementById('qr');
+  r.textContent=(ch===ans?'✓ ':' ✗ ')+(ch===ans?decodeURIComponent(okE):decodeURIComponent(faE));
+  r.className='qres show '+(ch===ans?'ok':'no');
+}
+
+function cm(){document.getElementById('mo').classList.remove('open');}
+function oc(e){if(e.target===document.getElementById('mo'))cm();}
+
+/* ——— SIMULATORS ——— */
+function buildSim(key){
+  window._sk=key;
+  const b=document.getElementById('simbox');
+  if(!b)return;
+  b.innerHTML='';
+  const w=document.createElement('div');
+  w.className='sim-wrap';
+  if(key==='bound') simBound(w);
+  else if(key==='rotate') simRotate(w);
+  else if(key==='zigzag') simZigzag(w);
+  else if(key==='snail') simSnail(w);
+  else if(key==='prefix2d') simPrefix(w);
+  b.appendChild(w);
+}
+
+function makeGrid(rows,cols,data,classes){
+  const g=document.createElement('div');
+  g.className='grid2d';
+  g.style.gridTemplateColumns=`repeat(${cols},36px)`;
+  for(let i=0;i<rows;i++)for(let j=0;j<cols;j++){
+    const c=document.createElement('div');c.className='cell';
+    c.id=`cell_${i}_${j}`;
+    c.textContent=data[i][j]||'';
+    if(classes&&classes[i]&&classes[i][j])c.classList.add(classes[i][j]);
+    g.appendChild(c);
+  }
+  return g;
+}
+
+function simBound(w){
+  const N=4,M=5;
+  const info=document.createElement('div');info.className='sinfo';info.textContent='셀을 클릭해 범위 체크 결과를 확인하세요';
+  const data=Array.from({length:N},(_,i)=>Array.from({length:M},(_,j)=>`${i},${j}`));
+  const g=document.createElement('div');g.className='grid2d';g.style.gridTemplateColumns=`repeat(${M},36px)`;
+  for(let i=0;i<N;i++)for(let j=0;j<M;j++){
+    const c=document.createElement('div');c.className='cell';
+    c.style.fontSize='9px';c.textContent=`${i},${j}`;
+    c.style.cursor='pointer';
+    const ci=i,cj=j;
+    c.onclick=()=>{
+      document.querySelectorAll('#simbox .cell').forEach(x=>x.className='cell');
+      c.classList.add('src');
+      const dirs=[[-1,0],[1,0],[0,-1],[0,1]];
+      dirs.forEach(([di,dj])=>{
+        const ni=ci+di,nj=cj+dj;
+        const el=document.getElementById(`bc_${ni}_${nj}`);
+        if(ni>=0&&ni<N&&nj>=0&&nj<M){if(el)el.classList.add('ok');}
+        else{if(el)el.classList.add('no');}
+      });
+      info.textContent=`(${ci},${ci}) → 인접 셀 범위 체크 완료 (초록=유효, 빨강=범위 초과)`;
+    };
+    c.id=`bc_${i}_${j}`;
+    g.appendChild(c);
+  }
+  const lbl=document.createElement('div');lbl.className='sim-label';lbl.textContent=`${N}×${M} 배열 — 셀 클릭 시 인접 4방향 범위 체크`;
+  w.appendChild(lbl);w.appendChild(g);w.appendChild(info);
+}
+
+function simRotate(w){
+  const n=3;
+  let orig=[[1,2,3],[4,5,6],[7,8,9]];
+  let step=0;
+  const lbl=document.createElement('div');lbl.className='sim-label';lbl.id='rlbl';lbl.textContent='원본 3×3 배열';
+  const gWrap=document.createElement('div');gWrap.style.display='flex';gWrap.style.gap='24px';gWrap.style.alignItems='flex-start';
+  const g1=document.createElement('div');
+  const g2=document.createElement('div');
+  const rInfo=document.createElement('div');rInfo.className='sinfo';rInfo.id='rinfo';rInfo.textContent='버튼을 눌러 회전하세요';
+  gWrap.appendChild(g1);gWrap.appendChild(g2);
+  const btns=document.createElement('div');btns.className='sim-btns';
+  const b1=document.createElement('button');b1.className='sbtn prim';b1.textContent='90° 시계방향';
+  const b2=document.createElement('button');b2.className='sbtn';b2.textContent='180° 회전';
+  const br=document.createElement('button');br.className='sbtn';br.textContent='초기화';
+  btns.appendChild(b1);btns.appendChild(b2);btns.appendChild(br);
+  function drawGrids(a,b,hint){
+    g1.innerHTML='';g2.innerHTML='';
+    const ga=document.createElement('div');ga.className='grid2d';ga.style.gridTemplateColumns=`repeat(${n},36px)`;
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++){const c=document.createElement('div');c.className='cell src';c.textContent=a[i][j];ga.appendChild(c);}
+    const gb=document.createElement('div');gb.className='grid2d';gb.style.gridTemplateColumns=`repeat(${n},36px)`;
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++){const c=document.createElement('div');c.className='cell done';c.textContent=b[i][j];gb.appendChild(c);}
+    const sl=document.createElement('div');sl.className='sim-label';sl.style.marginBottom='4px';sl.textContent='원본';
+    const sl2=document.createElement('div');sl2.className='sim-label';sl2.style.marginBottom='4px';sl2.textContent=hint||'결과';
+    g1.appendChild(sl);g1.appendChild(ga);g2.appendChild(sl2);g2.appendChild(gb);
+  }
+  function rot90(m){const r=Array.from({length:n},()=>Array(n).fill(0));for(let i=0;i<n;i++)for(let j=0;j<n;j++)r[j][n-1-i]=m[i][j];return r;}
+  function rot180(m){const r=Array.from({length:n},()=>Array(n).fill(0));for(let i=0;i<n;i++)for(let j=0;j<n;j++)r[n-1-i][n-1-j]=m[i][j];return r;}
+  drawGrids(orig,orig,'결과');
+  b1.onclick=()=>{const r=rot90(orig);drawGrids(orig,r,'90° 회전 결과');rInfo.textContent='rotated[j][n-1-i] = original[i][j] 적용';};
+  b2.onclick=()=>{const r=rot180(orig);drawGrids(orig,r,'180° 회전 결과');rInfo.textContent='rotated[n-1-i][n-1-j] = original[i][j] 적용';};
+  br.onclick=()=>{drawGrids(orig,orig,'결과');rInfo.textContent='초기화 완료';};
+  w.appendChild(lbl);w.appendChild(gWrap);w.appendChild(btns);w.appendChild(rInfo);
+}
+
+function simZigzag(w){
+  const N=4,M=5;
+  const data=Array.from({length:N},(_,i)=>Array.from({length:M},(_,j)=>i*M+j+1));
+  const order=[];
+  for(let i=0;i<N;i++){if(i%2===0)for(let j=0;j<M;j++)order.push([i,j]);else for(let j=M-1;j>=0;j--)order.push([i,j]);}
+  let step=0,iid=null;
+  const lbl=document.createElement('div');lbl.className='sim-label';lbl.textContent='지그재그 탐색 순서 시뮬레이터 (짝수행: →, 홀수행: ←)';
+  const g=document.createElement('div');g.className='grid2d';g.style.gridTemplateColumns=`repeat(${M},36px)`;
+  for(let i=0;i<N;i++)for(let j=0;j<M;j++){
+    const c=document.createElement('div');c.className='cell';c.id=`zc_${i}_${j}`;c.textContent=data[i][j];g.appendChild(c);
+  }
+  const info=document.createElement('div');info.className='sinfo';
+  const btns=document.createElement('div');btns.className='sim-btns';
+  const bs=document.createElement('button');bs.className='sbtn prim';bs.textContent='자동 재생';
+  const bn=document.createElement('button');bn.className='sbtn';bn.textContent='한 단계';
+  const br=document.createElement('button');br.className='sbtn';br.textContent='초기화';
+  btns.appendChild(bs);btns.appendChild(bn);btns.appendChild(br);
+  function stepFn(){
+    if(step<order.length){const[i,j]=order[step];const c=document.getElementById(`zc_${i}_${j}`);if(c){c.className='cell cur';setTimeout(()=>{if(c.className.includes('cur'))c.className='cell done';},220);}info.textContent=`단계 ${step+1}: (${i},${j}) → 값=${data[i][j]} / ${i%2===0?'짝수행(→)':'홀수행(←)'}`;step++;}else{clearInterval(iid);iid=null;info.textContent='완료!';}
+  }
+  bs.onclick=()=>{if(iid)return;step=0;document.querySelectorAll('#simbox .cell').forEach(c=>c.className='cell');iid=setInterval(stepFn,200);};
+  bn.onclick=()=>{if(iid){clearInterval(iid);iid=null;}stepFn();};
+  br.onclick=()=>{clearInterval(iid);iid=null;step=0;document.querySelectorAll('#simbox .cell').forEach(c=>c.className='cell');info.textContent='초기화 완료';};
+  w.appendChild(lbl);w.appendChild(g);w.appendChild(btns);w.appendChild(info);
+}
+
+function simSnail(w){
+  const N=4;
+  const lbl=document.createElement('div');lbl.className='sim-label';lbl.textContent=`${N}×${N} 달팽이 배열 시뮬레이터`;
+  const g=document.createElement('div');g.className='grid2d';g.style.gridTemplateColumns=`repeat(${N},36px)`;
+  const ans=Array.from({length:N},()=>Array(N).fill(0));
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){const c=document.createElement('div');c.className='cell';c.id=`sc_${i}_${j}`;g.appendChild(c);}
+  const dx=[0,1,0,-1],dy=[1,0,-1,0];
+  let x=0,y=0,dir=0,num=1,iid=null;
+  const info=document.createElement('div');info.className='sinfo';
+  const btns=document.createElement('div');btns.className='sim-btns';
+  const bs=document.createElement('button');bs.className='sbtn prim';bs.textContent='자동 재생';
+  const bn=document.createElement('button');bn.className='sbtn';bn.textContent='한 단계';
+  const br=document.createElement('button');br.className='sbtn';br.textContent='초기화';
+  btns.appendChild(bs);btns.appendChild(bn);btns.appendChild(br);
+  const dirs=['→ 우','↓ 하','← 좌','↑ 상'];
+  function isInside(nx,ny){return nx>=0&&nx<N&&ny>=0&&ny<N;}
+  function stepFn(){
+    if(num>N*N){clearInterval(iid);iid=null;info.textContent='달팽이 완성!';return;}
+    ans[x][y]=num;
+    const c=document.getElementById(`sc_${x}_${y}`);
+    if(c){c.textContent=num;c.className='cell cur';setTimeout(()=>{if(c)c.className='cell done';},200);}
+    info.textContent=`값=${num}, 위치=(${x},${y}), 방향=${dirs[dir]}`;
+    num++;
+    if(num<=N*N){let nx=x+dx[dir],ny=y+dy[dir];if(!isInside(nx,ny)||ans[nx][ny]!==0){dir=(dir+1)%4;nx=x+dx[dir];ny=y+dy[dir];}x=nx;y=ny;}
+  }
+  bs.onclick=()=>{if(iid)return;ans.forEach(r=>r.fill(0));num=1;x=0;y=0;dir=0;document.querySelectorAll('#simbox .cell').forEach(c=>{c.className='cell';c.textContent='';});iid=setInterval(stepFn,160);};
+  bn.onclick=()=>{if(iid){clearInterval(iid);iid=null;}stepFn();};
+  br.onclick=()=>{clearInterval(iid);iid=null;ans.forEach(r=>r.fill(0));num=1;x=0;y=0;dir=0;document.querySelectorAll('#simbox .cell').forEach(c=>{c.className='cell';c.textContent='';});info.textContent='초기화 완료';};
+  w.appendChild(lbl);w.appendChild(g);w.appendChild(btns);w.appendChild(info);
+}
+
+function simPrefix(w){
+  const N=4,M=4;
+  const A=[[3,1,2,4],[2,5,1,3],[1,2,4,2],[4,1,3,1]];
+  const S=Array.from({length:N+1},()=>Array(M+1).fill(0));
+  for(let i=1;i<=N;i++)for(let j=1;j<=M;j++)S[i][j]=A[i-1][j-1]+S[i-1][j]+S[i][j-1]-S[i-1][j-1];
+  let sel=[];
+  const lbl=document.createElement('div');lbl.className='sim-label';lbl.textContent='셀 2개를 클릭해 직사각형 구간 합을 O(1)로 계산';
+  const g=document.createElement('div');g.className='grid2d';g.style.gridTemplateColumns=`repeat(${M},36px)`;
+  for(let i=0;i<N;i++)for(let j=0;j<M;j++){
+    const c=document.createElement('div');c.className='cell';c.style.cursor='pointer';
+    c.textContent=A[i][j];c.id=`pc_${i}_${j}`;
+    const ci=i,cj=j;
+    c.onclick=()=>{
+      sel.push([ci,cj]);
+      c.classList.add('src');
+      if(sel.length===2){
+        const r1=Math.min(sel[0][0],sel[1][0]),c1=Math.min(sel[0][1],sel[1][1]);
+        const r2=Math.max(sel[0][0],sel[1][0]),c2=Math.max(sel[0][1],sel[1][1]);
+        for(let i=0;i<N;i++)for(let j=0;j<M;j++){
+          const el=document.getElementById(`pc_${i}_${j}`);
+          if(el)el.className='cell'+(i>=r1&&i<=r2&&j>=c1&&j<=c2?' hot':'');
+        }
+        const sum=S[r2+1][c2+1]-S[r1][c2+1]-S[r2+1][c1]+S[r1][c1];
+        info.textContent=`(${r1},${c1})~(${r2},${c2}) 구간 합 = ${sum} (O(1) 계산 완료)`;
+        sel=[];
+      }
+    };
+    g.appendChild(c);
+  }
+  const info=document.createElement('div');info.className='sinfo';info.textContent='첫 번째 셀 클릭...';
+  const br=document.createElement('button');br.className='sbtn';br.style.marginTop='8px';br.textContent='초기화';
+  br.onclick=()=>{sel=[];document.querySelectorAll('#simbox .cell').forEach(c=>c.className='cell');info.textContent='첫 번째 셀 클릭...';};
+  w.appendChild(lbl);w.appendChild(g);w.appendChild(info);w.appendChild(br);
+}
+
+render('all');
+</script>

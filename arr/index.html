@@ -1,0 +1,717 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --c1: #0a0a12;
+    --c2: #111120;
+    --c3: #1a1a2e;
+    --accent: #7f77dd;
+    --accent2: #5dcaa5;
+    --accent3: #ef9f27;
+    --accent4: #d85a30;
+    --dim: rgba(255,255,255,0.05);
+    --border: rgba(255,255,255,0.08);
+    --text: rgba(255,255,255,0.9);
+    --muted: rgba(255,255,255,0.45);
+  }
+
+  body { background: var(--c1); font-family: 'Noto Sans KR', sans-serif; color: var(--text); overflow-x: hidden; }
+
+  .hero {
+    padding: 3.5rem 1.5rem 2rem;
+    text-align: center;
+    position: relative;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(127,119,221,0.18) 0%, transparent 70%);
+  }
+
+  .hero-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    border: 0.5px solid rgba(127,119,221,0.4);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.08em;
+  }
+
+  .hero h1 {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.8rem;
+    background: linear-gradient(135deg, #fff 40%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 2rem;
+  }
+
+  .nav-pills {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-bottom: 2rem;
+  }
+
+  .pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border);
+    background: var(--dim);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .pill:hover, .pill.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(127,119,221,0.1);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+  }
+
+  .card {
+    background: var(--c1);
+    padding: 1.8rem 1.6rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .card:hover { background: var(--c2); }
+
+  .card-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.05em;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-badge {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 400;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .card-arrow {
+    position: absolute;
+    top: 1.8rem;
+    right: 1.6rem;
+    color: var(--muted);
+    font-size: 16px;
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .card:hover .card-arrow { transform: translateX(4px); color: var(--accent); }
+
+  .preview {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    background: rgba(255,255,255,0.04);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: #b0b0d0;
+    overflow: hidden;
+    max-height: 80px;
+    position: relative;
+  }
+
+  .preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 30px;
+    background: linear-gradient(transparent, var(--c1));
+  }
+
+  .card:hover .preview::after { background: linear-gradient(transparent, var(--c2)); }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 2rem 1rem;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--c2);
+    border: 0.5px solid rgba(127,119,221,0.3);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 700px;
+    overflow: hidden;
+    animation: slideUp 0.25s ease;
+  }
+
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .modal-header {
+    padding: 1.4rem 1.6rem;
+    border-bottom: 0.5px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .modal-title { font-size: 18px; font-weight: 700; }
+  .modal-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  .modal-close {
+    background: var(--dim);
+    border: 0.5px solid var(--border);
+    color: var(--muted);
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .modal-close:hover { color: var(--text); }
+
+  .modal-body { padding: 1.6rem; }
+
+  .section-label {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.7rem;
+  }
+
+  .desc-block {
+    font-size: 14px;
+    line-height: 1.8;
+    color: rgba(255,255,255,0.75);
+    margin-bottom: 1.6rem;
+  }
+
+  .code-block {
+    background: var(--c3);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.4rem;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--border);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .copy-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+
+  .copy-btn:hover { background: var(--dim); color: var(--text); }
+
+  pre {
+    padding: 1.2rem 1.4rem;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .num { color: #f78c6c; }
+  .cmt { color: #546e7a; font-style: italic; }
+  .ty { color: var(--accent2); }
+  .op { color: var(--accent3); }
+
+  .tip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.4rem; }
+
+  .tip-card {
+    background: rgba(255,255,255,0.03);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+
+  .tip-card-title { font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+  .tip-card-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  .quiz-area { margin-top: 1.4rem; }
+
+  .quiz-q {
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 1rem;
+    line-height: 1.7;
+    padding: 14px;
+    background: rgba(127,119,221,0.08);
+    border: 0.5px solid rgba(127,119,221,0.2);
+    border-radius: 8px;
+  }
+
+  .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+  .quiz-opt {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 10px 14px;
+    background: var(--dim);
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text);
+    transition: all 0.15s;
+  }
+
+  .quiz-opt:hover { border-color: var(--accent); background: rgba(127,119,221,0.1); }
+  .quiz-opt.correct { border-color: var(--accent2); background: rgba(93,202,165,0.12); color: var(--accent2); }
+  .quiz-opt.wrong { border-color: var(--accent4); background: rgba(216,90,48,0.1); color: var(--accent4); }
+
+  .quiz-result {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: none;
+  }
+
+  .quiz-result.show { display: block; }
+  .quiz-result.ok { background: rgba(93,202,165,0.1); color: var(--accent2); border: 0.5px solid rgba(93,202,165,0.3); }
+  .quiz-result.fail { background: rgba(216,90,48,0.1); color: var(--accent4); border: 0.5px solid rgba(216,90,48,0.3); }
+
+  .footer-bar {
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+
+<h2 class="sr-only">C 언어 배열 패턴 - 정보올림피아드 대비 인터랙티브 학습 홈페이지</h2>
+
+<div class="hero">
+  <div class="hero-tag">INFORMATICS OLYMPIAD · C LANGUAGE</div>
+  <h1>배열 핵심 패턴<br>완전 정복</h1>
+  <p>정보올림피아드 대회에서 반드시 사용하는 6가지 패턴</p>
+  <div class="nav-pills">
+    <div class="pill active" onclick="filterCards('all', this)">전체 보기</div>
+    <div class="pill" onclick="filterCards('basic', this)">기초</div>
+    <div class="pill" onclick="filterCards('technique', this)">기법</div>
+    <div class="pill" onclick="filterCards('optimization', this)">최적화</div>
+  </div>
+</div>
+
+<div class="grid" id="cardGrid"></div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="mTitle"></div>
+        <div class="modal-sub" id="mSub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="mBody"></div>
+  </div>
+</div>
+
+<div class="footer-bar">// 이 패턴들만 완벽히 숙지할 것!</div>
+
+<script>
+const patterns = [
+  {
+    num: '01',
+    tag: 'basic',
+    badge: '필수',
+    badgeColor: 'rgba(127,119,221,0.2)',
+    badgeText: '#7f77dd',
+    color: '#7f77dd',
+    title: '배열 선언과 초기화',
+    desc: 'Stack Overflow 방지와 자동 0 초기화를 위해 큰 배열은 전역 선언하고, memset으로 빠르게 초기화합니다.',
+    preview: `int arr[10005];  // 전역 선언\nmemset(arr, 0, sizeof(arr));\nmemset(arr, -1, sizeof(arr));`,
+    fullCode: `<span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="kw">#include</span> <span class="str">&lt;string.h&gt;</span>
+
+<span class="ty">int</span> arr[<span class="num">10005</span>]; <span class="cmt">// 최대 N=10000 → 여유 있게 선언</span>
+                 <span class="cmt">// 전역 = 자동 0 초기화</span>
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="cmt">// 0으로 초기화 (string.h 필요)</span>
+    <span class="fn">memset</span>(arr, <span class="num">0</span>, <span class="kw">sizeof</span>(arr));
+
+    <span class="cmt">// -1로 초기화 (0과 -1만 memset 가능)</span>
+    <span class="fn">memset</span>(arr, <span class="op">-</span><span class="num">1</span>, <span class="kw">sizeof</span>(arr));
+}`,
+    tips: [
+      { title: '왜 전역?', body: '지역 배열은 스택에 할당 → 큰 배열은 Stack Overflow 발생' },
+      { title: 'memset 주의', body: '0과 -1만 memset 사용 가능. 다른 값은 for문 사용' },
+      { title: 'Safety Margin', body: '배열 크기는 항상 문제 최대치보다 5~10 더 크게' },
+      { title: 'sizeof 활용', body: 'sizeof(arr)로 바이트 수 자동 계산, 하드코딩 금지' }
+    ],
+    quiz: {
+      q: '전역 배열 int arr[100];를 선언하면 자동으로 몇으로 초기화되나요?',
+      opts: ['쓰레기값 (random)', '0', '-1', '1'],
+      answer: 1,
+      ok: '맞습니다! 전역 변수는 항상 0으로 자동 초기화됩니다.',
+      fail: '틀렸습니다. 지역 변수는 쓰레기값이지만, 전역 변수는 항상 0으로 초기화됩니다.'
+    }
+  },
+  {
+    num: '02',
+    tag: 'basic',
+    badge: '필수',
+    badgeColor: 'rgba(127,119,221,0.2)',
+    badgeText: '#7f77dd',
+    color: '#7f77dd',
+    title: '입출력 가속 패턴',
+    desc: '1차원/2차원 배열 입력 반복문 패턴. 격자판 지도/미로 문제의 단골 소재입니다.',
+    preview: `int n;\nscanf("%d", &n);\nfor(int i = 0; i < n; i++)\n    scanf("%d", &arr[i]);`,
+    fullCode: `<span class="cmt">// ① 기본 1차원 배열 입력</span>
+<span class="ty">int</span> n;
+<span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&</span>n);
+<span class="kw">for</span>(<span class="ty">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&</span>arr[i]);
+}
+
+<span class="cmt">// ② 2차원 배열 (격자판 지도/미로)</span>
+<span class="ty">int</span> map[<span class="num">100</span>][<span class="num">100</span>];
+<span class="kw">for</span>(<span class="ty">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> R; i<span class="op">++</span>) {
+    <span class="kw">for</span>(<span class="ty">int</span> j <span class="op">=</span> <span class="num">0</span>; j <span class="op">&lt;</span> C; j<span class="op">++</span>) {
+        <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&</span>map[i][j]);
+    }
+}`,
+    tips: [
+      { title: 'scanf vs cin', body: 'C에서는 scanf가 cin보다 빠름. 입력 수 많을수록 유리' },
+      { title: '행/열 순서', body: '지도는 map[행][열] = map[y][x] 순서로 읽기' },
+      { title: '범위 확인', body: 'R×C 문제는 배열을 map[R+5][C+5]로 여유 선언' },
+      { title: '공백 입력', body: '숫자 사이 공백은 scanf("%d")가 자동 처리' }
+    ],
+    quiz: {
+      q: '5×5 지도를 입력받을 때 map[i][j]에서 i는 무엇을 의미하나요?',
+      opts: ['열 (column)', '행 (row)', '대각선', '아무거나'],
+      answer: 1,
+      ok: '맞습니다! i는 행(row), j는 열(column)입니다. map[행][열] 순서를 기억하세요.',
+      fail: '틀렸습니다. i는 행(row = y좌표), j는 열(column = x좌표)입니다.'
+    }
+  },
+  {
+    num: '03',
+    tag: 'technique',
+    badge: '기법',
+    badgeColor: 'rgba(93,202,165,0.15)',
+    badgeText: '#5dcaa5',
+    color: '#5dcaa5',
+    title: '빈도수 체크 (Counting Array)',
+    desc: '수의 범위가 작을 때 등장 횟수를 기록. 계수 정렬의 기초이며 대회에서 매우 자주 등장합니다.',
+    preview: `int count[11] = {0};\ncount[num]++; // 인덱스로 직접 사용!`,
+    fullCode: `<span class="ty">int</span> count[<span class="num">11</span>] <span class="op">=</span> {<span class="num">0</span>}; <span class="cmt">// 1~10 범위</span>
+<span class="ty">int</span> num, n;
+<span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&</span>n);
+
+<span class="kw">for</span>(<span class="ty">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&</span>num);
+    count[num]<span class="op">++</span>; <span class="cmt">// 숫자를 인덱스로 바로 사용!</span>
+}
+
+<span class="cmt">// 가장 많이 등장한 숫자 찾기</span>
+<span class="kw">for</span>(<span class="ty">int</span> i <span class="op">=</span> <span class="num">1</span>; i <span class="op">&lt;=</span> <span class="num">10</span>; i<span class="op">++</span>) {
+    <span class="fn">printf</span>(<span class="str">"%d: %d번\n"</span>, i, count[i]);
+}`,
+    tips: [
+      { title: '핵심 아이디어', body: '값 자체를 배열의 인덱스로 사용. O(1) 빈도 기록' },
+      { title: '배열 크기', body: '값의 최댓값 + 1로 선언. 범위 초과 시 런타임 에러' },
+      { title: '계수 정렬', body: '이 패턴을 확장하면 O(n+k) 계수 정렬 구현 가능' },
+      { title: '응용', body: '문자 빈도: count[ch-\'a\']++ 패턴으로 알파벳 카운팅' }
+    ],
+    quiz: {
+      q: '1~100 사이 숫자의 등장 횟수를 세려면 count 배열 크기를 얼마로 선언해야 하나요?',
+      opts: ['count[100]', 'count[101]', 'count[99]', 'count[1000]'],
+      answer: 1,
+      ok: '맞습니다! count[101]로 선언해야 인덱스 100까지 안전하게 접근 가능합니다.',
+      fail: '틀렸습니다. count[100]은 인덱스 0~99까지만 접근 가능. 100을 저장하려면 count[101]이 필요합니다.'
+    }
+  },
+  {
+    num: '04',
+    tag: 'technique',
+    badge: '핵심',
+    badgeColor: 'rgba(239,159,39,0.2)',
+    badgeText: '#ef9f27',
+    color: '#ef9f27',
+    title: '방향 벡터 (Direction Vectors)',
+    desc: '상하좌우/대각선 탐색 시 if문 대신 dx/dy 배열을 사용. BFS/DFS의 필수 구성요소입니다.',
+    preview: `int dx[] = {-1, 1, 0, 0};\nint dy[] = {0, 0, -1, 1};\nfor(int i=0; i<4; i++) { ... }`,
+    fullCode: `<span class="cmt">// 상, 하, 좌, 우</span>
+<span class="ty">int</span> dx[] <span class="op">=</span> {<span class="op">-</span><span class="num">1</span>, <span class="num">1</span>, <span class="num">0</span>, <span class="num">0</span>};
+<span class="ty">int</span> dy[] <span class="op">=</span> {<span class="num">0</span>, <span class="num">0</span>, <span class="op">-</span><span class="num">1</span>, <span class="num">1</span>};
+
+<span class="kw">for</span>(<span class="ty">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> <span class="num">4</span>; i<span class="op">++</span>) {
+    <span class="ty">int</span> nx <span class="op">=</span> x <span class="op">+</span> dx[i];
+    <span class="ty">int</span> ny <span class="op">=</span> y <span class="op">+</span> dy[i];
+
+    <span class="cmt">// 경계 체크! (매우 중요)</span>
+    <span class="kw">if</span>(nx <span class="op">&gt;=</span> <span class="num">0</span> <span class="op">&&</span> nx <span class="op">&lt;</span> R <span class="op">&&</span>
+       ny <span class="op">&gt;=</span> <span class="num">0</span> <span class="op">&&</span> ny <span class="op">&lt;</span> C) {
+        <span class="cmt">// 다음 동작 수행</span>
+    }
+}`,
+    tips: [
+      { title: '8방향 확장', body: 'dx[8], dy[8]로 대각선 포함 8방향 탐색 가능' },
+      { title: '경계 체크', body: 'nx, ny가 배열 범위를 벗어나면 런타임 에러! 반드시 확인' },
+      { title: 'BFS 연결', body: '이 패턴 + 큐 = BFS. 최단거리 문제 핵심' },
+      { title: '방향 순서', body: '시계방향(상우하좌)으로 순서 통일하면 실수 감소' }
+    ],
+    quiz: {
+      q: '현재 위치 (x, y)에서 dx = {-1,1,0,0}, dy = {0,0,-1,1}일 때 i=2일 때의 이동 방향은?',
+      opts: ['위 (x-1)', '아래 (x+1)', '왼쪽 (y-1)', '오른쪽 (y+1)'],
+      answer: 2,
+      ok: '맞습니다! i=2: dx[2]=0, dy[2]=-1 → y가 1 감소 → 왼쪽 이동입니다.',
+      fail: '틀렸습니다. i=2: dx[2]=0 (x 그대로), dy[2]=-1 (y 감소) → 왼쪽 이동입니다.'
+    }
+  },
+  {
+    num: '05',
+    tag: 'optimization',
+    badge: '최적화',
+    badgeColor: 'rgba(216,90,48,0.15)',
+    badgeText: '#d85a30',
+    color: '#d85a30',
+    title: '누적 합 (Prefix Sum)',
+    desc: '구간 합을 O(n)→O(1)로 줄이는 기법. S[R]-S[L-1] 공식으로 임의 구간 합을 즉시 계산.',
+    preview: `s[i] = s[i-1] + a[i];\n// 구간 [L, R] 합:\nresult = s[R] - s[L-1];`,
+    fullCode: `<span class="ty">int</span> a[<span class="num">1001</span>], s[<span class="num">1001</span>] <span class="op">=</span> {<span class="num">0</span>};
+
+<span class="cmt">// 누적 합 구성 (1-indexed)</span>
+<span class="kw">for</span>(<span class="ty">int</span> i <span class="op">=</span> <span class="num">1</span>; i <span class="op">&lt;=</span> n; i<span class="op">++</span>) {
+    <span class="fn">scanf</span>(<span class="str">"%d"</span>, <span class="op">&</span>a[i]);
+    s[i] <span class="op">=</span> s[i<span class="op">-</span><span class="num">1</span>] <span class="op">+</span> a[i];
+}
+
+<span class="cmt">// 구간 [L, R] 합 → O(1)</span>
+<span class="ty">int</span> L <span class="op">=</span> <span class="num">2</span>, R <span class="op">=</span> <span class="num">5</span>;
+<span class="ty">int</span> result <span class="op">=</span> s[R] <span class="op">-</span> s[L<span class="op">-</span><span class="num">1</span>];
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, result);`,
+    tips: [
+      { title: '시간복잡도', body: '전처리 O(n) 후 각 쿼리 O(1). 쿼리 수가 많을수록 유리' },
+      { title: '1-indexed', body: 's[0]=0으로 시작해야 L=1 경우 s[L-1]=s[0]=0 정상 처리' },
+      { title: '2D 누적 합', body: '2차원으로 확장하면 직사각형 구간 합도 O(1)에 계산' },
+      { title: '응용 문제', body: '구간 합 쿼리, 부분 배열 최댓값 등에 광범위하게 사용' }
+    ],
+    quiz: {
+      q: '배열 a = [_, 3, 1, 4, 1, 5] (1-indexed)일 때 구간 [2,4]의 합은? (s[1]=3, s[2]=4, s[3]=8, s[4]=9)',
+      opts: ['8', '6', '9', '5'],
+      answer: 1,
+      ok: '맞습니다! s[4] - s[1] = 9 - 3 = 6. a[2]+a[3]+a[4] = 1+4+1 = 6 ✓',
+      fail: '틀렸습니다. 구간 [L,R] 합 = s[R] - s[L-1] = s[4] - s[1] = 9 - 3 = 6입니다.'
+    }
+  },
+  {
+    num: '06',
+    tag: 'technique',
+    badge: '꿀팁',
+    badgeColor: 'rgba(93,202,165,0.15)',
+    badgeText: '#5dcaa5',
+    color: '#5dcaa5',
+    title: '실전 꿀팁 모음',
+    desc: '인덱스 1부터 사용하기, 최댓값/최솟값 갱신, 원형 배열 처리 등 대회 필수 패턴들.',
+    preview: `int max_val = -2147483648;\nif(arr[i] > max_val) max_val = arr[i];\n((i + 1) % n);  // 원형`,
+    fullCode: `<span class="cmt">// ① 1-indexed 활용</span>
+<span class="ty">int</span> arr[<span class="num">101</span>]; <span class="cmt">// 0번 버리고 1~100 사용</span>
+
+<span class="cmt">// ② 최댓값/최솟값 갱신</span>
+<span class="ty">int</span> max_val <span class="op">=</span> <span class="op">-</span><span class="num">2147483648</span>; <span class="cmt">// INT_MIN</span>
+<span class="ty">int</span> min_val <span class="op">=</span> <span class="num">2147483647</span>;  <span class="cmt">// INT_MAX</span>
+<span class="kw">for</span>(<span class="ty">int</span> i <span class="op">=</span> <span class="num">0</span>; i <span class="op">&lt;</span> n; i<span class="op">++</span>) {
+    <span class="kw">if</span>(arr[i] <span class="op">&gt;</span> max_val) max_val <span class="op">=</span> arr[i];
+    <span class="kw">if</span>(arr[i] <span class="op">&lt;</span> min_val) min_val <span class="op">=</span> arr[i];
+}
+
+<span class="cmt">// ③ 원형 배열 (끝→처음)</span>
+<span class="ty">int</span> next <span class="op">=</span> (i <span class="op">+</span> <span class="num">1</span>) <span class="op">%</span> n;
+<span class="ty">int</span> prev <span class="op">=</span> (i <span class="op">-</span> <span class="num">1</span> <span class="op">+</span> n) <span class="op">%</span> n;`,
+    tips: [
+      { title: '1-indexed 장점', body: '누적 합, 트리 등에서 0번 인덱스를 sentinel로 활용 가능' },
+      { title: 'limits.h 활용', body: '#include<limits.h>로 INT_MAX, INT_MIN 상수 사용 가능' },
+      { title: '원형 prev', body: '(i-1+n)%n : -1+n으로 음수 방지 필수! -1%n = 음수 오류' },
+      { title: 'swap 패턴', body: 'int tmp=a; a=b; b=tmp; 기본 swap (XOR swap은 실수 위험)' }
+    ],
+    quiz: {
+      q: '크기 n=5인 원형 배열에서 인덱스 0의 이전(prev) 인덱스는?',
+      opts: ['-1', '0', '4', '5'],
+      answer: 2,
+      ok: '맞습니다! (0 - 1 + 5) % 5 = 4. +n을 더해 음수를 방지합니다.',
+      fail: '틀렸습니다. (i-1+n)%n 공식 사용: (0-1+5)%5 = 4%5 = 4입니다. -1%5는 언어에 따라 음수!'
+    }
+  }
+];
+
+let currentQuizAnswered = false;
+
+function renderCards(filter) {
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = '';
+  patterns.filter(p => filter === 'all' || p.tag === filter).forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.onclick = () => openModal(p);
+    card.innerHTML = `
+      <div class="card-num">${p.num}</div>
+      <div class="card-title" style="color:${p.color}">
+        ${p.title}
+        <span class="card-badge" style="background:${p.badgeColor};color:${p.badgeText}">${p.badge}</span>
+      </div>
+      <div class="card-desc">${p.desc}</div>
+      <div class="preview">${p.preview}</div>
+      <div class="card-arrow">→</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function filterCards(f, el) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderCards(f);
+}
+
+function openModal(p) {
+  currentQuizAnswered = false;
+  document.getElementById('mTitle').textContent = `${p.num}. ${p.title}`;
+  document.getElementById('mSub').textContent = p.desc;
+
+  const tipsHtml = p.tips.map(t => `
+    <div class="tip-card">
+      <div class="tip-card-title" style="color:${p.color}">${t.title}</div>
+      <div class="tip-card-body">${t.body}</div>
+    </div>
+  `).join('');
+
+  const optsHtml = p.quiz.opts.map((o, i) => `
+    <button class="quiz-opt" onclick="checkQuiz(this, ${i}, ${p.quiz.answer}, '${p.quiz.ok.replace(/'/g,"\\'")}', '${p.quiz.fail.replace(/'/g,"\\'")}', ${p.quiz.answer})">${o}</button>
+  `).join('');
+
+  document.getElementById('mBody').innerHTML = `
+    <div class="section-label">상세 설명</div>
+    <div class="desc-block">${p.desc}</div>
+    <div class="section-label">코드 예시</div>
+    <div class="code-block">
+      <div class="code-header">
+        <span class="code-lang">C Language</span>
+        <button class="copy-btn" onclick="copyCode(this, ${JSON.stringify(p.preview)})">복사</button>
+      </div>
+      <pre>${p.fullCode}</pre>
+    </div>
+    <div class="section-label">핵심 포인트</div>
+    <div class="tip-grid">${tipsHtml}</div>
+    <div class="quiz-area">
+      <div class="section-label">확인 퀴즈</div>
+      <div class="quiz-q">${p.quiz.q}</div>
+      <div class="quiz-options">${optsHtml}</div>
+      <div class="quiz-result" id="qResult"></div>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function checkQuiz(btn, chosen, answer, ok, fail) {
+  if (currentQuizAnswered) return;
+  currentQuizAnswered = true;
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  opts.forEach((o, i) => {
+    o.style.pointerEvents = 'none';
+    if (i === answer) o.classList.add('correct');
+  });
+  if (chosen !== answer) btn.classList.add('wrong');
+  const res = document.getElementById('qResult');
+  res.textContent = chosen === answer ? '✓ ' + ok : '✗ ' + fail;
+  res.className = 'quiz-result show ' + (chosen === answer ? 'ok' : 'fail');
+}
+
+function copyCode(btn, code) {
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '복사됨!';
+    setTimeout(() => btn.textContent = '복사', 1500);
+  });
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+renderCards('all');
+</script>
