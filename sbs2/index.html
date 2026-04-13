@@ -1,0 +1,432 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+.hero{padding:2.4rem 1.5rem 1.4rem;text-align:center;border-bottom:0.5px solid var(--color-border-tertiary)}
+.htag{display:inline-block;font-family:var(--font-mono);font-size:11px;color:var(--color-text-info);background:var(--color-background-info);padding:3px 10px;border-radius:20px;margin-bottom:.9rem;letter-spacing:.06em}
+.hero h1{font-size:22px;font-weight:500;margin-bottom:.4rem}
+.hero p{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.4rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:380px;margin:0 auto}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem;text-align:center}
+.stat-n{font-size:22px;font-weight:500}
+.stat-l{font-size:11px;color:var(--color-text-secondary);font-family:var(--font-mono)}
+.nav{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);overflow-x:auto}
+.nb{font-size:12px;font-family:var(--font-mono);padding:10px 16px;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;background:none;border-left:none;border-right:none;border-top:none}
+.nb:hover{color:var(--color-text-primary)}
+.nb.on{color:var(--color-text-info);border-bottom-color:var(--color-border-info)}
+.pane{display:none;padding:1.2rem 1.5rem}.pane.on{display:block}
+
+/* SIM */
+.sc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.2rem;margin-bottom:1rem}
+.slbl{font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);letter-spacing:.08em;margin-bottom:.8rem;text-transform:uppercase}
+.bit-row{display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-bottom:.5rem}
+.bw{display:flex;flex-direction:column;align-items:center;gap:2px}
+.blabel{font-size:9px;font-family:var(--font-mono);color:var(--color-text-tertiary)}
+.bb{width:34px;height:34px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);font-family:var(--font-mono);font-size:15px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.bb.on{background:var(--color-background-info);border-color:var(--color-border-info);color:var(--color-text-info)}
+.bb.res{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success);cursor:default}
+.bb.res.z{background:var(--color-background-secondary);border-color:var(--color-border-tertiary);color:var(--color-text-tertiary);cursor:default}
+.op-row{display:flex;align-items:center;gap:8px;margin:.5rem 0;flex-wrap:wrap}
+.op-btn{font-family:var(--font-mono);font-size:12px;padding:5px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.op-btn:hover,.op-btn.on{border-color:var(--color-border-info);color:var(--color-text-info);background:var(--color-background-info)}
+.sres{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem 1rem;font-size:13px;color:var(--color-text-secondary);line-height:1.9;font-family:var(--font-mono)}
+.sres span{color:var(--color-text-primary);font-weight:500}
+.sbtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.8rem}
+.sbtn{font-size:12px;font-family:var(--font-mono);padding:6px 13px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.sbtn:hover{border-color:var(--color-border-info);color:var(--color-text-info)}
+.sbtn.p{border-color:var(--color-border-info);color:var(--color-text-info);background:var(--color-background-info)}
+.row-label{font-size:11px;font-family:var(--font-mono);color:var(--color-text-secondary);min-width:36px;text-align:right;margin-right:4px}
+.divider-row{height:1px;background:var(--color-border-tertiary);margin:.4rem 0}
+select{font-size:12px;padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-mono)}
+input[type=text]{font-family:var(--font-mono);font-size:12px;padding:6px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary)}
+
+/* QUIZ */
+.qpb{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:1.2rem}
+.qpf{height:100%;background:var(--color-border-info);border-radius:2px;transition:width .3s}
+.qhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+.qnum{font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-bottom:.3rem}
+.qtxt{font-size:14px;font-weight:500;line-height:1.6;margin-bottom:1rem;padding:.8rem 1rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.qopts{display:flex;flex-direction:column;gap:7px;margin-bottom:.9rem}
+.qo{padding:.65rem 1rem;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;text-align:left;background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-mono);transition:all .15s}
+.qo:hover{border-color:var(--color-border-info);color:var(--color-text-info)}
+.qo.ok{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
+.qo.no{background:var(--color-background-danger);border-color:var(--color-border-danger);color:var(--color-text-danger)}
+.qexp{font-size:13px;line-height:1.7;padding:.75rem 1rem;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);margin-bottom:.9rem;display:none;font-family:var(--font-mono)}
+.qexp.show{display:block}
+.qnav{display:flex;align-items:center;justify-content:space-between}
+.qscore{font-size:12px;font-family:var(--font-mono);padding:4px 10px;border-radius:20px;background:var(--color-background-success);color:var(--color-text-success)}
+
+/* ANS */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-bottom:1.5rem}
+.ac{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.75rem 1rem}
+.an{font-size:10px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-bottom:2px}
+.aq{font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;line-height:1.4}
+.aa{font-size:13px;font-weight:500;font-family:var(--font-mono);color:var(--color-text-info)}
+
+/* FORMULA */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:1.4rem}
+.fc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.1rem}
+.ft{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:.4rem;font-family:var(--font-mono)}
+.ff{font-size:15px;font-weight:500;font-family:var(--font-mono);color:var(--color-text-primary);margin-bottom:.3rem}
+.fd{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.truth-wrap{overflow-x:auto}
+table{border-collapse:collapse;font-family:var(--font-mono);font-size:13px}
+th,td{padding:6px 14px;border:0.5px solid var(--color-border-tertiary);text-align:center}
+th{background:var(--color-background-secondary);color:var(--color-text-secondary);font-weight:500}
+td.one{color:var(--color-text-info);font-weight:500}
+td.zero{color:var(--color-text-tertiary)}
+</style>
+
+<h2 class="sr-only">진수변환 + 비트연산 AND OR XOR — 중등올림피아드 대비 인터랙티브 학습 홈페이지</h2>
+
+<div class="hero">
+  <div class="htag">INFORMATICS OLYMPIAD · BIT OPS</div>
+  <h1>비트연산 완전 정복</h1>
+  <p>AND · OR · XOR + 진수변환 연결 30문제</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="ts">0</div><div class="stat-l">푼 문제</div></div>
+    <div class="stat"><div class="stat-n" id="tc">0</div><div class="stat-l">정답</div></div>
+    <div class="stat"><div class="stat-n">30</div><div class="stat-l">전체</div></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nb on" onclick="sp('sim',this)">비트 시뮬레이터</button>
+  <button class="nb" onclick="sp('quiz',this)">문제 풀기</button>
+  <button class="nb" onclick="sp('ans',this)">정답 해설</button>
+  <button class="nb" onclick="sp('formula',this)">핵심 공식</button>
+</div>
+
+<!-- SIM -->
+<div class="pane on" id="pane-sim">
+
+  <div class="sc">
+    <div class="slbl">비트연산 시뮬레이터 — A, B를 클릭해 AND / OR / XOR 결과 실시간 확인</div>
+    <div class="sbtns">
+      <select id="nbits" onchange="initSim()">
+        <option value="4">4비트</option>
+        <option value="6">6비트</option>
+        <option value="8">8비트</option>
+      </select>
+      <button class="sbtn" onclick="randSim()">랜덤</button>
+      <button class="sbtn" onclick="resetSim()">초기화</button>
+    </div>
+    <div style="display:flex;align-items:center;margin-bottom:2px">
+      <span class="row-label">A</span>
+      <div class="bit-row" id="row-a"></div>
+    </div>
+    <div style="display:flex;align-items:center;margin-bottom:2px">
+      <span class="row-label">B</span>
+      <div class="bit-row" id="row-b"></div>
+    </div>
+    <div class="divider-row"></div>
+    <div class="op-row">
+      <span style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-mono)">연산:</span>
+      <button class="op-btn on" id="opAND" onclick="setOp('AND')">AND</button>
+      <button class="op-btn" id="opOR" onclick="setOp('OR')">OR</button>
+      <button class="op-btn" id="opXOR" onclick="setOp('XOR')">XOR</button>
+    </div>
+    <div style="display:flex;align-items:center;margin-bottom:.5rem">
+      <span class="row-label" id="op-label" style="color:var(--color-text-info)">AND</span>
+      <div class="bit-row" id="row-r"></div>
+    </div>
+    <div class="sres" id="sim-result"></div>
+  </div>
+
+  <div class="sc">
+    <div class="slbl">진수 변환기 — 10진수 / 2진수 / 8진수 / 16진수 상호 변환</div>
+    <div class="sbtns">
+      <select id="from-base"><option value="10">10진수</option><option value="2">2진수</option><option value="8">8진수</option><option value="16">16진수</option></select>
+      <input type="text" id="conv-in" placeholder="값 입력 (예: 42 또는 1010)" style="width:170px" oninput="doConv()">
+    </div>
+    <div class="sres" id="conv-res">값을 입력하면 자동으로 변환됩니다</div>
+  </div>
+
+  <div class="sc">
+    <div class="slbl">왼쪽 시프트 체험 — 비트를 왼쪽으로 이동 (× 2배)</div>
+    <div class="sbtns">
+      <input type="text" id="shift-in" placeholder="2진수 입력 (예: 10101)" style="width:170px">
+      <button class="sbtn p" onclick="doShift()">왼쪽 시프트</button>
+      <button class="sbtn" onclick="document.getElementById('shift-in').value='';document.getElementById('shift-res').textContent='2진수를 입력 후 시프트 버튼을 누르세요'">초기화</button>
+    </div>
+    <div class="sres" id="shift-res">2진수를 입력 후 시프트 버튼을 누르세요</div>
+  </div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="pane" id="pane-quiz">
+  <div id="quiz-area"></div>
+</div>
+
+<!-- ANS -->
+<div class="pane" id="pane-ans">
+  <div class="slbl">전체 정답 · 30문제</div>
+  <div class="agrid" id="ans-grid"></div>
+</div>
+
+<!-- FORMULA -->
+<div class="pane" id="pane-formula">
+  <div class="slbl">비트연산 핵심 공식</div>
+  <div class="fgrid">
+    <div class="fc"><div class="ft">AND 연산</div><div class="ff">A &amp; B</div><div class="fd">둘 다 1일 때만 1. 공통으로 켜진 비트만 남김</div></div>
+    <div class="fc"><div class="ft">OR 연산</div><div class="ff">A | B</div><div class="fd">둘 중 하나라도 1이면 1. 하나라도 켜져 있으면 1</div></div>
+    <div class="fc"><div class="ft">XOR 연산</div><div class="ff">A ^ B</div><div class="fd">서로 다르면 1, 같으면 0. 차이 나는 비트만 표시</div></div>
+    <div class="fc"><div class="ft">왼쪽 시프트</div><div class="ff">A &lt;&lt; 1</div><div class="fd">2진수 뒤에 0 추가 → 2배. 오른쪽 시프트는 ÷2</div></div>
+    <div class="fc"><div class="ft">A XOR A = 0</div><div class="ff">같은 수끼리</div><div class="fd">자기 자신과 XOR하면 항상 0</div></div>
+    <div class="fc"><div class="ft">A AND 0 = 0</div><div class="ff">0과 AND</div><div class="fd">0과 AND하면 항상 0. A OR 0 = A, A XOR 0 = A</div></div>
+  </div>
+
+  <div class="slbl" style="margin-top:.5rem">비트연산 진리표</div>
+  <div class="truth-wrap">
+    <table style="margin-bottom:1.4rem">
+      <thead><tr><th>A</th><th>B</th><th>AND</th><th>OR</th><th>XOR</th></tr></thead>
+      <tbody id="truth-tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="slbl">자주 나오는 진수 변환</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px">
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .8rem;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">8진수 자리 → 2진수</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:3px;line-height:1.8">0=000 1=001 2=010<br>3=011 4=100 5=101<br>6=110 7=111</div></div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .8rem;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">16진수 자리 → 2진수</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:3px;line-height:1.8">0~9 그대로<br>A=1010 B=1011<br>C=1100 D=1101<br>E=1110 F=1111</div></div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .8rem;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">2의 거듭제곱</div><div style="font-size:12px;color:var(--color-text-secondary);margin-top:3px;line-height:1.8">2¹=2 2²=4 2³=8<br>2⁴=16 2⁵=32<br>2⁶=64 2⁷=128<br>2⁸=256</div></div>
+  </div>
+</div>
+
+<script>
+let bitsN=4,bA=[],bB=[],curOp='AND',userAns=new Array(30).fill(-1),qIdx=0,solved=0,correct=0;
+
+function sp(id,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pane-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='ans')renderAns();
+}
+
+/* SIM */
+function initSim(){
+  bitsN=parseInt(document.getElementById('nbits').value);
+  bA=new Array(bitsN).fill(0);
+  bB=new Array(bitsN).fill(0);
+  buildRows();updateResult();
+}
+function buildRows(){
+  ['a','b'].forEach(r=>{
+    const row=document.getElementById('row-'+r);
+    row.innerHTML='';
+    const arr=r==='a'?bA:bB;
+    for(let i=0;i<bitsN;i++){
+      const w=document.createElement('div');w.className='bw';
+      const lbl=document.createElement('div');lbl.className='blabel';lbl.textContent=bitsN-1-i;
+      const btn=document.createElement('button');btn.className='bb'+(arr[i]?' on':'');
+      btn.textContent=arr[i];
+      const ri=i,ra=r;
+      btn.onclick=()=>{if(ra==='a')bA[ri]^=1;else bB[ri]^=1;btn.textContent=ra==='a'?bA[ri]:bB[ri];btn.classList.toggle('on',(ra==='a'?bA[ri]:bB[ri])===1);updateResult();};
+      w.appendChild(lbl);w.appendChild(btn);row.appendChild(w);
+    }
+  });
+  buildResRow([]);
+}
+function buildResRow(res){
+  const row=document.getElementById('row-r');
+  row.innerHTML='';
+  for(let i=0;i<bitsN;i++){
+    const w=document.createElement('div');w.className='bw';
+    const lbl=document.createElement('div');lbl.className='blabel';lbl.textContent='';
+    const btn=document.createElement('button');
+    const v=res[i]||0;
+    btn.className='bb res'+(v===0?' z':'');
+    btn.textContent=v;
+    w.appendChild(lbl);w.appendChild(btn);row.appendChild(w);
+  }
+}
+function calcOp(a,b,op){
+  return a.map((v,i)=>{
+    if(op==='AND')return v&b[i];
+    if(op==='OR')return v|b[i];
+    return v^b[i];
+  });
+}
+function binToNum(arr){return parseInt(arr.join(''),2);}
+function numToStr(arr){return arr.join('');}
+function updateResult(){
+  const res=calcOp(bA,bB,curOp);
+  buildResRow(res);
+  const aStr=numToStr(bA),bStr=numToStr(bB),rStr=numToStr(res);
+  const aD=binToNum(bA),bD=binToNum(bB),rD=binToNum(res);
+  document.getElementById('sim-result').innerHTML=
+    `A = <span>${aStr}</span> (10진수 ${aD})<br>`+
+    `B = <span>${bStr}</span> (10진수 ${bD})<br>`+
+    `<span>${curOp}</span> 결과 = <span>${rStr}</span> (10진수 ${rD})`;
+}
+function setOp(op){
+  curOp=op;
+  document.getElementById('op-label').textContent=op;
+  ['AND','OR','XOR'].forEach(o=>document.getElementById('op'+o).classList.toggle('on',o===op));
+  updateResult();
+}
+function resetSim(){bA=new Array(bitsN).fill(0);bB=new Array(bitsN).fill(0);buildRows();updateResult();}
+function randSim(){bA=bA.map(()=>Math.random()>.5?1:0);bB=bB.map(()=>Math.random()>.5?1:0);buildRows();updateResult();}
+
+/* CONV */
+function doConv(){
+  const v=document.getElementById('conv-in').value.trim().toUpperCase();
+  const base=parseInt(document.getElementById('from-base').value);
+  if(!v){document.getElementById('conv-res').textContent='값을 입력하면 자동으로 변환됩니다';return;}
+  let dec;
+  try{dec=parseInt(v,base);}catch(e){document.getElementById('conv-res').textContent='잘못된 입력입니다';return;}
+  if(isNaN(dec)){document.getElementById('conv-res').textContent='잘못된 입력입니다';return;}
+  const b2=dec.toString(2);const b8=dec.toString(8);const b16=dec.toString(16).toUpperCase();
+  document.getElementById('conv-res').innerHTML=
+    `입력: <span>${v}</span> (${base}진수)<br>`+
+    `10진수: <span>${dec}</span> &nbsp; 2진수: <span>${b2}</span><br>`+
+    `8진수: <span>${b8}</span> &nbsp; 16진수: <span>${b16}</span>`;
+}
+
+/* SHIFT */
+function doShift(){
+  const v=document.getElementById('shift-in').value.trim();
+  if(!/^[01]+$/.test(v)){document.getElementById('shift-res').textContent='0과 1로만 이루어진 2진수를 입력하세요';return;}
+  const shifted=v+'0';
+  const orig=parseInt(v,2);const sh=parseInt(shifted,2);
+  document.getElementById('shift-res').innerHTML=
+    `원래: <span>${v}</span> (10진수 ${orig})<br>`+
+    `시프트 후: <span>${shifted}</span> (10진수 ${sh})<br>`+
+    `${sh} = ${orig} × <span>2</span> → <span>2배</span>`;
+}
+
+/* TRUTH TABLE */
+(function(){
+  const rows=[[0,0],[0,1],[1,0],[1,1]];
+  const tb=document.getElementById('truth-tbody');
+  rows.forEach(([a,b])=>{
+    const and=a&b,or=a|b,xor=a^b;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="${a?'one':'zero'}">${a}</td><td class="${b?'one':'zero'}">${b}</td>`+
+      `<td class="${and?'one':'zero'}">${and}</td><td class="${or?'one':'zero'}">${or}</td><td class="${xor?'one':'zero'}">${xor}</td>`;
+    tb.appendChild(tr);
+  });
+})();
+
+/* QUIZ */
+const QUIZ=[
+  {q:"(1011)₂ AND (1101)₂ = ?",opts:["1001","1111","0110","1010"],ans:0,exp:"자리별: 1&1=1, 0&1=0, 1&0=0, 1&1=1 → 1001"},
+  {q:"(1011)₂ OR (1101)₂ = ?",opts:["1001","1111","0110","1010"],ans:1,exp:"자리별: 1|1=1, 0|1=1, 1|0=1, 1|1=1 → 1111"},
+  {q:"(1011)₂ XOR (1101)₂ = ?",opts:["1001","1111","0110","1010"],ans:2,exp:"자리별: 1^1=0, 0^1=1, 1^0=1, 1^1=0 → 0110"},
+  {q:"(1110)₂ AND (1011)₂ = ?",opts:["1111","1010","0101","1100"],ans:1,exp:"1&1=1, 1&0=0, 1&1=1, 0&1=0 → 1010"},
+  {q:"(1110)₂ OR (1011)₂ = ?",opts:["1010","1110","1111","1001"],ans:2,exp:"1|1=1, 1|0=1, 1|1=1, 0|1=1 → 1111"},
+  {q:"(1110)₂ XOR (1011)₂ = ?",opts:["0101","0110","1001","1100"],ans:0,exp:"1^1=0, 1^0=1, 1^1=0, 0^1=1 → 0101"},
+  {q:"(101101)₂ AND (110011)₂ = ?",opts:["111111","100001","011110","100011"],ans:1,exp:"자리별 AND: 1,0,0,0,0,1 → 100001"},
+  {q:"(101101)₂ OR (110011)₂ = ?",opts:["100001","011110","111111","110101"],ans:2,exp:"자리별 OR: 1,1,1,1,1,1 → 111111"},
+  {q:"(101101)₂ XOR (110011)₂ = ?",opts:["011110","100001","111111","010100"],ans:0,exp:"자리별 XOR: 0,1,1,1,1,0 → 011110"},
+  {q:"(1001)₂ AND (0110)₂ = ?",opts:["0000","1111","1010","0110"],ans:0,exp:"어느 자리도 둘 다 1이 아님 → 0000"},
+  {q:"10진수 13과 11의 AND 결과를 10진수로?",opts:["7","9","11","15"],ans:1,exp:"13=1101, 11=1011 → AND=1001 → 9"},
+  {q:"10진수 13과 11의 OR 결과를 10진수로?",opts:["9","13","15","11"],ans:2,exp:"1101 OR 1011 = 1111 → 15"},
+  {q:"10진수 13과 11의 XOR 결과를 10진수로?",opts:["2","4","6","8"],ans:2,exp:"1101 XOR 1011 = 0110 → 6"},
+  {q:"10진수 9와 14의 AND 결과를 10진수로?",opts:["6","7","8","15"],ans:2,exp:"9=1001, 14=1110 → AND=1000 → 8"},
+  {q:"10진수 9와 14의 OR 결과를 10진수로?",opts:["9","14","15","7"],ans:2,exp:"1001 OR 1110 = 1111 → 15"},
+  {q:"10진수 9와 14의 XOR 결과를 10진수로?",opts:["5","6","7","8"],ans:2,exp:"1001 XOR 1110 = 0111 → 7"},
+  {q:"(11110000)₂ AND (10101010)₂ = ?",opts:["10100000","11111010","01011010","10010000"],ans:0,exp:"앞 4자리만 AND. 11110000 & 10101010 = 10100000"},
+  {q:"(11110000)₂ OR (10101010)₂ = ?",opts:["10100000","11111010","01011010","11110010"],ans:1,exp:"11110000 | 10101010 = 11111010"},
+  {q:"(11110000)₂ XOR (10101010)₂ = ?",opts:["10100000","11111010","01011010","01010000"],ans:2,exp:"11110000 ^ 10101010 = 01011010"},
+  {q:"(3A)₁₆ XOR (27)₁₆ 의 16진수 결과는?",opts:["1C","1D","1E","19"],ans:1,exp:"3A=00111010, 27=00100111 → XOR=00011101 → 1D"},
+  {q:"(57)₈ AND (36)₈ 의 8진수 결과는?",opts:["14","16","20","22"],ans:1,exp:"57₈=101111, 36₈=011110 → AND=001110 → 16₈"},
+  {q:"(57)₈ OR (36)₈ 의 8진수 결과는?",opts:["67","77","57","70"],ans:1,exp:"101111 | 011110 = 111111 → 77₈"},
+  {q:"(57)₈ XOR (36)₈ 의 8진수 결과는?",opts:["51","61","71","41"],ans:1,exp:"101111 ^ 011110 = 110001 → 61₈"},
+  {q:"A=101010, B=001111 일 때 A AND B = ?",opts:["001010","101111","100101","000010"],ans:0,exp:"101010 & 001111 = 001010"},
+  {q:"(100000)₂~(111111)₂ 중 마지막 비트가 1인 수는 몇 개?",opts:["8개","16개","32개","24개"],ans:1,exp:"첫 자리=1 고정, 마지막=1 고정 → 가운데 4비트 자유 → 2⁴=16개"},
+  {q:"A XOR B = 0000 일 때 A와 B의 관계는?",opts:["A+B=0","A = B","A = -B","A와 B 무관"],ans:1,exp:"XOR이 0이 되려면 모든 자리가 같아야 함 → A = B"},
+  {q:"A AND B = 1111 (4비트) 일 때 A, B는?",opts:["A=1111, B=0000","A=1010, B=1111","A=1111, B=1111","아무 값이나 가능"],ans:2,exp:"AND=1111이 되려면 모든 자리에서 A=1, B=1 → A=B=1111"},
+  {q:"A OR B = 0000 (4비트) 일 때 A, B는?",opts:["A=0000, B=1111","A=0000, B=0000","A=1111, B=0000","모두 1이어야 함"],ans:1,exp:"OR=0000이 되려면 모든 자리 A=0, B=0 → A=B=0000"},
+  {q:"(10101)₂ 를 왼쪽으로 한 칸 이동하면 원래의 몇 배?",opts:["같은 값","1.5배","2배","4배"],ans:2,exp:"10101→101010. 뒤에 0 하나 추가 = ×2. 21→42"},
+  {q:"(11010)₂ XOR (10101)₂ 의 1의 개수는?",opts:["3개","4개","5개","2개"],ans:1,exp:"11010 ^ 10101 = 01111 → 1의 개수 4개"},
+];
+
+const AQTEXT=[
+  "(1011)₂ AND (1101)₂","(1011)₂ OR (1101)₂","(1011)₂ XOR (1101)₂",
+  "(1110)₂ AND (1011)₂","(1110)₂ OR (1011)₂","(1110)₂ XOR (1011)₂",
+  "(101101)₂ AND (110011)₂","(101101)₂ OR (110011)₂","(101101)₂ XOR (110011)₂",
+  "(1001)₂와 (0110)₂의 AND, OR, XOR",
+  "13 AND 11 (10진수)","13 OR 11 (10진수)","13 XOR 11 (10진수)",
+  "9 AND 14 (2진수·10진수)","9 OR 14 (2진수·10진수)","9 XOR 14 (2진수·10진수)",
+  "(11110000)₂ AND (10101010)₂","(11110000)₂ OR (10101010)₂","(11110000)₂ XOR (10101010)₂",
+  "(3A)₁₆ XOR (27)₁₆ (16진수)","(57)₈ AND (36)₈ (8진수)","(57)₈ OR (36)₈ (8진수)",
+  "(57)₈ XOR (36)₈ (8진수)","A=101010, B=001111 AND/OR/XOR",
+  "마지막 비트=1인 6자리 2진수 개수","A XOR B=0000 관계",
+  "A AND B=1111 조건","A OR B=0000 조건",
+  "(10101)₂ 왼쪽 시프트 결과","(11010)₂ XOR (10101)₂ 결과"
+];
+const ATEXT=[
+  "1001₂","1111₂","0110₂","1010₂","1111₂","0101₂",
+  "100001₂","111111₂","011110₂",
+  "AND=0000, OR=1111, XOR=1111",
+  "1001₂, 9","1111₂, 15","0110₂, 6",
+  "1000₂, 8","1111₂, 15","0111₂, 7",
+  "10100000₂","11111010₂","01011010₂",
+  "1D₁₆","16₈","77₈","61₈",
+  "AND=001010, OR=101111, XOR=100101",
+  "16개","A = B","A=1111, B=1111","A=0000, B=0000",
+  "101010₂, 2배","01111₂, 1의 개수 4개"
+];
+
+function renderAns(){
+  const g=document.getElementById('ans-grid');
+  if(g.children.length)return;
+  g.innerHTML=AQTEXT.map((q,i)=>`
+<div class="ac">
+  <div class="an">${i+1}번</div>
+  <div class="aq">${q}</div>
+  <div class="aa">${ATEXT[i]}</div>
+</div>`).join('');
+}
+
+function initQuiz(){
+  const q=QUIZ[qIdx];
+  const pct=Math.round(qIdx/30*100);
+  const answered=userAns[qIdx]!==-1;
+  document.getElementById('quiz-area').innerHTML=`
+<div class="qpb"><div class="qpf" style="width:${pct}%"></div></div>
+<div class="qhdr">
+  <span style="font-size:13px;font-weight:500">${qIdx+1}/30번 문제</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="qscore">정답 ${correct}/${solved}</span>
+    <button class="sbtn" onclick="jumpQ(${Math.max(0,qIdx-1)})" ${qIdx===0?'style="opacity:.4;pointer-events:none"':''}>이전</button>
+  </div>
+</div>
+<div class="qnum">문제 ${qIdx+1}</div>
+<div class="qtxt">${q.q}</div>
+<div class="qopts">${q.opts.map((o,i)=>`<button class="qo" onclick="ansQ(${i})">${o}</button>`).join('')}</div>
+<div class="qexp" id="qexp">${q.exp}</div>
+<div class="qnav">
+  <button class="sbtn" id="nb" onclick="jumpQ(${Math.min(29,qIdx+1)})" style="opacity:.4;pointer-events:none">다음 문제</button>
+  <span style="font-size:12px;font-family:var(--font-mono);color:var(--color-text-tertiary)">${qIdx+1} / 30</span>
+</div>`;
+  if(answered)restoreQ(userAns[qIdx]);
+}
+
+function restoreQ(ch){
+  const q=QUIZ[qIdx];
+  document.querySelectorAll('.qo').forEach((o,i)=>{o.style.pointerEvents='none';if(i===q.ans)o.classList.add('ok');if(i===ch&&ch!==q.ans)o.classList.add('no');});
+  document.getElementById('qexp').classList.add('show');
+  const nb=document.getElementById('nb');if(nb){nb.style.opacity='1';nb.style.pointerEvents='auto';}
+}
+
+function ansQ(ch){
+  if(userAns[qIdx]!==-1)return;
+  const q=QUIZ[qIdx];
+  userAns[qIdx]=ch;
+  document.querySelectorAll('.qo').forEach((o,i)=>{o.style.pointerEvents='none';if(i===q.ans)o.classList.add('ok');if(i===ch&&ch!==q.ans)o.classList.add('no');});
+  document.getElementById('qexp').classList.add('show');
+  const nb=document.getElementById('nb');if(nb){nb.style.opacity='1';nb.style.pointerEvents='auto';}
+  solved=userAns.filter(a=>a!==-1).length;
+  correct=QUIZ.filter((_,k)=>userAns[k]===QUIZ[k].ans).length;
+  document.getElementById('ts').textContent=solved;
+  document.getElementById('tc').textContent=correct;
+}
+
+function jumpQ(n){qIdx=n;initQuiz();}
+
+initSim();
+initQuiz();
+</script>
