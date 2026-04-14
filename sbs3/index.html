@@ -1,0 +1,456 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+.hero{padding:2.4rem 1.5rem 1.4rem;text-align:center;border-bottom:0.5px solid var(--color-border-tertiary)}
+.htag{display:inline-block;font-family:var(--font-mono);font-size:11px;color:var(--color-text-info);background:var(--color-background-info);padding:3px 10px;border-radius:20px;margin-bottom:.9rem;letter-spacing:.06em}
+.hero h1{font-size:22px;font-weight:500;margin-bottom:.4rem}
+.hero p{font-size:13px;color:var(--color-text-secondary);margin-bottom:1.4rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:380px;margin:0 auto}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem;text-align:center}
+.stat-n{font-size:22px;font-weight:500}
+.stat-l{font-size:11px;color:var(--color-text-secondary);font-family:var(--font-mono)}
+.nav{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);overflow-x:auto}
+.nb{font-size:12px;font-family:var(--font-mono);padding:10px 16px;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;background:none;border-left:none;border-right:none;border-top:none}
+.nb:hover{color:var(--color-text-primary)}
+.nb.on{color:var(--color-text-info);border-bottom-color:var(--color-border-info)}
+.pane{display:none;padding:1.2rem 1.5rem}.pane.on{display:block}
+.slbl{font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);letter-spacing:.08em;margin-bottom:.8rem;text-transform:uppercase}
+
+/* SIM */
+.sc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.2rem;margin-bottom:1rem}
+.sctitle{font-size:12px;font-family:var(--font-mono);color:var(--color-text-secondary);margin-bottom:.9rem;font-weight:500}
+.bit-grid{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.6rem;align-items:flex-end}
+.bw{display:flex;flex-direction:column;align-items:center;gap:3px}
+.blbl{font-size:9px;font-family:var(--font-mono);color:var(--color-text-tertiary)}
+.bb{width:36px;height:36px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);font-family:var(--font-mono);font-size:15px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.bb.on{background:var(--color-background-info);border-color:var(--color-border-info);color:var(--color-text-info)}
+.bb.res{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success);cursor:default;font-size:14px}
+.bb.res.z{background:var(--color-background-secondary);border-color:var(--color-border-tertiary);color:var(--color-text-tertiary);cursor:default}
+.row-lbl{font-size:11px;font-family:var(--font-mono);color:var(--color-text-secondary);min-width:40px;text-align:right;padding-right:6px;margin-bottom:4px}
+.srow{display:flex;align-items:flex-end;margin-bottom:4px}
+.op-btns{display:flex;gap:8px;margin:.7rem 0;flex-wrap:wrap}
+.opb{font-family:var(--font-mono);font-size:12px;padding:5px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.opb:hover,.opb.on{border-color:var(--color-border-info);color:var(--color-text-info);background:var(--color-background-info)}
+.sres{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem 1rem;font-size:13px;color:var(--color-text-secondary);line-height:1.9;font-family:var(--font-mono);margin-top:.6rem}
+.sres span{color:var(--color-text-primary);font-weight:500}
+.sbtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.8rem}
+.sbtn{font-size:12px;font-family:var(--font-mono);padding:6px 13px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.sbtn:hover{border-color:var(--color-border-info);color:var(--color-text-info)}
+.sbtn.p{border-color:var(--color-border-info);color:var(--color-text-info);background:var(--color-background-info)}
+select,input[type=text]{font-size:12px;padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-mono)}
+.sep{height:0.5px;background:var(--color-border-tertiary);margin:.8rem 0}
+
+/* QUIZ */
+.qpb{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:1.1rem}
+.qpf{height:100%;background:var(--color-border-info);border-radius:2px;transition:width .3s}
+.qhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+.qnum{font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-bottom:.3rem}
+.qtxt{font-size:14px;font-weight:500;line-height:1.6;margin-bottom:1rem;padding:.8rem 1rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.qopts{display:flex;flex-direction:column;gap:7px;margin-bottom:.9rem}
+.qo{padding:.65rem 1rem;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;text-align:left;background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-mono);transition:all .15s}
+.qo:hover{border-color:var(--color-border-info);color:var(--color-text-info)}
+.qo.ok{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
+.qo.no{background:var(--color-background-danger);border-color:var(--color-border-danger);color:var(--color-text-danger)}
+.qexp{font-size:13px;line-height:1.7;padding:.75rem 1rem;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);margin-bottom:.9rem;display:none;font-family:var(--font-mono)}
+.qexp.show{display:block}
+.qnav{display:flex;align-items:center;justify-content:space-between}
+.qscr{font-size:12px;font-family:var(--font-mono);padding:4px 10px;border-radius:20px;background:var(--color-background-success);color:var(--color-text-success)}
+.cat-tag{display:inline-block;font-size:10px;font-family:var(--font-mono);padding:2px 8px;border-radius:12px;margin-bottom:.5rem}
+.cat-sub{background:var(--color-background-info);color:var(--color-text-info)}
+.cat-op{background:var(--color-background-warning);color:var(--color-text-warning)}
+.cat-cnt{background:var(--color-background-success);color:var(--color-text-success)}
+.cat-mix{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-secondary)}
+
+/* ANS */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+.ac{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:.75rem 1rem}
+.an{font-size:10px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-bottom:2px}
+.aq{font-size:12px;color:var(--color-text-secondary);margin-bottom:3px;line-height:1.4}
+.aa{font-size:13px;font-weight:500;font-family:var(--font-mono);color:var(--color-text-info)}
+
+/* FORMULA */
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-bottom:1.4rem}
+.fc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.1rem}
+.ft{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:.4rem;font-family:var(--font-mono)}
+.ff{font-size:15px;font-weight:500;font-family:var(--font-mono);color:var(--color-text-primary);margin-bottom:.3rem}
+.fd{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+</style>
+
+<h2 class="sr-only">비트마스크 + 부분집합 + 비트연산 종합 — 중등올림피아드 대비 인터랙티브 홈페이지</h2>
+
+<div class="hero">
+  <div class="htag">INFORMATICS OLYMPIAD · 종합편</div>
+  <h1>비트마스크 · 부분집합 · AND/OR/XOR</h1>
+  <p>해석 · 경우의 수 · 연산 의미 · 규칙 · 식 세우기 종합 30문제</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="ts">0</div><div class="stat-l">푼 문제</div></div>
+    <div class="stat"><div class="stat-n" id="tc">0</div><div class="stat-l">정답</div></div>
+    <div class="stat"><div class="stat-n">30</div><div class="stat-l">전체</div></div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nb on" onclick="sp('sim',this)">통합 시뮬레이터</button>
+  <button class="nb" onclick="sp('quiz',this)">문제 풀기</button>
+  <button class="nb" onclick="sp('ans',this)">정답 해설</button>
+  <button class="nb" onclick="sp('formula',this)">핵심 정리</button>
+</div>
+
+<!-- SIM -->
+<div class="pane on" id="pane-sim">
+
+  <div class="sc">
+    <div class="sctitle">비트마스크 ↔ 부분집합 + AND/OR/XOR 실시간 계산기</div>
+    <div class="sbtns">
+      <select id="simset" onchange="initSim()">
+        <option value="abcd">{a,b,c,d}</option>
+        <option value="abcde">{a,b,c,d,e}</option>
+        <option value="12345">{1,2,3,4,5}</option>
+        <option value="123456">{1,2,3,4,5,6}</option>
+        <option value="abcdef">{a,b,c,d,e,f}</option>
+      </select>
+      <button class="sbtn" onclick="randSim()">랜덤</button>
+      <button class="sbtn" onclick="resetSim()">초기화</button>
+    </div>
+    <div class="srow"><span class="row-lbl">A</span><div class="bit-grid" id="ra"></div></div>
+    <div class="srow"><span class="row-lbl">B</span><div class="bit-grid" id="rb"></div></div>
+    <div class="op-btns">
+      <span style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-mono)">연산:</span>
+      <button class="opb on" id="oAND" onclick="setOp('AND')">AND (교집합)</button>
+      <button class="opb" id="oOR" onclick="setOp('OR')">OR (합집합)</button>
+      <button class="opb" id="oXOR" onclick="setOp('XOR')">XOR (대칭차)</button>
+    </div>
+    <div class="srow"><span class="row-lbl" id="oplbl" style="color:var(--color-text-info)">AND</span><div class="bit-grid" id="rr"></div></div>
+    <div class="sres" id="simres"></div>
+  </div>
+
+  <div class="sc">
+    <div class="sctitle">10진수 ↔ 비트마스크 ↔ 부분집합 변환기</div>
+    <div class="sbtns">
+      <select id="convset">
+        <option value="abcde">{a,b,c,d,e} 5비트</option>
+        <option value="12345">{1,2,3,4,5} 5비트</option>
+        <option value="abcd">{a,b,c,d} 4비트</option>
+        <option value="123456">{1,2,3,4,5,6} 6비트</option>
+      </select>
+      <input type="text" id="conv-in" placeholder="10진수 또는 2진수 입력" style="width:180px" oninput="doConv()">
+    </div>
+    <div class="sres" id="convres">10진수(예:21) 또는 2진수(예:10101)를 입력하세요</div>
+  </div>
+
+  <div class="sc">
+    <div class="sctitle">경우의 수 계산기 — 원소 k개인 부분집합 수</div>
+    <div class="sbtns">
+      <span style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-mono)">전체 원소 n =</span>
+      <select id="cn" onchange="calcComb()">
+        <option>4</option><option>5</option><option selected>6</option>
+      </select>
+      <span style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-mono)">선택 k =</span>
+      <select id="ck" onchange="calcComb()">
+        <option>0</option><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option>
+      </select>
+    </div>
+    <div class="sres" id="combres"></div>
+  </div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="pane" id="pane-quiz">
+  <div class="sbtns" style="margin-bottom:0;padding-bottom:.8rem;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:.9rem">
+    <span style="font-size:12px;color:var(--color-text-secondary);font-family:var(--font-mono)">유형:</span>
+    <button class="sbtn p" id="fAll" onclick="setFilter('all',this)">전체</button>
+    <button class="sbtn" id="fSub" onclick="setFilter('sub',this)">부분집합 해석</button>
+    <button class="sbtn" id="fOp" onclick="setFilter('op',this)">비트연산</button>
+    <button class="sbtn" id="fCnt" onclick="setFilter('cnt',this)">경우의 수</button>
+    <button class="sbtn" id="fMix" onclick="setFilter('mix',this)">종합</button>
+  </div>
+  <div id="quiz-area"></div>
+</div>
+
+<!-- ANS -->
+<div class="pane" id="pane-ans">
+  <div class="slbl">전체 정답 · 30문제</div>
+  <div class="agrid" id="agrid"></div>
+</div>
+
+<!-- FORMULA -->
+<div class="pane" id="pane-formula">
+  <div class="slbl">AND · OR · XOR의 집합적 의미</div>
+  <div class="fgrid">
+    <div class="fc"><div class="ft">AND → 교집합</div><div class="ff">A &amp; B</div><div class="fd">두 부분집합의 공통 원소만 남김. 둘 다 1인 비트만 1</div></div>
+    <div class="fc"><div class="ft">OR → 합집합</div><div class="ff">A | B</div><div class="fd">두 부분집합의 모든 원소 포함. 하나라도 1이면 1</div></div>
+    <div class="fc"><div class="ft">XOR → 대칭차</div><div class="ff">A ^ B</div><div class="fd">한쪽에만 있는 원소만 남김. 서로 다른 비트만 1</div></div>
+    <div class="fc"><div class="ft">부분집합 개수</div><div class="ff">2ⁿ</div><div class="fd">원소 n개 → 2ⁿ개 부분집합. 각 원소 선택/비선택 2가지</div></div>
+    <div class="fc"><div class="ft">k개 선택 수</div><div class="ff">ₙCₖ</div><div class="fd">비트마스크 1이 정확히 k개인 경우의 수와 동일</div></div>
+    <div class="fc"><div class="ft">전체집합</div><div class="ff">111...1 = 2ⁿ-1</div><div class="fd">모든 비트가 1 = 모든 원소 선택. n=5 → 31, n=6 → 63</div></div>
+  </div>
+  <div class="slbl">자주 쓰는 성질</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:1.4rem">
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .8rem;font-family:var(--font-mono)">
+      <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">항등원</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.9">A XOR 0 = A<br>A AND 1 = A<br>A OR 0 = A</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .8rem;font-family:var(--font-mono)">
+      <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">자기 자신과</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.9">A XOR A = 0<br>A AND A = A<br>A OR A = A</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .8rem;font-family:var(--font-mono)">
+      <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">XOR 관계</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.9">A XOR B=0 → A=B<br>OR=전체 → 합집합=전체<br>AND=0 → 교집합=∅</div>
+    </div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.6rem .8rem;font-family:var(--font-mono)">
+      <div style="font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px">홀수/짝수 부분집합</div>
+      <div style="font-size:12px;color:var(--color-text-secondary);line-height:1.9">원소 n개 → 각 2ⁿ⁻¹개<br>홀수 개수 = 짝수 개수<br>= 전체의 절반</div>
+    </div>
+  </div>
+  <div class="slbl">자주 나오는 조합 값</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px">
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .7rem;text-align:center;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">5C2</div><div style="font-size:18px;font-weight:500">10</div></div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .7rem;text-align:center;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">5C3</div><div style="font-size:18px;font-weight:500">10</div></div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .7rem;text-align:center;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">6C2</div><div style="font-size:18px;font-weight:500">15</div></div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .7rem;text-align:center;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">6C3</div><div style="font-size:18px;font-weight:500">20</div></div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .7rem;text-align:center;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">6C4</div><div style="font-size:18px;font-weight:500">15</div></div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .7rem;text-align:center;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">2⁴</div><div style="font-size:18px;font-weight:500">16</div></div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .7rem;text-align:center;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">2⁵</div><div style="font-size:18px;font-weight:500">32</div></div>
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.5rem .7rem;text-align:center;font-family:var(--font-mono)"><div style="font-size:10px;color:var(--color-text-tertiary)">2⁶</div><div style="font-size:18px;font-weight:500">64</div></div>
+  </div>
+</div>
+
+<script>
+const SETS={
+  abcd:['a','b','c','d'],abcde:['a','b','c','d','e'],
+  '12345':['1','2','3','4','5'],'123456':['1','2','3','4','5','6'],
+  abcdef:['a','b','c','d','e','f']
+};
+let bA=[],bB=[],curOp='AND',simN=4;
+let userAns=new Array(30).fill(-1),qIdx=0,solved=0,correct=0,curFilter='all';
+
+function sp(id,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pane-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='ans')renderAns();
+  if(id==='pane-formula'){}
+}
+
+/* ---- SIM ---- */
+function getSimEls(){return SETS[document.getElementById('simset').value];}
+function initSim(){
+  const els=getSimEls();simN=els.length;
+  bA=new Array(simN).fill(0);bB=new Array(simN).fill(0);
+  buildBitRows();updateSimRes();
+}
+function buildBitRows(){
+  const els=getSimEls();
+  ['ra','rb'].forEach((rid,ri)=>{
+    const row=document.getElementById(rid);row.innerHTML='';
+    const arr=ri===0?bA:bB;
+    els.forEach((el,i)=>{
+      const w=document.createElement('div');w.className='bw';
+      const l=document.createElement('div');l.className='blbl';l.textContent=el;
+      const b=document.createElement('button');b.className='bb'+(arr[i]?' on':'');b.textContent=arr[i];
+      const ci=i,cr=ri;
+      b.onclick=()=>{if(cr===0)bA[ci]^=1;else bB[ci]^=1;b.textContent=cr===0?bA[ci]:bB[ci];b.classList.toggle('on',(cr===0?bA[ci]:bB[ci])===1);updateSimRes();};
+      w.appendChild(l);w.appendChild(b);row.appendChild(w);
+    });
+  });
+  buildResRow([]);
+}
+function buildResRow(res){
+  const row=document.getElementById('rr');row.innerHTML='';
+  const els=getSimEls();
+  res.forEach((v,i)=>{
+    const w=document.createElement('div');w.className='bw';
+    const l=document.createElement('div');l.className='blbl';l.textContent=els[i];
+    const b=document.createElement('button');
+    b.className='bb res'+(v===0?' z':'');b.textContent=v;
+    w.appendChild(l);w.appendChild(b);row.appendChild(w);
+  });
+}
+function calcBits(a,b,op){return a.map((v,i)=>op==='AND'?v&b[i]:op==='OR'?v|b[i]:v^b[i]);}
+function bitsToSet(bits,els){const s=els.filter((_,i)=>bits[i]===1);return s.length?'{'+s.join(', ')+'}':'∅';}
+function bitsToStr(bits){return bits.join('');}
+function bitsToNum(bits){return parseInt(bits.join(''),2);}
+function updateSimRes(){
+  const els=getSimEls();
+  const res=calcBits(bA,bB,curOp);
+  buildResRow(res);
+  const opMeaning={'AND':'교집합 (공통 원소)','OR':'합집합 (합쳐진 원소)','XOR':'대칭차 (한쪽에만 있는 원소)'};
+  document.getElementById('simres').innerHTML=
+    `A = <span>${bitsToStr(bA)}</span>  →  <span>${bitsToSet(bA,els)}</span>  (10진수 ${bitsToNum(bA)})<br>`+
+    `B = <span>${bitsToStr(bB)}</span>  →  <span>${bitsToSet(bB,els)}</span>  (10진수 ${bitsToNum(bB)})<br>`+
+    `<span>${curOp}</span> = <span>${bitsToStr(res)}</span>  →  <span>${bitsToSet(res,els)}</span>  ← ${opMeaning[curOp]}`;
+}
+function setOp(op){
+  curOp=op;document.getElementById('oplbl').textContent=op;
+  ['AND','OR','XOR'].forEach(o=>document.getElementById('o'+o).classList.toggle('on',o===op));
+  updateSimRes();
+}
+function resetSim(){bA=bA.map(()=>0);bB=bB.map(()=>0);buildBitRows();updateSimRes();}
+function randSim(){bA=bA.map(()=>Math.random()>.5?1:0);bB=bB.map(()=>Math.random()>.5?1:0);buildBitRows();updateSimRes();}
+
+/* CONV */
+function doConv(){
+  const v=document.getElementById('conv-in').value.trim();
+  const sk=document.getElementById('convset').value;
+  const els=SETS[sk];const n=els.length;
+  if(!v){document.getElementById('convres').textContent='10진수(예:21) 또는 2진수(예:10101)를 입력하세요';return;}
+  let dec;
+  if(/^[01]+$/.test(v))dec=parseInt(v,2);
+  else dec=parseInt(v,10);
+  if(isNaN(dec)||dec<0||dec>=Math.pow(2,n)){document.getElementById('convres').innerHTML=`0 ~ ${Math.pow(2,n)-1} 사이의 값을 입력하세요 (${n}비트)`;return;}
+  const bits=dec.toString(2).padStart(n,'0').split('').map(Number);
+  const sub=els.filter((_,i)=>bits[i]===1);
+  const subStr=sub.length?'{'+sub.join(', ')+'}':'공집합 ∅';
+  document.getElementById('convres').innerHTML=
+    `입력: <span>${v}</span> → 10진수 <span>${dec}</span> → 2진수 <span>${bits.join('')}</span><br>`+
+    `집합 {${els.join(',')}} 기준 부분집합: <span>${subStr}</span><br>`+
+    `1의 개수: <span>${bits.filter(b=>b===1).length}개</span>  (= 부분집합 원소 수)`;
+}
+
+/* COMB */
+function fact(n){let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+function C(n,k){if(k<0||k>n)return 0;return fact(n)/(fact(k)*fact(n-k));}
+function calcComb(){
+  const n=parseInt(document.getElementById('cn').value);
+  const k=parseInt(document.getElementById('ck').value);
+  const r=C(n,k);
+  const total=Math.pow(2,n);
+  document.getElementById('combres').innerHTML=
+    `${n}C${k} = <span>${r}개</span>  (원소 ${n}개 중 정확히 ${k}개 선택)<br>`+
+    `전체 부분집합 2^${n} = <span>${total}개</span>  비율: <span>${(r/total*100).toFixed(1)}%</span>`;
+}
+
+/* ---- QUIZ ---- */
+const CATS={
+  sub:'부분집합 해석',op:'비트연산',cnt:'경우의 수',mix:'종합'
+};
+const QUIZ=[
+  {q:"{a,b,c,d}에서 비트마스크 1010이 나타내는 부분집합은?",opts:["{a,c}","{b,d}","{a,b}","{c,d}"],ans:0,exp:"1010: a→1(선택), b→0, c→1(선택), d→0 → {a,c}",cat:'sub'},
+  {q:"{1,2,3,4,5}에서 부분집합 {1,3,5}의 비트마스크는?",opts:["10101","01010","11010","10110"],ans:0,exp:"1→1, 2→0, 3→1, 4→0, 5→1 → 10101",cat:'sub'},
+  {q:"{a,b,c,d}에서 1100과 1010의 교집합은?",opts:["{a}","{a,b}","{a,c}","{b,c}"],ans:0,exp:"1100={a,b}, 1010={a,c} → AND=1000 → 교집합={a}",cat:'op'},
+  {q:"{a,b,c,d}에서 1100과 1010의 합집합은?",opts:["{a,b,c}","{a,b,d}","{b,c,d}","{a,c,d}"],ans:0,exp:"1100={a,b}, 1010={a,c} → OR=1110 → {a,b,c}",cat:'op'},
+  {q:"{1,2,3,4}에서 비트마스크 0110이 나타내는 부분집합의 원소 합은?",opts:["3","5","7","4"],ans:1,exp:"0110: 1→0, 2→1, 3→1, 4→0 → {2,3} → 2+3=5",cat:'sub'},
+  {q:"{a,b,c,d,e}의 모든 부분집합의 개수는?",opts:["16개","32개","64개","10개"],ans:1,exp:"2⁵ = 32개. 각 원소마다 선택/비선택 2가지",cat:'cnt'},
+  {q:"{a,b,c,d,e}에서 원소 정확히 2개인 부분집합 수는?",opts:["8개","10개","12개","20개"],ans:1,exp:"5C2 = 10개. 5개 중 2개 선택",cat:'cnt'},
+  {q:"{1,2,3,4,5,6}에서 원소 정확히 3개인 부분집합 수는?",opts:["15개","18개","20개","25개"],ans:2,exp:"6C3 = 20개",cat:'cnt'},
+  {q:"비트마스크 1011 AND 1101 = ?",opts:["1001","1111","0110","1010"],ans:0,exp:"1&1=1, 0&1=0, 1&0=0, 1&1=1 → 1001",cat:'op'},
+  {q:"비트마스크 1011 OR 1101 = ?",opts:["1001","1111","0110","1010"],ans:1,exp:"1|1=1, 0|1=1, 1|0=1, 1|1=1 → 1111",cat:'op'},
+  {q:"비트마스크 1011 XOR 1101 = ?",opts:["1001","1111","0110","1010"],ans:2,exp:"1^1=0, 0^1=1, 1^0=1, 1^1=0 → 0110",cat:'op'},
+  {q:"{a,b,c,d}에서 1011과 1101의 공통 원소(교집합)는?",opts:["{a,d}","{a,c}","{b,d}","{a,b}"],ans:0,exp:"1011={a,c,d}, 1101={a,b,d} → AND=1001 → {a,d}",cat:'mix'},
+  {q:"{a,b,c,d}에서 1011과 1101의 합집합은?",opts:["{a,b,c}","{a,b,c,d}","{b,c,d}","{a,c,d}"],ans:1,exp:"1011={a,c,d}, 1101={a,b,d} → OR=1111 → {a,b,c,d}",cat:'op'},
+  {q:"{1,2,3,4}에서 1010과 0110의 교집합은?",opts:["{1}","{2}","{3}","{4}"],ans:2,exp:"1010={1,3}, 0110={2,3} → AND=0010 → 3번째 원소={3}",cat:'op'},
+  {q:"{1,2,3,4}에서 1010과 0110의 합집합은?",opts:["{1,2,3}","{1,3,4}","{2,3,4}","{1,2,4}"],ans:0,exp:"1010={1,3}, 0110={2,3} → OR=1110 → {1,2,3}",cat:'op'},
+  {q:"{a,b,c,d,e,f}에서 비트마스크 1의 개수가 홀수인 부분집합 수는?",opts:["16개","32개","48개","20개"],ans:1,exp:"2⁶=64개 중 절반=32개. 6C1+6C3+6C5=6+20+6=32",cat:'cnt'},
+  {q:"{a,b,c,d,e,f}에서 비트마스크 1의 개수가 짝수인 부분집합 수는?",opts:["16개","28개","32개","64개"],ans:2,exp:"6C0+6C2+6C4+6C6=1+15+15+1=32개",cat:'cnt'},
+  {q:"10진수 13을 4자리 비트마스크로 보면 {a,b,c,d}에서 어떤 부분집합?",opts:["{a,b,d}","{a,c,d}","{b,c,d}","{a,b,c}"],ans:0,exp:"13=1101₂ → a=1,b=1,c=0,d=1 → {a,b,d}",cat:'mix'},
+  {q:"10진수 21을 5자리 비트마스크로 보면 {1,2,3,4,5}에서 어떤 부분집합?",opts:["{1,3,5}","{2,4}","{1,2,5}","{1,4,5}"],ans:0,exp:"21=10101₂ → 1선택,2제외,3선택,4제외,5선택 → {1,3,5}",cat:'mix'},
+  {q:"{1,2,3,4,5}에서 {2,4}를 비트마스크로 나타내면? (10진수도 구하기)",opts:["01010, 10","10010, 18","01001, 9","00110, 6"],ans:0,exp:"1→0,2→1,3→0,4→1,5→0 → 01010 = 0+8+0+2+0=10",cat:'mix'},
+  {q:"{a,b,c,d}에서 A={a,c,d}, B={a,b,d}일 때 A XOR B는?",opts:["0000","1111","0110","1001"],ans:2,exp:"1011 XOR 1101: 1^1=0,0^1=1,1^0=1,1^1=0 → 0110 → {b,c}",cat:'op'},
+  {q:"{1,2,3,4,5}에서 A={1,4,5}, B={2,4}일 때 A∩B는?",opts:["{4}","{1,4}","{2,5}","{1,2,4,5}"],ans:0,exp:"10011 AND 01010 = 00010 → 4번째 원소={4}",cat:'op'},
+  {q:"{a,b,c,d,e}에서 11111의 10진수 값은?",opts:["15","31","63","127"],ans:1,exp:"11111₂ = 16+8+4+2+1 = 31 (전체집합)",cat:'mix'},
+  {q:"{a,b,c,d,e}에서 00000이 나타내는 부분집합과 10진수 값은?",opts:["전체집합, 31","공집합, 0","공집합, 1","전체집합, 0"],ans:1,exp:"00000: 모든 원소 미선택 = 공집합. 10진수=0",cat:'sub'},
+  {q:"{1,2,3,4,5,6}에서 100101의 원소 합은?",opts:["9","11","13","15"],ans:1,exp:"100101 → {1,4,6} → 1+4+6=11",cat:'sub'},
+  {q:"{1,2,3,4,5,6}에서 111000과 101100의 교집합은?",opts:["{1,2}","{1,3}","{1,2,3}","{2,3}"],ans:1,exp:"111000={1,2,3}, 101100={1,3,4} → AND=101000={1,3} → 교집합={1,3}",cat:'op'},
+  {q:"A XOR B = 00000 (5비트)일 때 A와 B의 관계는?",opts:["A+B=11111","A=B","A와 B는 서로 보수","A와 B 무관"],ans:1,exp:"XOR=0 → 모든 자리 같음 → A=B",cat:'mix'},
+  {q:"A OR B = 11111 (5비트)를 집합 관점에서 설명하면?",opts:["A와 B가 같다","A와 B의 합집합이 전체집합","A와 B의 교집합이 전체집합","A가 전체집합"],ans:1,exp:"OR=11111 → 각 원소가 A 또는 B 중 하나에는 있음 → 합집합=전체집합",cat:'mix'},
+  {q:"A AND B = 00000 (5비트)를 집합 관점에서 설명하면?",opts:["A=B=0","A와 B의 교집합이 공집합","A와 B의 합집합이 공집합","A=전체, B=전체"],ans:1,exp:"AND=0 → 어느 자리도 둘 다 1이 아님 → 공통 원소 없음 → 교집합=∅",cat:'mix'},
+  {q:"{a,b,c,d,e}에서 1의 개수가 정확히 2개 또는 3개인 부분집합 수는?",opts:["10개","15개","20개","25개"],ans:2,exp:"5C2+5C3 = 10+10 = 20개",cat:'cnt'},
+];
+const AQTEXT=[
+  "{a,b,c,d} 비트마스크 1010의 부분집합","{1,2,3,4,5}에서 {1,3,5}의 비트마스크",
+  "{a,b,c,d} 1100과 1010의 교집합","{a,b,c,d} 1100과 1010의 합집합",
+  "{1,2,3,4} 0110 부분집합의 원소 합","{a,b,c,d,e}의 모든 부분집합 수",
+  "{a,b,c,d,e} 원소 2개인 부분집합 수","{1,2,3,4,5,6} 원소 3개인 부분집합 수",
+  "1011 AND 1101","1011 OR 1101","1011 XOR 1101",
+  "{a,b,c,d} 1011∩1101","집합 {a,b,c,d}에서 1011∪1101",
+  "{1,2,3,4} 1010∩0110","{1,2,3,4} 1010∪0110",
+  "{a~f} 1의 개수 홀수 부분집합 수","{a~f} 1의 개수 짝수 부분집합 수",
+  "10진수 13 → {a,b,c,d} 부분집합","10진수 21 → {1,2,3,4,5} 부분집합",
+  "{1,2,3,4,5}에서 {2,4} 비트마스크와 10진수",
+  "{a,b,c,d} A={a,c,d},B={a,b,d} 비트연산","{1,2,3,4,5} A={1,4,5},B={2,4} 교집합과 합집합",
+  "{a~e} 11111의 부분집합과 10진수","{a~e} 00000의 부분집합과 10진수",
+  "{1~6} 100101 부분집합과 원소 합","{1~6} 111000∩101100과 합집합",
+  "A XOR B=00000일 때 A와 B의 관계","A OR B=11111의 집합 의미",
+  "A AND B=00000의 집합 의미","{a~e} 1의 개수 2개 또는 3개인 부분집합 수"
+];
+const ATEXT=[
+  "{a,c}","10101","{a}","{a,b,c}","5","32개","10개","20개",
+  "1001","1111","0110","{a,c,d},{a,b,d}, 공통={a,d}","{a,b,c,d}",
+  "{3}","{1,2,3}","32개","32개","{a,b,d}","{1,3,5}","01010, 10",
+  "1011,1101 / AND=1001,OR=1111,XOR=0110",
+  "10011,01010 / A∩B={4}, A∪B={1,2,4,5}",
+  "전체집합 {a,b,c,d,e}, 31","공집합, 0",
+  "{1,4,6}, 원소합=11","교집합={1,3}, 합집합={1,2,3,4}",
+  "A=B","합집합이 전체집합","교집합이 공집합","20개"
+];
+
+function renderAns(){
+  const g=document.getElementById('agrid');if(g.children.length)return;
+  g.innerHTML=AQTEXT.map((q,i)=>`<div class="ac"><div class="an">${i+1}번</div><div class="aq">${q}</div><div class="aa">${ATEXT[i]}</div></div>`).join('');
+}
+
+let filteredIdxs=[...Array(30).keys()];
+let filteredPos=0;
+
+function setFilter(f,btn){
+  curFilter=f;
+  document.querySelectorAll('[id^="f"]').forEach(b=>b.classList.remove('p'));
+  btn.classList.add('p');
+  if(f==='all')filteredIdxs=[...Array(30).keys()];
+  else filteredIdxs=QUIZ.map((q,i)=>q.cat===f?i:-1).filter(i=>i!==-1);
+  filteredPos=0;
+  qIdx=filteredIdxs[0]||0;
+  initQuiz();
+}
+
+function initQuiz(){
+  const q=QUIZ[qIdx];
+  const pos=filteredIdxs.indexOf(qIdx);
+  const pct=Math.round((pos+1)/filteredIdxs.length*100);
+  const catLabels={sub:'부분집합 해석',op:'비트연산',cnt:'경우의 수',mix:'종합'};
+  const catClass={sub:'cat-sub',op:'cat-op',cnt:'cat-cnt',mix:'cat-mix'};
+  document.getElementById('quiz-area').innerHTML=`
+<div class="qpb"><div class="qpf" style="width:${pct}%"></div></div>
+<div class="qhdr">
+  <span style="font-size:13px;font-weight:500">${pos+1}/${filteredIdxs.length} (전체 ${qIdx+1}번)</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="qscr">정답 ${correct}/${solved}</span>
+    <button class="sbtn" onclick="goPrev()" ${pos===0?'style="opacity:.4;pointer-events:none"':''}>이전</button>
+  </div>
+</div>
+<div class="qnum"><span class="cat-tag ${catClass[q.cat]}">${catLabels[q.cat]}</span> &nbsp;문제 ${qIdx+1}</div>
+<div class="qtxt">${q.q}</div>
+<div class="qopts">${q.opts.map((o,i)=>`<button class="qo" onclick="ansQ(${i})">${o}</button>`).join('')}</div>
+<div class="qexp" id="qexp">${q.exp}</div>
+<div class="qnav">
+  <button class="sbtn" id="nbt" onclick="goNext()" style="opacity:.4;pointer-events:none">다음 문제</button>
+  <span style="font-size:12px;font-family:var(--font-mono);color:var(--color-text-tertiary)">${pos+1} / ${filteredIdxs.length}</span>
+</div>`;
+  if(userAns[qIdx]!==-1)restoreQ(userAns[qIdx]);
+}
+function restoreQ(ch){
+  const q=QUIZ[qIdx];
+  document.querySelectorAll('.qo').forEach((o,i)=>{o.style.pointerEvents='none';if(i===q.ans)o.classList.add('ok');if(i===ch&&ch!==q.ans)o.classList.add('no');});
+  document.getElementById('qexp').classList.add('show');
+  const nb=document.getElementById('nbt');if(nb){nb.style.opacity='1';nb.style.pointerEvents='auto';}
+}
+function ansQ(ch){
+  if(userAns[qIdx]!==-1)return;
+  const q=QUIZ[qIdx];userAns[qIdx]=ch;
+  document.querySelectorAll('.qo').forEach((o,i)=>{o.style.pointerEvents='none';if(i===q.ans)o.classList.add('ok');if(i===ch&&ch!==q.ans)o.classList.add('no');});
+  document.getElementById('qexp').classList.add('show');
+  const nb=document.getElementById('nbt');if(nb){nb.style.opacity='1';nb.style.pointerEvents='auto';}
+  solved=userAns.filter(a=>a!==-1).length;
+  correct=QUIZ.filter((_,k)=>userAns[k]===QUIZ[k].ans).length;
+  document.getElementById('ts').textContent=solved;
+  document.getElementById('tc').textContent=correct;
+}
+function goNext(){const pos=filteredIdxs.indexOf(qIdx);if(pos<filteredIdxs.length-1){qIdx=filteredIdxs[pos+1];initQuiz();}}
+function goPrev(){const pos=filteredIdxs.indexOf(qIdx);if(pos>0){qIdx=filteredIdxs[pos-1];initQuiz();}}
+
+initSim();calcComb();initQuiz();
+</script>
