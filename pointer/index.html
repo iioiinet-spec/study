@@ -1,0 +1,479 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary)}
+.hero{padding:2.4rem 1.5rem 1.4rem;text-align:center;border-bottom:0.5px solid var(--color-border-tertiary)}
+.htag{display:inline-block;font-family:var(--font-mono);font-size:11px;color:var(--color-text-info);background:var(--color-background-info);padding:3px 10px;border-radius:20px;margin-bottom:.9rem;letter-spacing:.06em}
+.hero h1{font-size:22px;font-weight:500;margin-bottom:.4rem}
+.hero p{font-size:13px;color:var(--color-text-secondary)}
+.nav{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);overflow-x:auto}
+.nb{font-size:12px;font-family:var(--font-mono);padding:10px 16px;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;background:none;border-left:none;border-right:none;border-top:none}
+.nb:hover{color:var(--color-text-primary)}.nb.on{color:var(--color-text-info);border-bottom-color:var(--color-border-info)}
+.pane{display:none;padding:1.2rem 1.5rem}.pane.on{display:block}
+.slbl{font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);letter-spacing:.08em;margin-bottom:.8rem;text-transform:uppercase}
+
+/* cards */
+.cc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.2rem 1.3rem;margin-bottom:1rem}
+.cct{font-size:14px;font-weight:500;margin-bottom:.7rem;display:flex;align-items:center;gap:8px}
+.ccn{font-family:var(--font-mono);font-size:11px;color:var(--color-text-tertiary)}
+.ccb{font-size:13px;color:var(--color-text-secondary);line-height:1.8}
+.cb{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;margin:.8rem 0}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.cl{font-family:var(--font-mono);font-size:11px;color:var(--color-text-tertiary)}
+.cbtn{font-family:var(--font-mono);font-size:11px;color:var(--color-text-secondary);background:none;border:none;cursor:pointer;padding:2px 8px;border-radius:4px;transition:all .15s}
+.cbtn:hover{color:var(--color-text-primary)}
+pre{padding:.9rem 1.1rem;overflow-x:auto;font-family:var(--font-mono);font-size:12.5px;line-height:1.9;color:var(--color-text-primary)}
+.kw{color:#c792ea}.fn{color:#82aaff}.str{color:#c3e88d}.num{color:#f78c6c}.cmt{color:var(--color-text-tertiary);font-style:italic}.ty{color:#5dcaa5}.op{color:#ef9f27}
+.ok{background:var(--color-background-success);border:0.5px solid var(--color-border-success);border-radius:var(--border-radius-md);padding:.7rem 1rem;font-size:13px;color:var(--color-text-success);margin-top:.6rem;font-family:var(--font-mono);line-height:1.8}
+.warn{background:var(--color-background-warning);border:0.5px solid var(--color-border-warning);border-radius:var(--border-radius-md);padding:.7rem 1rem;font-size:13px;color:var(--color-text-warning);margin-top:.6rem;line-height:1.8}
+.er{background:var(--color-background-danger);border:0.5px solid var(--color-border-danger);border-radius:var(--border-radius-md);padding:.7rem 1rem;font-size:13px;color:var(--color-text-danger);margin-top:.5rem;font-family:var(--font-mono);line-height:1.8}
+.tag{display:inline-block;font-size:10px;font-family:var(--font-mono);padding:2px 8px;border-radius:12px}
+.ti{background:var(--color-background-info);color:var(--color-text-info)}
+.tw{background:var(--color-background-warning);color:var(--color-text-warning)}
+.te{background:var(--color-background-danger);color:var(--color-text-danger)}
+
+/* SIM */
+.sw{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.2rem;margin-bottom:1rem}
+.st{font-size:13px;font-weight:500;margin-bottom:.9rem;color:var(--color-text-secondary);font-family:var(--font-mono)}
+.sbtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.9rem}
+.sbtn{font-size:12px;font-family:var(--font-mono);padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.sbtn:hover{border-color:var(--color-border-info);color:var(--color-text-info)}
+.sbtn.pi{border-color:var(--color-border-info);color:var(--color-text-info);background:var(--color-background-info)}
+.sbtn.pw{border-color:var(--color-border-warning);color:var(--color-text-warning);background:var(--color-background-warning)}
+/* memory grid */
+.mg{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:1rem;align-items:flex-start}
+.mbox{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);overflow:hidden;min-width:160px}
+.mhdr{padding:6px 12px;font-family:var(--font-mono);font-size:11px;font-weight:500}
+.mhdr.a{background:var(--color-background-info);color:var(--color-text-info)}
+.mhdr.p{background:var(--color-background-warning);color:var(--color-text-warning)}
+.mhdr.n{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.mrow{display:flex;align-items:stretch;border-top:0.5px solid var(--color-border-tertiary)}
+.madr{font-family:var(--font-mono);font-size:10px;color:var(--color-text-tertiary);padding:6px 8px;min-width:54px;border-right:0.5px solid var(--color-border-tertiary);display:flex;align-items:center}
+.mnm{font-family:var(--font-mono);font-size:12px;color:var(--color-text-secondary);padding:6px 8px;min-width:40px;border-right:0.5px solid var(--color-border-tertiary);display:flex;align-items:center}
+.mvl{font-family:var(--font-mono);font-size:13px;padding:6px 10px;display:flex;align-items:center;font-weight:500;min-width:80px;transition:background .3s,color .3s}
+.mvl.hi{color:var(--color-text-success)}
+.mvl.ptr{color:var(--color-text-warning)}
+.arrow-svg{display:flex;align-items:center;justify-content:center}
+.slog{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.8rem 1rem;font-family:var(--font-mono);font-size:12px;line-height:2;color:var(--color-text-secondary);min-height:64px}
+.slog .hi{color:var(--color-text-success);font-weight:500}
+.slog .pt{color:var(--color-text-warning);font-weight:500}
+.slog .hl{color:var(--color-text-primary);font-weight:500}
+/* arr sim */
+.arr-cells{display:flex;gap:4px;margin-bottom:.8rem;flex-wrap:wrap}
+.acell{display:flex;flex-direction:column;align-items:center;gap:2px}
+.acell-idx{font-size:10px;font-family:var(--font-mono);color:var(--color-text-tertiary)}
+.acell-val{width:44px;height:44px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:14px;font-weight:500;background:var(--color-background-secondary);transition:all .25s}
+.acell-val.sel{background:var(--color-background-info);border-color:var(--color-border-info);color:var(--color-text-info)}
+.acell-val.ptr{background:var(--color-background-warning);border-color:var(--color-border-warning);color:var(--color-text-warning)}
+.acell-adr{font-size:9px;font-family:var(--font-mono);color:var(--color-text-tertiary)}
+input[type=number],input[type=text]{font-size:12px;padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-mono)}
+
+/* QUIZ */
+.qpb{height:3px;background:var(--color-border-tertiary);border-radius:2px;margin-bottom:1.1rem}
+.qpf{height:100%;background:var(--color-border-info);border-radius:2px;transition:width .3s}
+.qhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+.qtxt{font-size:14px;font-weight:500;line-height:1.6;margin-bottom:1rem;padding:.8rem 1rem;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.qopts{display:flex;flex-direction:column;gap:7px;margin-bottom:.9rem}
+.qo{padding:.65rem 1rem;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:13px;cursor:pointer;text-align:left;background:var(--color-background-primary);color:var(--color-text-primary);font-family:var(--font-mono);transition:all .15s;line-height:1.5}
+.qo:hover{border-color:var(--color-border-info);color:var(--color-text-info)}
+.qo.ok{background:var(--color-background-success);border-color:var(--color-border-success);color:var(--color-text-success)}
+.qo.no{background:var(--color-background-danger);border-color:var(--color-border-danger);color:var(--color-text-danger)}
+.qexp{font-size:13px;line-height:1.7;padding:.75rem 1rem;border-radius:var(--border-radius-md);background:var(--color-background-secondary);color:var(--color-text-secondary);margin-bottom:.9rem;display:none;font-family:var(--font-mono)}
+.qexp.show{display:block}
+.qnav{display:flex;align-items:center;justify-content:space-between}
+.qscr{font-size:12px;font-family:var(--font-mono);padding:4px 10px;border-radius:20px;background:var(--color-background-success);color:var(--color-text-success)}
+</style>
+
+<h2 class="sr-only">C언어 포인터(pointer) 완전 정복 — 인터랙티브 학습 홈페이지</h2>
+
+<div class="hero">
+  <div class="htag">C LANGUAGE · POINTER</div>
+  <h1>포인터(pointer) 완전 정복</h1>
+  <p>주소 · &연산자 · *역참조 · 배열 — 메모리 시뮬레이터로 직접 체험</p>
+</div>
+
+<div class="nav">
+  <button class="nb on" onclick="sp('concept',this)">개념 학습</button>
+  <button class="nb" onclick="sp('sim',this)">메모리 시뮬레이터</button>
+  <button class="nb" onclick="sp('examples',this)">예제 모음</button>
+  <button class="nb" onclick="sp('quiz',this)">퀴즈</button>
+</div>
+
+<!-- CONCEPT -->
+<div class="pane on" id="pane-concept">
+
+  <div class="slbl">포인터 핵심 4가지</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin-bottom:1.2rem">
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.8rem 1rem;text-align:center">
+      <div style="font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--color-text-primary);margin-bottom:4px">a</div>
+      <div style="font-size:11px;color:var(--color-text-secondary)">값(value)</div>
+    </div>
+    <div style="background:var(--color-background-info);border-radius:var(--border-radius-md);padding:.8rem 1rem;text-align:center">
+      <div style="font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--color-text-info);margin-bottom:4px">&a</div>
+      <div style="font-size:11px;color:var(--color-text-info)">주소(address)</div>
+    </div>
+    <div style="background:var(--color-background-warning);border-radius:var(--border-radius-md);padding:.8rem 1rem;text-align:center">
+      <div style="font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--color-text-warning);margin-bottom:4px">p</div>
+      <div style="font-size:11px;color:var(--color-text-warning)">주소 저장</div>
+    </div>
+    <div style="background:var(--color-background-success);border-radius:var(--border-radius-md);padding:.8rem 1rem;text-align:center">
+      <div style="font-family:var(--font-mono);font-size:20px;font-weight:500;color:var(--color-text-success);margin-bottom:4px">*p</div>
+      <div style="font-size:11px;color:var(--color-text-success)">역참조 = 실제 값</div>
+    </div>
+  </div>
+
+  <div class="cc">
+    <div class="cct"><span class="ccn">01</span>포인터란 무엇인가</div>
+    <div class="ccb">포인터는 <strong>다른 변수의 주소를 저장하는 변수</strong>입니다. 일반 변수가 값을 저장한다면, 포인터는 그 값이 저장된 <strong>메모리 위치(주소)</strong>를 저장합니다.</div>
+    <div class="cb">
+      <div class="ch"><span class="cl">C — 기본 연결</span><button class="cbtn" onclick="doCp(this,0)">복사</button></div>
+      <pre id="s0"><span class="ty">int</span> a = <span class="num">10</span>;        <span class="cmt">// 일반 변수: 값 저장</span>
+<span class="ty">int</span> *p = <span class="op">&</span>a;      <span class="cmt">// 포인터: a의 주소 저장</span>
+
+<span class="cmt">// a   → 10        (값)</span>
+<span class="cmt">// &a  → 0x100     (a의 주소)</span>
+<span class="cmt">// p   → 0x100     (a의 주소를 저장)</span>
+<span class="cmt">// *p  → 10        (p가 가리키는 실제 값)</span></pre>
+    </div>
+  </div>
+
+  <div class="cc">
+    <div class="cct"><span class="ccn">02</span>& 연산자 — 주소를 구한다</div>
+    <div class="ccb"><strong>&변수</strong>는 그 변수가 메모리에서 저장된 위치(주소)를 반환합니다.</div>
+    <div class="cb">
+      <div class="ch"><span class="cl">C — & 연산자</span></div>
+      <pre><span class="ty">int</span> a = <span class="num">10</span>;
+<span class="fn">printf</span>(<span class="str">"%p\n"</span>, (<span class="kw">void</span>*)<span class="op">&</span>a);  <span class="cmt">// 예: 0x7ffd100</span>
+<span class="cmt">// &a = a가 메모리 어디에 있는지</span></pre>
+    </div>
+  </div>
+
+  <div class="cc">
+    <div class="cct"><span class="ccn">03</span>* 연산자 — 두 가지 의미</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:.4rem">
+      <div>
+        <div style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-bottom:.4rem">① 포인터 선언</div>
+        <div class="cb" style="margin:0"><pre style="padding:.6rem .9rem"><span class="ty">int</span> *p;</pre></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:.3rem">p를 포인터 변수로 선언</div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-bottom:.4rem">② 역참조 (dereference)</div>
+        <div class="cb" style="margin:0"><pre style="padding:.6rem .9rem">*p</pre></div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:.3rem">p가 가리키는 실제 값</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cc">
+    <div class="cct"><span class="ccn">04</span>역참조로 원본 값 바꾸기</div>
+    <div class="ccb"><strong>*p = 값;</strong>은 포인터가 가리키는 원본 변수의 값을 직접 변경합니다.</div>
+    <div class="cb">
+      <div class="ch"><span class="cl">C — 역참조 변경</span><button class="cbtn" onclick="doCp(this,1)">복사</button></div>
+      <pre id="s1"><span class="ty">int</span> a = <span class="num">10</span>;
+<span class="ty">int</span> *p = <span class="op">&</span>a;
+
+*p = <span class="num">50</span>;   <span class="cmt">// a = 50; 과 같은 효과</span>
+
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, a);   <span class="cmt">// 50</span>
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, *p);  <span class="cmt">// 50</span></pre>
+    </div>
+    <div class="ok">출력: 50 / 50 ← 포인터로 원본 a가 바뀜</div>
+  </div>
+
+  <div class="cc">
+    <div class="cct"><span class="ccn">05</span>포인터를 선언만 하면 위험!</div>
+    <div class="er">int *p;<br>*p = 10;  ← 위험! p가 가리키는 곳이 없음</div>
+    <div class="ok" style="margin-top:6px">int a = 10;<br>int *p = &a;  ← 안전: 올바른 주소 지정 후 사용</div>
+  </div>
+
+  <div class="cc">
+    <div class="cct"><span class="ccn">06</span>배열과 포인터의 관계</div>
+    <div class="ccb">배열 이름은 첫 번째 원소의 주소처럼 사용됩니다. <strong>*(p+i)</strong>와 <strong>arr[i]</strong>는 같은 원소를 가리킵니다.</div>
+    <div class="cb">
+      <div class="ch"><span class="cl">C — 배열·포인터 연결</span><button class="cbtn" onclick="doCp(this,2)">복사</button></div>
+      <pre id="s2"><span class="ty">int</span> arr[<span class="num">3</span>] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>};
+<span class="ty">int</span> *p = arr;      <span class="cmt">// p = &arr[0]</span>
+
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, *p);        <span class="cmt">// 10 = arr[0]</span>
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, *(p + <span class="num">1</span>)); <span class="cmt">// 20 = arr[1]</span>
+<span class="fn">printf</span>(<span class="str">"%d\n"</span>, *(p + <span class="num">2</span>)); <span class="cmt">// 30 = arr[2]</span></pre>
+    </div>
+  </div>
+
+</div>
+
+<!-- SIM -->
+<div class="pane" id="pane-sim">
+
+  <div class="sw">
+    <div class="st">포인터 메모리 시뮬레이터 — 단계별로 포인터가 어떻게 동작하는지 확인</div>
+    <div class="sbtns">
+      <input type="number" id="sim-val" value="10" style="width:90px" placeholder="a 값">
+      <input type="number" id="sim-new" value="50" style="width:90px" placeholder="새 값(*p=?)">
+      <button class="sbtn pi" onclick="simStep()">단계 실행</button>
+      <button class="sbtn" onclick="simReset()">초기화</button>
+    </div>
+    <div class="mg" id="mem-view">
+      <div class="mbox">
+        <div class="mhdr a">변수 a (0x100)</div>
+        <div class="mrow"><div class="madr">0x100</div><div class="mnm">a</div><div class="mvl" id="mv-a">—</div></div>
+      </div>
+      <div style="display:flex;align-items:center;color:var(--color-text-tertiary);font-size:20px;padding:20px 4px">←</div>
+      <div class="mbox">
+        <div class="mhdr p">포인터 p (0x200)</div>
+        <div class="mrow"><div class="madr">0x200</div><div class="mnm">p</div><div class="mvl ptr" id="mv-p">—</div></div>
+        <div class="mrow"><div class="madr"></div><div class="mnm">*p</div><div class="mvl" id="mv-dp">—</div></div>
+      </div>
+    </div>
+    <div class="slog" id="sim-log">a 값과 새 값을 입력하고 단계 실행 버튼을 누르세요</div>
+  </div>
+
+  <div class="sw">
+    <div class="st">배열 포인터 탐색기 — p+i 이동으로 arr[i] 접근하는 과정 시각화</div>
+    <div class="sbtns">
+      <button class="sbtn" onclick="arrPrev()">← 이전</button>
+      <button class="sbtn pw" onclick="arrNext()">다음 →</button>
+      <button class="sbtn" onclick="arrReset()">처음으로</button>
+    </div>
+    <div class="arr-cells" id="arr-cells"></div>
+    <div class="slog" id="arr-log">화살표 버튼으로 포인터를 이동하세요</div>
+  </div>
+
+  <div class="sw">
+    <div class="st">핵심 기호 빠른 참조</div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:12px">
+        <thead><tr style="background:var(--color-background-secondary)">
+          <th style="padding:8px 12px;border:0.5px solid var(--color-border-tertiary);text-align:left;color:var(--color-text-secondary)">표현</th>
+          <th style="padding:8px 12px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">의미</th>
+          <th style="padding:8px 12px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)">예시</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">a</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">변수의 값</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">10</td></tr>
+          <tr style="background:var(--color-background-secondary)"><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">&a</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">변수의 주소</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">0x100</td></tr>
+          <tr><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">int *p</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">포인터 선언</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">주소 저장 변수</td></tr>
+          <tr style="background:var(--color-background-secondary)"><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">p = &a</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">포인터에 주소 저장</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">p가 a를 가리킴</td></tr>
+          <tr><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">*p</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">역참조 — 실제 값</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">10 (a의 값)</td></tr>
+          <tr style="background:var(--color-background-secondary)"><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">*p = 값</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">원본 변수 변경</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">a = 값 효과</td></tr>
+          <tr><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">*(p+i)</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">배열 i번째 원소</td><td style="padding:7px 12px;border:0.5px solid var(--color-border-tertiary)">arr[i]와 동일</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- EXAMPLES -->
+<div class="pane" id="pane-examples">
+
+  <div class="cc">
+    <div class="cct"><span class="tag ti">예제 1</span>&nbsp;포인터로 변수 값 바꾸기</div>
+    <div class="cb">
+      <div class="ch"><span class="cl">C — *p로 원본 변경</span><button class="cbtn" onclick="doCp(this,3)">복사</button></div>
+      <pre id="s3"><span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="ty">int</span> a = <span class="num">10</span>;
+    <span class="ty">int</span> *p = <span class="op">&</span>a;
+
+    <span class="fn">printf</span>(<span class="str">"변경 전 a = %d\n"</span>, a);
+    *p = <span class="num">50</span>;
+    <span class="fn">printf</span>(<span class="str">"변경 후 a = %d\n"</span>, a);
+    <span class="fn">printf</span>(<span class="str">"*p = %d\n"</span>, *p);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+    </div>
+    <div class="ok">변경 전 a = 10<br>변경 후 a = 50<br>*p = 50</div>
+    <div class="warn" style="margin-top:8px">포인트: *p = 50; 은 a = 50; 과 완전히 동일한 효과입니다. p가 a의 주소를 알기 때문입니다.</div>
+  </div>
+
+  <div class="cc">
+    <div class="cct"><span class="tag tw">예제 2</span>&nbsp;함수에서 원본 값 바꾸기</div>
+    <div class="cb">
+      <div class="ch"><span class="cl">C — 포인터 매개변수</span><button class="cbtn" onclick="doCp(this,4)">복사</button></div>
+      <pre id="s4"><span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+
+<span class="kw">void</span> <span class="fn">changeValue</span>(<span class="ty">int</span> *x) {
+    *x = <span class="num">100</span>;
+}
+
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="ty">int</span> num = <span class="num">20</span>;
+    <span class="fn">printf</span>(<span class="str">"호출 전 num = %d\n"</span>, num);
+    <span class="fn">changeValue</span>(<span class="op">&</span>num);
+    <span class="fn">printf</span>(<span class="str">"호출 후 num = %d\n"</span>, num);
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+    </div>
+    <div class="ok">호출 전 num = 20<br>호출 후 num = 100</div>
+    <div class="warn" style="margin-top:8px">핵심: &num으로 주소를 넘기고 → 함수 안에서 *x로 역참조해 원본 변경. call by value와의 차이를 꼭 비교하세요.</div>
+  </div>
+
+  <div class="cc">
+    <div class="cct"><span class="tag ti">예제 3</span>&nbsp;배열과 포인터 — *(p+i) 탐색</div>
+    <div class="cb">
+      <div class="ch"><span class="cl">C — 배열 포인터 탐색</span><button class="cbtn" onclick="doCp(this,5)">복사</button></div>
+      <pre id="s5"><span class="kw">#include</span> <span class="str">&lt;stdio.h&gt;</span>
+<span class="ty">int</span> <span class="fn">main</span>() {
+    <span class="ty">int</span> arr[<span class="num">3</span>] = {<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>};
+    <span class="ty">int</span> *p = arr;
+
+    <span class="fn">printf</span>(<span class="str">"arr[0]=%d  *p=%d\n"</span>,
+           arr[<span class="num">0</span>], *p);
+    <span class="fn">printf</span>(<span class="str">"arr[1]=%d  *(p+1)=%d\n"</span>,
+           arr[<span class="num">1</span>], *(p+<span class="num">1</span>));
+    <span class="fn">printf</span>(<span class="str">"arr[2]=%d  *(p+2)=%d\n"</span>,
+           arr[<span class="num">2</span>], *(p+<span class="num">2</span>));
+    <span class="kw">return</span> <span class="num">0</span>;
+}</pre>
+    </div>
+    <div class="ok">arr[0]=10  *p=10<br>arr[1]=20  *(p+1)=20<br>arr[2]=30  *(p+2)=30</div>
+  </div>
+
+  <div class="cc">
+    <div class="cct"><span class="ccn">헷갈림 주의</span>* 의 두 가지 얼굴</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:.4rem">
+      <div>
+        <div style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-bottom:.3rem">선언에서 *</div>
+        <div class="cb" style="margin:0"><pre style="padding:.6rem .9rem"><span class="ty">int</span> *p;   <span class="cmt">// 포인터 선언</span></pre></div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-family:var(--font-mono);color:var(--color-text-tertiary);margin-bottom:.3rem">수식에서 *</div>
+        <div class="cb" style="margin:0"><pre style="padding:.6rem .9rem"><span class="ty">int</span> c = a * b; <span class="cmt">// 곱셈</span></pre></div>
+      </div>
+    </div>
+    <div class="warn" style="margin-top:8px">같은 * 기호지만 의미가 다릅니다. 선언에서는 포인터, 수식에서는 역참조 또는 곱셈으로 문맥에 따라 구분하세요.</div>
+  </div>
+
+</div>
+
+<!-- QUIZ -->
+<div class="pane" id="pane-quiz">
+  <div id="quiz-area"></div>
+</div>
+
+<script>
+/* COPY */
+const SRCS=[
+`int a = 10;\nint *p = &a;\n// a   → 10\n// &a  → 주소\n// p   → a의 주소\n// *p  → 10`,
+`int a = 10;\nint *p = &a;\n*p = 50;\nprintf("%d\\n", a);   // 50\nprintf("%d\\n", *p);  // 50`,
+`int arr[3] = {10, 20, 30};\nint *p = arr;\nprintf("%d\\n", *p);        // 10\nprintf("%d\\n", *(p+1));   // 20\nprintf("%d\\n", *(p+2));   // 30`,
+`#include <stdio.h>\nint main() {\n    int a = 10;\n    int *p = &a;\n    printf("변경 전 a = %d\\n", a);\n    *p = 50;\n    printf("변경 후 a = %d\\n", a);\n    printf("*p = %d\\n", *p);\n    return 0;\n}`,
+`#include <stdio.h>\nvoid changeValue(int *x) { *x = 100; }\nint main() {\n    int num = 20;\n    printf("호출 전 num = %d\\n", num);\n    changeValue(&num);\n    printf("호출 후 num = %d\\n", num);\n    return 0;\n}`,
+`#include <stdio.h>\nint main() {\n    int arr[3] = {10, 20, 30};\n    int *p = arr;\n    printf("arr[0]=%d  *p=%d\\n", arr[0], *p);\n    printf("arr[1]=%d  *(p+1)=%d\\n", arr[1], *(p+1));\n    printf("arr[2]=%d  *(p+2)=%d\\n", arr[2], *(p+2));\n    return 0;\n}`
+];
+function doCp(btn,i){navigator.clipboard.writeText(SRCS[i]).then(()=>{btn.textContent='복사됨!';setTimeout(()=>btn.textContent='복사',1400);});}
+
+/* POINTER SIM */
+let simSt=0;
+function simStep(){
+  const av=parseInt(document.getElementById('sim-val').value)||10;
+  const nv=parseInt(document.getElementById('sim-new').value)||50;
+  const ma=document.getElementById('mv-a'),mp=document.getElementById('mv-p'),md=document.getElementById('mv-dp');
+  const log=document.getElementById('sim-log');
+  if(simSt===0){
+    ma.textContent='—';mp.textContent='—';md.textContent='—';
+    ma.className='mvl';mp.className='mvl ptr';md.className='mvl';
+    log.innerHTML=`변수 선언 준비 중...`;
+    simSt=1;
+    setTimeout(()=>{
+      ma.textContent=av;log.innerHTML=`<span class="hl">1단계:</span> int a = ${av}; → 0x100 주소에 <span class="hi">${av}</span> 저장`;
+    },100);
+  } else if(simSt===1){
+    mp.textContent='→ 0x100';md.textContent=av;
+    log.innerHTML=`<span class="hl">2단계:</span> int *p = &a; → p에 a의 주소 <span class="pt">0x100</span> 저장<br>*p = <span class="hi">${av}</span> (p가 가리키는 값)`;
+    simSt=2;
+  } else if(simSt===2){
+    ma.textContent=nv;ma.className='mvl hi';md.textContent=nv;md.className='mvl hi';
+    log.innerHTML=`<span class="hl">3단계:</span> *p = ${nv}; → p가 가리키는 0x100에 <span class="hi">${nv}</span> 저장<br>a도 함께 <span class="hi">${nv}</span>으로 바뀜 ← 원본 변경!`;
+    simSt=3;
+  } else {
+    simReset();
+  }
+}
+function simReset(){
+  simSt=0;
+  ['mv-a','mv-p','mv-dp'].forEach(id=>{const e=document.getElementById(id);e.textContent='—';e.className=id==='mv-p'?'mvl ptr':'mvl';});
+  document.getElementById('sim-log').innerHTML='a 값과 새 값을 입력하고 단계 실행 버튼을 누르세요';
+}
+
+/* ARRAY SIM */
+const ARR=[10,20,30,40,50];
+let arrPos=0;
+function renderArr(){
+  const c=document.getElementById('arr-cells');
+  c.innerHTML=ARR.map((v,i)=>`
+<div class="acell">
+  <div class="acell-idx">arr[${i}]</div>
+  <div class="acell-val${i===arrPos?' ptr':''}">${v}</div>
+  <div class="acell-adr">0x${(100+i*4).toString(16).toUpperCase()}</div>
+</div>`).join('');
+  const log=document.getElementById('arr-log');
+  log.innerHTML=`p + ${arrPos} → <span class="hl">*(p+${arrPos}) = arr[${arrPos}] = <span style="color:var(--color-text-warning);font-weight:500">${ARR[arrPos]}</span></span><br>주소: <span class="pt">0x${(100+arrPos*4).toString(16).toUpperCase()}</span>`;
+}
+function arrNext(){if(arrPos<ARR.length-1){arrPos++;renderArr();}}
+function arrPrev(){if(arrPos>0){arrPos--;renderArr();}}
+function arrReset(){arrPos=0;renderArr();}
+
+/* QUIZ */
+const QUIZ=[
+  {q:"포인터 변수에 저장되는 것은 무엇인가요?",opts:["값","주소","자료형 크기","배열 크기"],ans:1,exp:"포인터는 다른 변수의 주소(메모리 위치)를 저장하는 변수입니다."},
+  {q:"int a = 10; 일 때 &a 는 무엇인가요?",opts:["a의 값 10","a의 주소","포인터 선언","역참조"],ans:1,exp:"& 연산자는 변수의 주소를 반환합니다. &a는 변수 a가 저장된 메모리 주소입니다."},
+  {q:"int *p; 에서 * 의 의미는?",opts:["곱셈","역참조","포인터 변수 선언","주소 반환"],ans:2,exp:"선언에서 *는 포인터 변수를 나타냅니다. int *p는 'p는 int형 주소를 저장하는 포인터'입니다."},
+  {q:"int a=10; int *p=&a; 일 때 *p 의 값은?",opts:["a의 주소","10","0","오류"],ans:1,exp:"*p는 역참조로 p가 가리키는 실제 값입니다. p가 a를 가리키므로 *p = a = 10입니다."},
+  {q:"*p = 50; 을 실행하면 어떻게 되나요? (p = &a 상태)",opts:["p가 50을 저장","a가 50으로 바뀜","오류 발생","아무 일도 없음"],ans:1,exp:"*p = 50은 p가 가리키는 원본 변수(a)의 값을 50으로 바꿉니다. p가 &a이므로 a = 50이 됩니다."},
+  {q:"포인터를 선언만 하고 초기화 없이 사용하면?",opts:["정상 동작","자동으로 0 저장","위험한 상황 발생","컴파일 오류"],ans:2,exp:"초기화하지 않은 포인터는 알 수 없는 메모리를 가리킵니다. 반드시 올바른 주소를 넣고 사용해야 합니다."},
+  {q:"함수에서 원본 변수를 바꾸려면?",opts:["int x 형태로 전달","return으로만 가능","포인터 &로 주소 전달","전역변수 필수"],ans:2,exp:"포인터로 주소(&a)를 전달하고 함수 안에서 *p로 역참조하면 원본 변수를 직접 변경할 수 있습니다."},
+  {q:"int arr[3]={10,20,30}; int *p=arr; 일 때 *(p+1)은?",opts:["10","20","30","오류"],ans:1,exp:"p는 arr[0]을 가리킵니다. p+1은 arr[1]을 가리키므로 *(p+1) = arr[1] = 20입니다."},
+  {q:"배열 이름 arr을 포인터 p에 대입하면 p는 무엇을 가리키나요?",opts:["마지막 원소","두 번째 원소","첫 번째 원소 주소","배열 크기"],ans:2,exp:"배열 이름은 첫 번째 원소(&arr[0])의 주소처럼 사용됩니다. 따라서 p = arr은 p = &arr[0]과 같습니다."},
+  {q:"p와 *p의 차이로 올바른 것은?",opts:["p=값, *p=주소","p=주소, *p=실제값","둘 다 같다","p=배열, *p=문자열"],ans:1,exp:"p는 주소를 저장하는 포인터 변수이고, *p는 역참조로 p가 가리키는 메모리의 실제 값입니다."},
+  {q:"int a=10; int *p=&a; 에서 p의 자료형은?",opts:["int","int*","char*","double"],ans:1,exp:"int *p는 int형 변수의 주소를 저장하는 포인터입니다. 자료형이 맞아야 올바르게 역참조할 수 있습니다."},
+  {q:"void f(int *x){*x=100;} 에서 *x=100 이 의미하는 것은?",opts:["포인터 x를 100으로","x가 가리키는 원본 변수를 100으로","새 변수 100 생성","x의 주소를 100으로"],ans:1,exp:"*x는 역참조입니다. *x=100은 포인터 x가 가리키는 원본 변수의 값을 100으로 변경합니다."},
+];
+
+let userAns=new Array(12).fill(-1),qIdx=0,solved=0,correct=0;
+function initQ(){
+  const q=QUIZ[qIdx];
+  const pct=Math.round(qIdx/12*100);
+  document.getElementById('quiz-area').innerHTML=`
+<div class="qpb"><div class="qpf" style="width:${pct}%"></div></div>
+<div class="qhdr">
+  <span style="font-size:13px;font-weight:500">${qIdx+1}/12 문제</span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span class="qscr">정답 ${correct}/${solved}</span>
+    <button class="sbtn" onclick="jq(${Math.max(0,qIdx-1)})" ${qIdx===0?'style="opacity:.4;pointer-events:none"':''}>이전</button>
+  </div>
+</div>
+<div class="qtxt">${q.q}</div>
+<div class="qopts">${q.opts.map((o,i)=>`<button class="qo" onclick="aq(${i})">${o}</button>`).join('')}</div>
+<div class="qexp" id="qe">${q.exp}</div>
+<div class="qnav">
+  <button class="sbtn" id="nb" onclick="jq(${Math.min(11,qIdx+1)})" style="opacity:.4;pointer-events:none">다음 문제</button>
+  <span style="font-size:12px;font-family:var(--font-mono);color:var(--color-text-tertiary)">${qIdx+1} / 12</span>
+</div>`;
+  if(userAns[qIdx]!==-1){
+    const q2=QUIZ[qIdx],ch=userAns[qIdx];
+    document.querySelectorAll('.qo').forEach((o,i)=>{o.style.pointerEvents='none';if(i===q2.ans)o.classList.add('ok');if(i===ch&&ch!==q2.ans)o.classList.add('no');});
+    document.getElementById('qe').classList.add('show');
+    const nb=document.getElementById('nb');if(nb){nb.style.opacity='1';nb.style.pointerEvents='auto';}
+  }
+}
+function aq(ch){
+  if(userAns[qIdx]!==-1)return;
+  const q=QUIZ[qIdx];userAns[qIdx]=ch;
+  document.querySelectorAll('.qo').forEach((o,i)=>{o.style.pointerEvents='none';if(i===q.ans)o.classList.add('ok');if(i===ch&&ch!==q.ans)o.classList.add('no');});
+  document.getElementById('qe').classList.add('show');
+  const nb=document.getElementById('nb');if(nb){nb.style.opacity='1';nb.style.pointerEvents='auto';}
+  solved=userAns.filter(a=>a!==-1).length;
+  correct=QUIZ.filter((_,k)=>userAns[k]===QUIZ[k].ans).length;
+}
+function jq(n){qIdx=n;initQ();}
+function sp(id,btn){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pane-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+renderArr();
+initQ();
+</script>
