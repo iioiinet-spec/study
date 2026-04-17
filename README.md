@@ -73,3 +73,6 @@ sbs2
 sbs3
 진수변환 + 비트연산 AND OR XOR
 
+
+qqq
+이산수학 문제집
