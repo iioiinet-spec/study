@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>알고리즘 & 이산수학 학습 로드맵</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f7fa;
+            --text-color: #333;
+            --accent-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 { color: var(--primary-color); margin-bottom: 10px; }
+        p { color: #666; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .category-title::before {
+            content: '*';
+            margin-right: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #555;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: #fafafa;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        a:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #eee;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Graph & Discrete Math Roadmap</h1>
+        <p>정보올림피아드 및 이산수학 완벽 대비를 위한 학습 링크 모음</p>
+    </header>
+
+    <div class="grid">
+        <div class="category-card">
+            <div class="category-title">그래프(Graph) 기초/심화</div>
+            <ul>
+                <li><a href="https://iioiinet-spec.github.io/G/" target="_blank">그래프 이론 핵심 Note <span class="badge">Theory</span></a></li>
+                <li><a href="https://iioiinet-spec.github.io/GB/" target="_blank">그래프 기초 문제집 <span class="badge">Basic</span></a></li>
+                <li><a href="https://iioiinet-spec.github.io/G/gt30/" target="_blank">트리/그래프 문제 30선 <span class="badge">Practice</span></a></li>
+                <li><a href="https://iioiinet-spec.github.io/graph/" target="_blank">기본 개념 완전 정복 <span class="badge">Master</span></a></li>
+            </ul>
+        </div>
+
+        <div class="category-card">
+            <div class="category-title">DFS & BFS 완전 정복</div>
+            <ul>
+                <li><a href="https://iioiinet-spec.github.io/study/dfsd/" target="_blank">중등 정올 DFS 서술형 10선</a></li>
+                <li><a href="https://iioiinet-spec.github.io/study/bfsd/" target="_blank">BFS 서술형 대비 10제</a></li>
+                <li><a href="https://iioiinet-spec.github.io/study/1bfs/" target="_blank">BFS 기초 5문제 (코딩)</a></li>
+            </ul>
+        </div>
+
+        <div class="category-card">
+            <div class="category-title">트리(Tree) & 수학적 증명</div>
+            <ul>
+                <li><a href="https://iioiinet-spec.github.io/T/" target="_blank">트리 이론 핵심 Note</a></li>
+                <li><a href="https://iioiinet-spec.github.io/tree/" target="_blank">트리/그래프 증명 유형별 핵심본</a></li>
+            </ul>
+        </div>
+
+        <div class="category-card">
+            <div class="category-title">진법 변환 & 비트 연산</div>
+            <ul>
+                <li><a href="https://iioiinet-spec.github.io/base/" target="_blank">진법 변환 문제집</a></li>
+                <li><a href="https://iioiinet-spec.github.io/study/sbs/" target="_blank">진수·비트마스크·부분집합</a></li>
+                <li><a href="https://iioiinet-spec.github.io/study/sbs2/" target="_blank">진수변환 + 비트연산(AND/OR/XOR)</a></li>
+            </ul>
+        </div>
+
+        <div class="category-card">
+            <div class="category-title">조합론(Combinatorics)</div>
+            <ul>
+                <li><a href="https://iioiinet-spec.github.io/base/pc1/" target="_blank">그래프 + 경우의 수 30문제</a></li>
+                <li><a href="https://iioiinet-spec.github.io/base/pc2/" target="_blank">Graph & Combinatorics 30 (A)</a></li>
+                <li><a href="https://iioiinet-spec.github.io/GTP/" target="_blank">Graph & Combinatorics 30 (B)</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
