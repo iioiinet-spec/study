@@ -1,0 +1,416 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.root{font-family:var(--font-sans);padding:2rem 0}
+.hero{margin-bottom:1.75rem}
+.hero-ey{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;margin-bottom:6px}
+.hero-title{font-size:22px;font-weight:500;margin-bottom:6px}
+.hero-desc{font-size:13px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:1rem;max-width:540px}
+.tag{font-size:11px;padding:3px 10px;border-radius:9px;border:0.5px solid;font-weight:500;display:inline-block}
+.tp{background:#E6F1FB;color:#0C447C;border-color:#85B7EB}
+.tc{background:#E1F5EE;color:#085041;border-color:#5DCAA5}
+.tb{background:#EAF3DE;color:#27500A;border-color:#97C459}
+.tm{background:#FAEEDA;color:#633806;border-color:#EF9F27}
+.th{background:#FCEBEB;color:#A32D2D;border-color:#F09595}
+
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem;align-items:center}
+.fb{font-size:12px;padding:5px 13px;border-radius:9px;border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;transition:all .15s;color:var(--color-text-secondary)}
+.fb:hover{background:var(--color-background-secondary)}
+.fb.on{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+
+.prob-list{display:flex;flex-direction:column;gap:0;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:2rem}
+.prob-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .15s;background:var(--color-background-primary)}
+.prob-row:last-child{border-bottom:none}
+.prob-row:hover{background:var(--color-background-secondary)}
+.prob-row.active{background:var(--color-background-secondary);border-left:2px solid var(--color-text-primary)}
+.pr-num{font-size:12px;font-weight:500;color:var(--color-text-tertiary);min-width:24px;font-family:var(--font-mono)}
+.pr-title{flex:1;font-size:13px;color:var(--color-text-primary)}
+.pr-badges{display:flex;gap:4px}
+.pr-done{width:16px;height:16px;border-radius:50%;background:#EAF3DE;border:0.5px solid #3B6D11;display:flex;align-items:center;justify-content:center;font-size:10px;color:#173404;flex-shrink:0}
+.pr-done.no{background:var(--color-background-secondary);border-color:var(--color-border-tertiary);color:var(--color-text-tertiary)}
+
+.detail{display:none;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem;margin-bottom:1.5rem}
+.detail.on{display:block}
+.dh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;flex-wrap:wrap;gap:8px}
+.dh-num{font-size:11px;color:var(--color-text-tertiary);margin-bottom:3px;font-family:var(--font-mono)}
+.dh-title{font-size:18px;font-weight:500}
+.dtabs{display:flex;gap:4px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:1rem}
+.dt{padding:7px 13px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--color-text-secondary);border-bottom:2px solid transparent}
+.dt.on{color:var(--color-text-primary);border-bottom-color:var(--color-text-primary)}
+.dtab{display:none}.dtab.on{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;margin-bottom:1rem}
+.card h3{font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:6px}
+.card p,.card li{font-size:13px;line-height:1.7;color:var(--color-text-primary)}
+.card ul{list-style:none;padding-left:10px}
+.card li::before{content:"· ";color:var(--color-text-tertiary)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.formula-big{font-size:17px;font-weight:500;font-family:var(--font-mono);padding:12px 16px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);margin-bottom:1rem;color:var(--color-text-primary)}
+.step-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+.step-item{display:flex;gap:10px;padding:10px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md)}
+.step-n{font-size:11px;font-weight:500;color:var(--color-text-tertiary);min-width:18px;padding-top:1px}
+.step-txt{font-size:13px;color:var(--color-text-primary);line-height:1.6}
+.btn-row{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+button.btn{font-size:13px;padding:7px 16px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;color:var(--color-text-primary);cursor:pointer;transition:all .15s}
+button.btn:hover{background:var(--color-background-secondary)}
+button.btn.pri{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+button.btn.ok{background:#EAF3DE;border-color:#3B6D11;color:#173404}
+button.btn.wrong{background:#FCEBEB;border-color:#E24B4A;color:#501313}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+.qopt{text-align:left;padding:10px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);font-size:13px;cursor:pointer;transition:all .15s;color:var(--color-text-primary)}
+.qopt:hover{background:var(--color-background-secondary)}
+.qopt.ok{background:#EAF3DE;border-color:#3B6D11;color:#173404}
+.qopt.ng{background:#FCEBEB;border-color:#E24B4A;color:#501313}
+.qres{font-size:13px;padding:10px 14px;border-radius:var(--border-radius-md);margin-bottom:1rem;line-height:1.6}
+.qres.ok{background:#EAF3DE;color:#173404}
+.qres.ng{background:#FCEBEB;color:#501313}
+.info-box{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:10px 14px;font-size:13px;color:var(--color-text-primary);line-height:1.6;min-height:40px;margin-bottom:1rem}
+.reveal-btn{padding:8px 20px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;font-size:13px;cursor:pointer;color:var(--color-text-primary);transition:all .15s;margin-bottom:1rem;display:block}
+.reveal-btn:hover{background:var(--color-background-secondary)}
+.answer-box{display:none;padding:12px 16px;background:#EEEDFE;border:0.5px solid #534AB7;border-radius:var(--border-radius-md);margin-bottom:1rem}
+.answer-box.on{display:block}
+.ab-title{font-size:11px;font-weight:500;color:#534AB7;margin-bottom:4px}
+.ab-val{font-size:17px;font-weight:500;font-family:var(--font-mono);color:#26215C}
+.nav-btns{display:flex;gap:8px;margin-top:1rem}
+.progress-track{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:1.25rem}
+.prog-dot{width:14px;height:14px;border-radius:50%;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);cursor:pointer;transition:all .15s}
+.prog-dot:hover{border-color:var(--color-border-primary)}
+.prog-dot.done{background:#1D9E75;border-color:#0F6E56}
+.prog-dot.active{background:#EF9F27;border-color:#854F0B}
+.sep{height:0.5px;background:var(--color-border-tertiary);margin:1.5rem 0}
+.cheatsheet{margin-bottom:2rem}
+.cs-title{font-size:14px;font-weight:500;margin-bottom:1rem}
+.cs-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cs-card{padding:1rem;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);background:var(--color-background-primary)}
+.cs-card h4{font-size:13px;font-weight:500;margin-bottom:8px}
+.cs-card p{font-size:12px;color:var(--color-text-secondary);line-height:1.7;margin-bottom:6px}
+.cs-formula{font-family:var(--font-mono);font-size:13px;font-weight:500;padding:6px 10px;background:var(--color-background-secondary);border-radius:4px}
+</style>
+
+<div class="root">
+<h2 style="position:absolute;opacity:0;pointer-events:none">중복순열·중복조합 20문제 학습 홈페이지</h2>
+
+<div class="hero">
+  <div class="hero-ey">경우의 수 / 조합론</div>
+  <div class="hero-title">중복순열 · 중복조합 20문제</div>
+  <div class="hero-desc">기초 6 → 중급 6 → 심화 8 단계로 구성된 문제집. 각 문제에서 핵심 아이디어와 풀이 단계를 확인하고 직접 풀어보세요.</div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
+    <span class="tag tp">중복순열 nⁿ형</span>
+    <span class="tag tc">중복조합 H형</span>
+    <span class="tag tb">기초 6문제</span>
+    <span class="tag tm">중급 6문제</span>
+    <span class="tag th">심화 8문제</span>
+  </div>
+</div>
+
+<div class="cheatsheet">
+  <div class="cs-title">공식 빠른 참조</div>
+  <div class="cs-grid">
+    <div class="cs-card" style="border-top:2px solid #185FA5">
+      <h4 style="color:#0C447C">중복순열</h4>
+      <p>n가지 중 r개를 순서 있게, 중복 허용</p>
+      <div class="cs-formula">n^r</div>
+      <p style="margin-top:8px;font-size:11px">예: 숫자 0~9로 3자리 비밀번호 → 10³</p>
+    </div>
+    <div class="cs-card" style="border-top:2px solid #1D9E75">
+      <h4 style="color:#085041">중복조합</h4>
+      <p>n가지 중 r개를 순서 없이, 중복 허용</p>
+      <div class="cs-formula">nHr = C(n+r-1, r)</div>
+      <p style="margin-top:8px;font-size:11px">예: 사탕 3종류에서 4개 → ₃H₄ = C(6,4)</p>
+    </div>
+    <div class="cs-card">
+      <h4>별과 막대 (Stars & Bars)</h4>
+      <p>x₁+x₂+…+xₙ = r의 0이상 정수해 개수</p>
+      <div class="cs-formula">nHr = C(n+r-1, r)</div>
+    </div>
+    <div class="cs-card">
+      <h4>포함-배제 원리</h4>
+      <p>A 또는 B를 포함하는 경우 = 전체 − A없음 − B없음 + 둘다없음</p>
+      <div class="cs-formula">|A∪B| = |전체| − |Aᶜ| − |Bᶜ| + |Aᶜ∩Bᶜ|</div>
+    </div>
+  </div>
+</div>
+
+<div class="filter-row">
+  <span style="font-size:12px;color:var(--color-text-secondary)">난이도:</span>
+  <button class="fb on" onclick="setFilter('all')">전체 (20)</button>
+  <button class="fb" onclick="setFilter('기초')">기초 (1~6)</button>
+  <button class="fb" onclick="setFilter('중급')">중급 (7~12)</button>
+  <button class="fb" onclick="setFilter('심화')">심화 (13~20)</button>
+  <button class="fb" onclick="setFilter('중복순열')">중복순열</button>
+  <button class="fb" onclick="setFilter('중복조합')">중복조합</button>
+</div>
+
+<div style="margin-bottom:8px;font-size:12px;color:var(--color-text-secondary)">진도 현황 — 클릭해서 문제로 이동:</div>
+<div class="progress-track" id="progress-track"></div>
+
+<div class="prob-list" id="prob-list"></div>
+
+<div class="detail" id="detail-box"></div>
+
+<div class="sep"></div>
+<div style="font-size:14px;font-weight:500;margin-bottom:1rem">핵심 전략 정리</div>
+<div class="card" style="margin-bottom:1rem">
+  <h3>문제 유형 판별 순서도</h3>
+  <div style="display:flex;flex-direction:column;gap:6px;margin-top:4px">
+    <div style="padding:8px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px">① 순서가 있나요? → <strong style="font-weight:500">있으면 순열 계열</strong>, 없으면 조합 계열</div>
+    <div style="padding:8px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px">② 중복이 허용되나요? → <strong style="font-weight:500">허용이면 중복순열(nʳ) 또는 중복조합(nHr)</strong></div>
+    <div style="padding:8px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px">③ x₁+x₂+…=k 형태? → <strong style="font-weight:500">중복조합 = 별과 막대</strong></div>
+    <div style="padding:8px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px">④ "최소/정확히" 조건 → <strong style="font-weight:500">여사건 or 변수 치환</strong></div>
+    <div style="padding:8px 14px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);font-size:13px">⑤ "둘 다 포함" 조건 → <strong style="font-weight:500">포함-배제 원리</strong></div>
+  </div>
+</div>
+</div>
+
+<script>
+const PROBS=[
+  {n:1,level:'기초',type:'중복순열',title:'비밀번호 3자리',short:'0~9, 길이3, 중복허용',
+   q:'숫자 0~9로 길이 3인 비밀번호를 만든다. (중복 허용) 경우의 수는?',
+   ans:'10³ = 1000',ansNum:'1000',
+   idea:'각 자리마다 10가지 선택이 독립적으로 가능합니다.',
+   formula:'n^r = 10³',
+   steps:['각 자리: 10가지 (0~9)','자리 3개 독립','10 × 10 × 10 = 1000']},
+  {n:2,level:'기초',type:'중복순열',title:'로봇 명령 5개',short:'4가지 명령, 5개 순서대로',
+   q:'로봇 명령이 4가지(앞/뒤/좌/우)일 때, 명령 5개를 순서대로 만든다. (중복 허용) 경우의 수는?',
+   ans:'4⁵ = 1024',ansNum:'1024',
+   idea:'5칸 각각에 4가지 선택이 독립적으로 가능합니다.',
+   formula:'n^r = 4⁵',
+   steps:['각 칸: 4가지 (앞/뒤/좌/우)','5칸 독립적 선택','4⁵ = 1024']},
+  {n:3,level:'기초',type:'중복순열',title:'동전 6번',short:'앞/뒤, 6번 기록',
+   q:'동전(앞/뒤) 결과를 6번 순서대로 기록한다. 경우의 수는?',
+   ans:'2⁶ = 64',ansNum:'64',
+   idea:'매번 2가지 결과가 독립적으로 가능합니다.',
+   formula:'n^r = 2⁶',
+   steps:['각 시행: 2가지 (앞/뒤)','6번 독립','2⁶ = 64']},
+  {n:4,level:'기초',type:'중복조합',title:'사탕 3종류에서 4개',short:'₃H₄',
+   q:'사탕이 3종류 있다. 총 4개를 고른다. (중복 허용, 순서 없음) 경우의 수는?',
+   ans:'₃H₄ = C(6,4) = 15',ansNum:'15',
+   idea:'"종류 n개에서 r개 고르기, 순서 없음" → 중복조합 공식 적용.',
+   formula:'nHr = C(n+r-1, r) → C(6,4) = 15',
+   steps:['종류 3개, 총 4개, 순서 없음','중복조합: ₃H₄','= C(3+4-1, 4) = C(6,4) = 15']},
+  {n:5,level:'기초',type:'중복조합',title:'아이스크림 5종류에서 2스쿱',short:'₅H₂',
+   q:'아이스크림 맛 5가지 중에서 2스쿱을 고른다. (중복 허용, 순서 없음) 경우의 수는?',
+   ans:'₅H₂ = C(6,2) = 15',ansNum:'15',
+   idea:'중복 허용, 순서 없음 → 중복조합',
+   formula:'₅H₂ = C(5+2-1, 2) = C(6,2)',
+   steps:['종류 5, 선택 2, 순서 없음','₅H₂ = C(6,2)','= 15']},
+  {n:6,level:'기초',type:'중복조합',title:'x₁+x₂+x₃=5 (기초)',short:'별과 막대 기초',
+   q:'0 이상 정수 x₁, x₂, x₃가 x₁+x₂+x₃=5를 만족하는 해의 개수는?',
+   ans:'₃H₅ = C(7,5) = 21',ansNum:'21',
+   idea:'"5개를 3칸에 나누기" → 별(★) 5개와 막대(|) 2개를 나열하는 문제입니다.',
+   formula:'₃H₅ = C(3+5-1, 5) = C(7,5)',
+   steps:['5개를 3칸에 분배 = 별5개 + 막대2개','C(7,5) = C(7,2) = 21']},
+  {n:7,level:'중급',type:'중복순열',title:'4자리 수 (첫자리 0 불가)',short:'첫 자리 제한 중복순열',
+   q:'숫자 0~9로 4자리 수를 만든다. 중복 허용, 첫 자리는 0 불가. 경우의 수는?',
+   ans:'9 × 10³ = 9000',ansNum:'9000',
+   idea:'첫 자리는 1~9(9가지), 나머지는 제한 없음.',
+   formula:'9 × 10 × 10 × 10',
+   steps:['첫 자리: 1~9 → 9가지','둘째~넷째 자리: 0~9 → 10가지씩','9 × 10³ = 9000']},
+  {n:8,level:'중급',type:'중복순열',title:'36문자 길이5 비밀번호',short:'대문자+숫자 중복순열',
+   q:'사용 가능한 문자가 총 36개(대문자 26+숫자 10)이다. 길이 5 비밀번호(중복 허용) 경우의 수는?',
+   ans:'36⁵',ansNum:'36⁵',
+   idea:'5자리 각각 36가지 선택',
+   formula:'36^5',
+   steps:['각 자리: 36가지','5자리 독립','36⁵']},
+  {n:9,level:'중급',type:'중복순열',title:'주사위 4번, 짝수 정확히 2번',short:'조합+중복순열 혼합',
+   q:'주사위를 4번 던진다. 짝수(2,4,6)가 정확히 2번 나오는 경우의 수는?',
+   ans:'C(4,2) × 3² × 3² = 6 × 9 × 9 = 486',ansNum:'486',
+   idea:'먼저 짝수가 들어갈 자리를 고르고, 그 자리에 짝수를 채우고, 나머지에 홀수를 채웁니다.',
+   formula:'C(4,2) × 3² × 3²',
+   steps:['짝수 자리 선택: C(4,2) = 6','짝수 종류(2,4,6) → 3² = 9','홀수 종류(1,3,5) → 3² = 9','6 × 9 × 9 = 486']},
+  {n:10,level:'중급',type:'중복조합',title:'동전 4종류에서 6개',short:'₄H₆',
+   q:'동전 종류가 4가지이고 무한히 있다. 총 6개를 고른다(순서 없음). 경우의 수는?',
+   ans:'₄H₆ = C(9,6) = 84',ansNum:'84',
+   idea:'종류 n개에서 r개 선택, 순서 없음 → 중복조합',
+   formula:'₄H₆ = C(4+6-1, 6) = C(9,6)',
+   steps:['종류 4, 선택 6, 순서 없음','₄H₆ = C(9,6) = C(9,3)','= 84']},
+  {n:11,level:'중급',type:'중복조합',title:'x₁+x₂+x₃+x₄=7',short:'별과 막대 중급',
+   q:'0 이상 정수 x₁,x₂,x₃,x₄가 x₁+x₂+x₃+x₄=7을 만족하는 해의 개수는?',
+   ans:'₄H₇ = C(10,7) = C(10,3) = 120',ansNum:'120',
+   idea:'7개를 4칸에 나누기 = 별과 막대',
+   formula:'₄H₇ = C(4+7-1, 7) = C(10,7)',
+   steps:['별 7개 + 막대 3개를 나열','C(10,7) = C(10,3) = 120']},
+  {n:12,level:'중급',type:'중복조합',title:'사탕 5종류 8개, 딸기 2개 이하',short:'여사건으로 제한 조건',
+   q:'사탕 5종류에서 총 8개를 고르되, 특정 한 종류(딸기)를 2개 이하. (중복 허용, 순서 없음)',
+   ans:'₅H₈ − ₅H₅ = C(12,8) − C(9,5) = 495 − 126 = 369',ansNum:'369',
+   idea:'여사건: 전체에서 "딸기 3개 이상"인 경우를 빼면 됩니다.',
+   formula:'₅H₈ − (딸기 3개 고정 후) ₅H₅',
+   steps:['전체: ₅H₈ = C(12,8) = 495','딸기 3개 이상 제거: 딸기 3개 고정 → 남은 5개를 5종류에서','→ ₅H₅ = C(9,5) = 126','495 − 126 = 369']},
+  {n:13,level:'심화',type:'중복순열',title:'0~7 중 길이6, 짝수 최소 1번',short:'여사건 포함-배제',
+   q:'0~7(총 8개)로 길이 6 문자열을 만든다(중복 허용). 단, 짝수(0,2,4,6)가 최소 1번 이상 등장.',
+   ans:'8⁶ − 4⁶ = 262144 − 4096 = 258048',ansNum:'258048',
+   idea:'여사건: 전체에서 짝수가 한 번도 없는 경우(홀수만)를 뺍니다.',
+   formula:'8⁶ − 4⁶',
+   steps:['전체: 8⁶ = 262144','짝수 없음(홀수 1,3,5,7만): 4⁶ = 4096','262144 − 4096 = 258048']},
+  {n:14,level:'심화',type:'중복순열',title:'5자리 수, 첫자리 0 불가 + 마지막 짝수',short:'자리별 조건 중복순열',
+   q:'숫자 0~9로 길이 5 문자열(중복 허용). 첫 자리 0 불가, 마지막 자리는 짝수.',
+   ans:'9 × 10³ × 5 = 45000',ansNum:'45000',
+   idea:'각 자리의 제한 조건을 독립적으로 계산합니다.',
+   formula:'9 × 10³ × 5',
+   steps:['첫 자리: 1~9 → 9가지','2~4번째 자리: 10가지씩','마지막 자리: 짝수(0,2,4,6,8) → 5가지','9 × 10 × 10 × 10 × 5 = 45000']},
+  {n:15,level:'심화',type:'중복순열',title:'A가 정확히 2번 등장',short:'자리 선택 + 나머지 채우기',
+   q:'대문자 26개로 길이 6 문자열(중복 허용). 단, A가 정확히 2번 등장.',
+   ans:'C(6,2) × 25⁴ = 15 × 25⁴',ansNum:'15 × 25⁴',
+   idea:'A가 들어갈 자리를 먼저 선택하고, 나머지 자리에 A 제외 문자를 채웁니다.',
+   formula:'C(6,2) × 25⁴',
+   steps:['A 위치 선택: C(6,2) = 15가지','나머지 4자리: A 제외 25가지씩','15 × 25⁴']},
+  {n:16,level:'심화',type:'중복조합',title:'x₁+x₂+x₃=10, 각 2 이상',short:'변수 치환 심화',
+   q:'0 이상 정수 x₁,x₂,x₃가 x₁+x₂+x₃=10을 만족할 때, 모든 변수는 2 이상. 해의 개수는?',
+   ans:'₃H₄ = C(6,4) = 15',ansNum:'15',
+   idea:'변수 치환: yᵢ = xᵢ − 2로 두면 y₁+y₂+y₃ = 10 − 6 = 4, yᵢ ≥ 0',
+   formula:'₃H₄ = C(6,4) = 15',
+   steps:['yᵢ = xᵢ − 2 치환','y₁+y₂+y₃ = 10 − 2×3 = 4','0이상 해 개수: ₃H₄ = C(6,4) = 15']},
+  {n:17,level:'심화',type:'중복조합',title:'x₁+x₂+x₃+x₄=12, x₁은 홀수',short:'홀수 조건 케이스 분류',
+   q:'0 이상 정수 x₁,x₂,x₃,x₄가 x₁+x₂+x₃+x₄=12를 만족할 때, x₁은 홀수. 해의 개수는?',
+   ans:'78+55+36+21+10+3 = 203',ansNum:'203',
+   idea:'x₁ = 2t+1 (t≥0)로 치환. 합이 달라지는 t별로 케이스를 나눠 더합니다.',
+   formula:'x₁=2t+1 → 2t+x₂+x₃+x₄=11, t=0~5',
+   steps:['x₁=2t+1 치환 → x₂+x₃+x₄ = 11−2t','t=0: C(13,2)=78, t=1: C(11,2)=55','t=2: C(9,2)=36, t=3: C(7,2)=21','t=4: C(5,2)=10, t=5: C(3,1)=3','합: 78+55+36+21+10+3 = 203']},
+  {n:18,level:'심화',type:'중복조합',title:'사탕 4종류, 각 최대 3개씩 9개',short:'상한 제한 케이스 분류',
+   q:'사탕 4종류에서 총 9개를 고르되, 각 종류는 최대 3개까지. (중복 허용, 순서 없음)',
+   ans:'4 + 24 + 20 = 48',ansNum:'48',
+   idea:'최대 4개 합이 12이므로 9개를 만들려면 0이 거의 없어야 합니다. 3의 개수별로 케이스를 나눕니다.',
+   formula:'3개 수에 따라 케이스 분류',
+   steps:['3이 3개: (3,3,3,0) → 나머지 1자리 선택 = 4가지','3이 2개: C(4,2)×4 = 24가지','3이 1개: 4×5 = 20가지','3이 0개: 합 9 불가 (최대 2×4=8)','총: 4+24+20 = 48']},
+  {n:19,level:'심화',type:'중복순열',title:'0과 9 둘 다 최소 1번',short:'포함-배제 심화',
+   q:'숫자 0~9로 길이 6 문자열(중복 허용). 단, 0과 9가 둘 다 한 번 이상 등장.',
+   ans:'10⁶ − 2×9⁶ + 8⁶',ansNum:'10⁶ − 2×9⁶ + 8⁶',
+   idea:'포함-배제 원리: 전체 − "0 없음" − "9 없음" + "둘 다 없음"',
+   formula:'10⁶ − 2×9⁶ + 8⁶',
+   steps:['전체: 10⁶','"0 없음": 9⁶ (1~9로만)','"9 없음": 9⁶ (0~8로만)','"0도 없고 9도 없음": 8⁶','포함-배제: 10⁶ − 2×9⁶ + 8⁶']},
+  {n:20,level:'심화',type:'중복조합',title:'5변수 합 12',short:'₅H₁₂',
+   q:'0 이상 정수 x₁,x₂,x₃,x₄,x₅가 x₁+x₂+x₃+x₄+x₅=12를 만족하는 해의 개수는?',
+   ans:'₅H₁₂ = C(16,12) = C(16,4) = 1820',ansNum:'1820',
+   idea:'12개를 5칸에 나누기 = 별 12개 + 막대 4개',
+   formula:'₅H₁₂ = C(5+12-1, 12) = C(16,12)',
+   steps:['별 12개 + 막대 4개 나열','C(16,12) = C(16,4) = 1820']},
+];
+
+const solved=new Set();
+let activeN=null;
+let curFilter='all';
+
+function getFiltered(){
+  return PROBS.filter(p=>{
+    if(curFilter==='all') return true;
+    if(curFilter==='기초') return p.level==='기초';
+    if(curFilter==='중급') return p.level==='중급';
+    if(curFilter==='심화') return p.level==='심화';
+    return p.type===curFilter;
+  });
+}
+
+function setFilter(f){
+  curFilter=f;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  event.target.classList.add('on');
+  renderList();
+  document.getElementById('detail-box').classList.remove('on');
+  activeN=null;
+}
+
+function renderProgress(){
+  const w=document.getElementById('progress-track');
+  w.innerHTML='';
+  PROBS.forEach(p=>{
+    const d=document.createElement('div');
+    d.className='prog-dot'+(solved.has(p.n)?' done':activeN===p.n?' active':'');
+    d.title=`${p.n}번: ${p.title}`;
+    d.onclick=()=>openDetail(p.n);
+    w.appendChild(d);
+  });
+}
+
+function renderList(){
+  const w=document.getElementById('prob-list');
+  w.innerHTML='';
+  const filtered=getFiltered();
+  filtered.forEach(p=>{
+    const row=document.createElement('div');
+    row.className='prob-row'+(activeN===p.n?' active':'');
+    row.id='row_'+p.n;
+    const levelCls={기초:'tb',중급:'tm',심화:'th'}[p.level]||'tb';
+    const typeCls=p.type==='중복순열'?'tp':'tc';
+    row.innerHTML=`<div class="pr-num">${String(p.n).padStart(2,'0')}</div>
+      <div class="pr-title">${p.title} <span style="font-size:11px;color:var(--color-text-tertiary)">${p.short}</span></div>
+      <div class="pr-badges"><span class="tag ${levelCls}" style="font-size:10px">${p.level}</span><span class="tag ${typeCls}" style="font-size:10px">${p.type}</span></div>
+      <div class="pr-done${solved.has(p.n)?'':' no'}">${solved.has(p.n)?'✓':'○'}</div>`;
+    row.onclick=()=>openDetail(p.n);
+    w.appendChild(row);
+  });
+}
+
+function openDetail(n){
+  activeN=n;
+  const p=PROBS.find(x=>x.n===n);
+  renderList();
+  renderProgress();
+  const db=document.getElementById('detail-box');
+  db.classList.add('on');
+  const levelCls={기초:'tb',중급:'tm',심화:'th'}[p.level]||'tb';
+  const typeCls=p.type==='중복순열'?'tp':'tc';
+  db.innerHTML=`
+  <div class="dh">
+    <div><div class="dh-num"># ${p.n}</div><div class="dh-title">${p.title}</div></div>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="tag ${levelCls}">${p.level}</span><span class="tag ${typeCls}">${p.type}</span></div>
+  </div>
+  <div class="dtabs">
+    <button class="dt on" data-tab="0">문제</button>
+    <button class="dt" data-tab="1">풀이</button>
+    <button class="dt" data-tab="2">직접 풀기</button>
+  </div>
+  <div class="dtab on" id="dt0">
+    <div class="card" style="margin-bottom:1rem"><h3>문제</h3><p>${p.q}</p></div>
+    <div class="card" style="margin-bottom:1rem">
+      <h3>핵심 아이디어</h3>
+      <p>${p.idea}</p>
+    </div>
+    <div class="card">
+      <h3>핵심 공식</h3>
+      <div style="font-family:var(--font-mono);font-size:14px;font-weight:500;margin-top:4px">${p.formula}</div>
+    </div>
+  </div>
+  <div class="dtab" id="dt1">
+    <div class="formula-big">${p.ans}</div>
+    <div class="step-list">${p.steps.map((s,i)=>`<div class="step-item"><div class="step-n">Step ${i+1}</div><div class="step-txt">${s}</div></div>`).join('')}</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn pri" onclick="markSolved(${p.n})">이 문제 완료 표시 ✓</button>
+    </div>
+  </div>
+  <div class="dtab" id="dt2">
+    <div class="card" style="margin-bottom:1rem"><h3>문제 (다시 보기)</h3><p>${p.q}</p></div>
+    <div class="info-box" id="quiz-area">풀이를 작성하고 정답을 확인해보세요.</div>
+    <button class="reveal-btn" onclick="revealAnswer(${p.n})">정답 보기 ▼</button>
+    <div class="answer-box" id="ans-box-${p.n}">
+      <div class="ab-title">정답</div>
+      <div class="ab-val">${p.ans}</div>
+    </div>
+    <div class="nav-btns">
+      ${p.n>1?`<button class="btn" onclick="openDetail(${p.n-1})">← 이전</button>`:''}
+      ${p.n<20?`<button class="btn pri" onclick="openDetail(${p.n+1})">다음 →</button>`:''}
+    </div>
+  </div>`;
+  db.querySelectorAll('.dt').forEach(btn=>{
+    btn.onclick=()=>{
+      const ti=parseInt(btn.dataset.tab);
+      db.querySelectorAll('.dt').forEach((t,j)=>t.classList.toggle('on',j===ti));
+      db.querySelectorAll('.dtab').forEach((t,j)=>t.classList.toggle('on',j===ti));
+    };
+  });
+  db.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function revealAnswer(n){
+  const box=document.getElementById('ans-box-'+n);
+  if(box) box.classList.add('on');
+  solved.add(n);
+  renderList();renderProgress();
+}
+
+function markSolved(n){
+  solved.add(n);
+  renderList();renderProgress();
+}
+
+renderList();
+renderProgress();
+</script>
