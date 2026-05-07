@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #5122 조약돌 인터랙티브 설명</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      background: linear-gradient(135deg, #f7fbff, #fff8ec);
+      color: #243042;
+    }
+    header {
+      padding: 42px 20px 30px;
+      text-align: center;
+      background: linear-gradient(135deg, #3f8cff, #7b61ff);
+      color: white;
+    }
+    header h1 {
+      margin: 0 0 12px;
+      font-size: 38px;
+    }
+    header p {
+      margin: 0;
+      font-size: 18px;
+      opacity: 0.95;
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 18px 60px;
+    }
+    section {
+      background: rgba(255,255,255,0.92);
+      border: 1px solid #e8edf5;
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 12px 30px rgba(55, 84, 140, 0.10);
+    }
+    h2 {
+      margin-top: 0;
+      color: #24406f;
+      font-size: 26px;
+    }
+    h3 {
+      color: #394b67;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .rule-card {
+      padding: 18px;
+      border-radius: 18px;
+      background: #f5f8ff;
+      border: 1px solid #dfe8ff;
+    }
+    .rule-card strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 8px;
+      color: #2453a6;
+    }
+    .playground {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+    @media (max-width: 850px) {
+      .playground { grid-template-columns: 1fr; }
+    }
+    .pebbles {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: end;
+      min-height: 160px;
+      padding: 18px;
+      border-radius: 20px;
+      background: #eef5ff;
+    }
+    .cell {
+      width: 94px;
+      min-height: 115px;
+      border-radius: 18px;
+      background: white;
+      border: 2px solid #d2def5;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 8px;
+      transition: 0.25s;
+      cursor: pointer;
+    }
+    .cell.selected {
+      border-color: #ff9b2f;
+      transform: translateY(-6px);
+      box-shadow: 0 10px 22px rgba(255, 155, 47, 0.25);
+    }
+    .cell .idx {
+      font-weight: 800;
+      color: #6b7a90;
+      font-size: 13px;
+    }
+    .stone-count {
+      font-size: 30px;
+      font-weight: 900;
+      color: #25324a;
+    }
+    .stones {
+      font-size: 20px;
+      line-height: 1.1;
+      min-height: 46px;
+      text-align: center;
+    }
+    .controls {
+      padding: 18px;
+      border-radius: 20px;
+      background: #fff7e9;
+      border: 1px solid #ffe1aa;
+    }
+    button {
+      border: 0;
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      color: white;
+      background: #3f8cff;
+      margin: 5px;
+      transition: 0.2s;
+    }
+    button:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    button.orange { background: #ff9b2f; }
+    button.red { background: #ef5350; }
+    button.green { background: #18a058; }
+    button.gray { background: #6f7d91; }
+    .status {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      background: white;
+      border: 1px dashed #f0b55c;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+    .answer-box {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: 16px;
+      background: #eefaf2;
+      border: 1px solid #bde9ca;
+      font-size: 18px;
+      font-weight: 800;
+      color: #13733b;
+    }
+    pre {
+      overflow-x: auto;
+      background: #111827;
+      color: #e5e7eb;
+      padding: 20px;
+      border-radius: 18px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+    code { font-family: Consolas, Monaco, monospace; }
+    .step {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      margin: 14px 0;
+      padding: 14px;
+      border-radius: 16px;
+      background: #f7f9fc;
+    }
+    .step-num {
+      min-width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #7b61ff;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 900;
+    }
+    .mini {
+      color: #667085;
+      font-size: 14px;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    .table th, .table td {
+      border: 1px solid #dce5f2;
+      padding: 10px;
+      text-align: center;
+    }
+    .table th { background: #eef5ff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #5122 조약돌</h1>
+    <p> 최소 작업 횟수 DP + 인터랙티브 체험</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>1. 문제를 아주 쉽게 말하면</h2>
+      <p>여러 칸에 조약돌이 놓여 있습니다. 우리는 모든 조약돌을 없애야 합니다. 단, 행동 횟수를 가장 적게 해야 합니다.</p>
+      <div class="grid">
+        <div class="rule-card">
+          <strong>규칙 1: 한 칸 제거</strong>
+          <p>한 칸에서 원하는 만큼 조약돌을 없앨 수 있습니다. 보통 그 칸을 한 번에 비우는 데 사용합니다.</p>
+        </div>
+        <div class="rule-card">
+          <strong>규칙 2: 옆 칸 같이 제거</strong>
+          <p>서로 붙어 있는 두 칸에서 같은 개수만큼 조약돌을 없앨 수 있습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>2. 직접 해보기</h2>
+      <p>칸을 클릭한 뒤 버튼을 눌러 보세요. 목표는 모든 조약돌을 가장 적은 횟수로 없애는 것입니다.</p>
+      <div class="playground">
+        <div>
+          <div id="pebbles" class="pebbles"></div>
+        </div>
+        <div class="controls">
+          <h3>조작 버튼</h3>
+          <button class="orange" onclick="removeOneCell()">선택한 칸 혼자 제거</button>
+          <button class="green" onclick="removeWithNext()">선택한 칸 + 오른쪽 칸 같이 제거</button>
+          <button class="gray" onclick="resetGame()">처음으로</button>
+          <button class="red" onclick="showOptimal()">최소 횟수 보기</button>
+          <div id="status" class="status">1번 칸부터 클릭해서 시작해 보세요.</div>
+          <div id="answer" class="answer-box" style="display:none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>3. 핵심 생각</h2>
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <strong>왼쪽부터 차례대로 본다.</strong>
+          <p>현재 칸에 조약돌이 남아 있으면, 그 칸을 어떻게 없앨지 결정합니다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <strong>혼자 없앨지, 오른쪽 칸과 같이 없앨지 고른다.</strong>
+          <p>옆 칸과 같이 없애면 한 번의 행동으로 두 칸을 줄일 수 있어서 이득일 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <strong>가장 적은 행동 횟수를 기억한다.</strong>
+          <p>컴퓨터는 여러 방법을 비교하면서 더 적은 횟수만 남깁니다. 이것이 DP입니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>4. 예시 이해하기</h2>
+      <table class="table">
+        <tr>
+          <th>상태</th>
+          <th>행동</th>
+          <th>결과</th>
+        </tr>
+        <tr>
+          <td>2 5 3</td>
+          <td>1번과 2번에서 2개씩 같이 제거</td>
+          <td>0 3 3</td>
+        </tr>
+        <tr>
+          <td>0 3 3</td>
+          <td>2번과 3번에서 3개씩 같이 제거</td>
+          <td>0 0 0</td>
+        </tr>
+      </table>
+      <p><strong>총 2번</strong>으로 모두 없앨 수 있습니다.</p>
+    </section>
+
+    <section>
+      <h2>5. C 정답 코드</h2>
+      <p class="mini">아래 코드는 상태를 저장하면서 최소 작업 횟수를 찾는 DP 코드입니다.</p>
+      <pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef struct {
+    long long remain;
+    int cost;
+} State;
+
+State dp[3000], ndp[6000];
+
+int cmp(const void *a, const void *b) {
+    State *x = (State *)a;
+    State *y = (State *)b;
+
+    if (x-&gt;remain &lt; y-&gt;remain) return -1;
+    if (x-&gt;remain &gt; y-&gt;remain) return 1;
+    return x-&gt;cost - y-&gt;cost;
+}
+
+void addState(State arr[], int *cnt, long long remain, int cost) {
+    arr[*cnt].remain = remain;
+    arr[*cnt].cost = cost;
+    (*cnt)++;
+}
+
+int main() {
+    int N;
+    long long a[2505];
+
+    scanf("%d", &amp;N);
+
+    for (int i = 0; i &lt; N; i++) {
+        scanf("%lld", &amp;a[i]);
+    }
+
+    int dpCnt = 1;
+    dp[0].remain = a[0];
+    dp[0].cost = 0;
+
+    for (int i = 0; i &lt; N - 1; i++) {
+        int ndpCnt = 0;
+
+        for (int j = 0; j &lt; dpCnt; j++) {
+            long long cur = dp[j].remain;
+            int cost = dp[j].cost;
+
+            if (cur == 0) {
+                addState(ndp, &amp;ndpCnt, a[i + 1], cost);
+            } else {
+                addState(ndp, &amp;ndpCnt, a[i + 1], cost + 1);
+
+                if (cur &lt;= a[i + 1]) {
+                    addState(ndp, &amp;ndpCnt, a[i + 1] - cur, cost + 1);
+                }
+            }
+        }
+
+        qsort(ndp, ndpCnt, sizeof(State), cmp);
+
+        dpCnt = 0;
+
+        for (int j = 0; j &lt; ndpCnt; j++) {
+            if (dpCnt == 0 || dp[dpCnt - 1].remain != ndp[j].remain) {
+                dp[dpCnt++] = ndp[j];
+            } else {
+                if (ndp[j].cost &lt; dp[dpCnt - 1].cost) {
+                    dp[dpCnt - 1].cost = ndp[j].cost;
+                }
+            }
+        }
+    }
+
+    int answer = 987654321;
+
+    for (int i = 0; i &lt; dpCnt; i++) {
+        int result = dp[i].cost;
+
+        if (dp[i].remain &gt; 0) {
+            result++;
+        }
+
+        if (result &lt; answer) {
+            answer = result;
+        }
+    }
+
+    printf("%d\n", answer);
+
+    return 0;
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>6. 한 줄 정리</h2>
+      <p style="font-size:20px; font-weight:900; color:#2453a6;">현재 칸을 혼자 없앨지, 옆 칸과 같이 없앨지 비교하면서 최소 행동 횟수를 찾는 문제입니다.</p>
+    </section>
+  </main>
+
+  <script>
+    const initial = [2, 5, 3];
+    let stones = [...initial];
+    let selected = 0;
+    let moves = 0;
+
+    function stoneEmoji(n) {
+      if (n <= 0) return "";
+      return "🪨".repeat(Math.min(n, 6)) + (n > 6 ? "…" : "");
+    }
+
+    function render() {
+      const area = document.getElementById("pebbles");
+      area.innerHTML = "";
+      stones.forEach((v, i) => {
+        const div = document.createElement("div");
+        div.className = "cell" + (i === selected ? " selected" : "");
+        div.onclick = () => {
+          selected = i;
+          document.getElementById("answer").style.display = "none";
+          setStatus(`${i + 1}번 칸을 선택했습니다. 현재 조약돌은 ${v}개입니다.`);
+          render();
+        };
+        div.innerHTML = `
+          <div class="idx">${i + 1}번 칸</div>
+          <div class="stones">${stoneEmoji(v)}</div>
+          <div class="stone-count">${v}</div>
+        `;
+        area.appendChild(div);
+      });
+      checkClear();
+    }
+
+    function setStatus(msg) {
+      document.getElementById("status").innerHTML = `${msg}<br><strong>현재 행동 횟수: ${moves}번</strong>`;
+    }
+
+    function removeOneCell() {
+      if (stones[selected] === 0) {
+        setStatus("이미 비어 있는 칸입니다. 다른 칸을 골라 보세요.");
+        return;
+      }
+      stones[selected] = 0;
+      moves++;
+      setStatus(`${selected + 1}번 칸을 혼자 제거했습니다.`);
+      document.getElementById("answer").style.display = "none";
+      render();
+    }
+
+    function removeWithNext() {
+      if (selected >= stones.length - 1) {
+        setStatus("오른쪽 칸이 없어서 같이 제거할 수 없습니다.");
+        return;
+      }
+      const a = stones[selected];
+      const b = stones[selected + 1];
+      const m = Math.min(a, b);
+      if (m === 0) {
+        setStatus("두 칸 중 하나가 비어 있어서 같이 제거할 수 없습니다.");
+        return;
+      }
+      stones[selected] -= m;
+      stones[selected + 1] -= m;
+      moves++;
+      setStatus(`${selected + 1}번 칸과 ${selected + 2}번 칸에서 ${m}개씩 같이 제거했습니다.`);
+      document.getElementById("answer").style.display = "none";
+      render();
+    }
+
+    function resetGame() {
+      stones = [...initial];
+      selected = 0;
+      moves = 0;
+      document.getElementById("answer").style.display = "none";
+      setStatus("처음 상태로 돌아왔습니다. 1번 칸부터 클릭해서 시작해 보세요.");
+      render();
+    }
+
+    function checkClear() {
+      if (stones.every(x => x === 0)) {
+        setStatus(`모든 조약돌을 없앴습니다! 총 ${moves}번 사용했습니다.`);
+      }
+    }
+
+    function optimalDP(arr) {
+      const memo = new Map();
+      function key(a) { return a.join(","); }
+      function dfs(a) {
+        if (a.every(x => x === 0)) return 0;
+        const k = key(a);
+        if (memo.has(k)) return memo.get(k);
+        let best = 999;
+        for (let i = 0; i < a.length; i++) {
+          if (a[i] > 0) {
+            const b = [...a];
+            b[i] = 0;
+            best = Math.min(best, 1 + dfs(b));
+          }
+          if (i + 1 < a.length && a[i] > 0 && a[i + 1] > 0) {
+            const b = [...a];
+            const m = Math.min(b[i], b[i + 1]);
+            b[i] -= m;
+            b[i + 1] -= m;
+            best = Math.min(best, 1 + dfs(b));
+          }
+        }
+        memo.set(k, best);
+        return best;
+      }
+      return dfs(arr);
+    }
+
+    function showOptimal() {
+      const ans = optimalDP(initial);
+      const box = document.getElementById("answer");
+      box.style.display = "block";
+      box.innerHTML = `예시 [${initial.join(", ")}]의 최소 행동 횟수는 ${ans}번입니다.`;
+    }
+
+    render();
+  </script>
+</body>
+</html>
