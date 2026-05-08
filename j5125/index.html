@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #5125 피하자 인터랙티브 학습</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #eef5ff, #fff7e8);
+      color: #1f2937;
+      line-height: 1.7;
+    }
+
+    header {
+      padding: 54px 20px 36px;
+      text-align: center;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.22);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 52px);
+      letter-spacing: -1px;
+    }
+
+    header p {
+      max-width: 850px;
+      margin: 18px auto 0;
+      font-size: clamp(16px, 2vw, 20px);
+      opacity: 0.95;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 28px;
+      padding: 26px;
+      margin: 22px 0;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #1d4ed8;
+      font-size: 28px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .mini {
+      border-radius: 22px;
+      padding: 20px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .mini h3 {
+      margin-top: 0;
+      color: #4338ca;
+    }
+
+    .number-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0;
+      min-height: 54px;
+      align-items: center;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 50px;
+      height: 48px;
+      padding: 0 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 18px;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+      transition: transform 0.2s ease;
+    }
+
+    .pill:hover {
+      transform: translateY(-4px) scale(1.04);
+    }
+
+    .even {
+      background: #dbeafe;
+      color: #1d4ed8;
+      border: 2px solid #93c5fd;
+    }
+
+    .odd {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 2px solid #fca5a5;
+    }
+
+    .input-area {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    input {
+      width: 100%;
+      border: 2px solid #cbd5e1;
+      border-radius: 18px;
+      padding: 16px 18px;
+      font-size: 18px;
+      outline: none;
+      background: white;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    button {
+      border: none;
+      border-radius: 18px;
+      padding: 14px 20px;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.22);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      background: #1d4ed8;
+    }
+
+    .ghost {
+      background: #f1f5f9;
+      color: #334155;
+      box-shadow: none;
+      border: 1px solid #cbd5e1;
+    }
+
+    .result-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .score {
+      border-radius: 24px;
+      padding: 22px;
+      background: white;
+      border: 2px solid #e5e7eb;
+    }
+
+    .score strong {
+      display: block;
+      font-size: 36px;
+      color: #7c3aed;
+      margin-top: 8px;
+    }
+
+    .answer {
+      background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+      border: 2px solid #86efac;
+    }
+
+    .step-list {
+      counter-reset: step;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .step-list li {
+      counter-increment: step;
+      margin: 14px 0;
+      padding: 16px 18px 16px 58px;
+      background: #f8fafc;
+      border-radius: 18px;
+      border: 1px solid #e2e8f0;
+      position: relative;
+    }
+
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 22px;
+      border-radius: 22px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .highlight {
+      color: #dc2626;
+      font-weight: 900;
+    }
+
+    .note {
+      padding: 16px 18px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 18px;
+    }
+
+    .bar-wrap {
+      margin-top: 12px;
+      background: #e5e7eb;
+      height: 18px;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      transition: width 0.5s ease;
+    }
+
+    footer {
+      text-align: center;
+      padding: 28px;
+      color: #64748b;
+    }
+
+    @media (max-width: 640px) {
+      .input-area {
+        grid-template-columns: 1fr;
+      }
+      .card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #5125 피하자</h1>
+    <p>홀수와 짝수가 서로 섞여 있으면 불편해요. 최소 몇 번 옆으로 바꿔야 한쪽에는 짝수, 한쪽에는 홀수가 모일까요?</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 문제를 아주 쉽게 이해하기</h2>
+      <p>
+        숫자들이 한 줄로 서 있습니다. 우리는 바로 옆에 있는 숫자끼리만 자리를 바꿀 수 있습니다.
+        목표는 <span class="highlight">홀수와 짝수가 만나는 부분이 최대 1번</span>만 나오게 만드는 것입니다.
+      </p>
+      <div class="grid">
+        <div class="mini">
+          <h3>가능한 모양 1</h3>
+          <p>짝수를 왼쪽으로 모읍니다.</p>
+          <div class="number-row">
+            <span class="pill even">4</span>
+            <span class="pill even">0</span>
+            <span class="pill odd">5</span>
+            <span class="pill odd">1</span>
+          </div>
+        </div>
+        <div class="mini">
+          <h3>가능한 모양 2</h3>
+          <p>홀수를 왼쪽으로 모읍니다.</p>
+          <div class="number-row">
+            <span class="pill odd">5</span>
+            <span class="pill odd">1</span>
+            <span class="pill even">4</span>
+            <span class="pill even">0</span>
+          </div>
+        </div>
+      </div>
+      <p class="note">
+        0은 짝수입니다. 따라서 0은 파란색 짝수 그룹에 들어갑니다.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>2. 직접 입력해서 확인하기</h2>
+      <p>숫자를 띄어쓰기로 입력하세요. 예: <b>4 5 1 0</b></p>
+      <div class="input-area">
+        <input id="numbersInput" value="4 5 1 0" placeholder="예: 4 5 1 0" />
+        <button onclick="analyze()">분석하기</button>
+      </div>
+      <button class="ghost" onclick="setExample('2 4 6 1 3 5')">예제 1</button>
+      <button class="ghost" onclick="setExample('1 2 3 4 5')">예제 2</button>
+      <button class="ghost" onclick="setExample('8 7 6 5 4 3 2 1')">예제 3</button>
+
+      <h3>입력한 숫자</h3>
+      <div id="originalRow" class="number-row"></div>
+
+      <div class="result-box">
+        <div class="score">
+          <h3>짝수를 왼쪽으로 모으기</h3>
+          <p>현재 짝수 앞에 있는 홀수 개수만큼 이동합니다.</p>
+          <strong id="evenLeftCount">0</strong>
+          <div class="bar-wrap"><div id="evenBar" class="bar"></div></div>
+        </div>
+        <div class="score">
+          <h3>홀수를 왼쪽으로 모으기</h3>
+          <p>현재 홀수 앞에 있는 짝수 개수만큼 이동합니다.</p>
+          <strong id="oddLeftCount">0</strong>
+          <div class="bar-wrap"><div id="oddBar" class="bar"></div></div>
+        </div>
+        <div class="score answer">
+          <h3>정답</h3>
+          <p>두 방법 중 더 적은 횟수입니다.</p>
+          <strong id="answerCount">0</strong>
+        </div>
+      </div>
+
+      <h3>정렬 결과 보기</h3>
+      <p>짝수 왼쪽 결과</p>
+      <div id="evenFirstRow" class="number-row"></div>
+      <p>홀수 왼쪽 결과</p>
+      <div id="oddFirstRow" class="number-row"></div>
+    </section>
+
+    <section class="card">
+      <h2>3. 초등학생도 이해하는 풀이 원리</h2>
+      <ol class="step-list">
+        <li>숫자를 왼쪽부터 하나씩 봅니다.</li>
+        <li>짝수를 왼쪽으로 모으고 싶다면, 짝수 앞에 있는 홀수들이 방해물입니다.</li>
+        <li>현재 짝수 앞에 홀수가 2개 있으면, 그 짝수는 홀수 2개를 지나가야 하므로 2번 움직입니다.</li>
+        <li>반대로 홀수를 왼쪽으로 모으고 싶다면, 홀수 앞에 있는 짝수들이 방해물입니다.</li>
+        <li>두 경우를 모두 계산해서 더 작은 값을 정답으로 출력합니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>4. 예제 설명</h2>
+      <p>입력 숫자가 다음과 같다고 해봅시다.</p>
+      <div class="number-row">
+        <span class="pill even">4</span>
+        <span class="pill odd">5</span>
+        <span class="pill odd">1</span>
+        <span class="pill even">0</span>
+      </div>
+      <p>마지막 0은 짝수입니다. 짝수를 왼쪽으로 모으려면 0이 앞의 홀수 5와 1을 지나가야 합니다.</p>
+      <p>그래서 2번 움직입니다.</p>
+      <div class="number-row">
+        <span class="pill even">4</span>
+        <span class="pill odd">5</span>
+        <span class="pill odd">1</span>
+        <span class="pill even">0</span>
+      </div>
+      <div class="number-row">
+        <span class="pill even">4</span>
+        <span class="pill odd">5</span>
+        <span class="pill even">0</span>
+        <span class="pill odd">1</span>
+      </div>
+      <div class="number-row">
+        <span class="pill even">4</span>
+        <span class="pill even">0</span>
+        <span class="pill odd">5</span>
+        <span class="pill odd">1</span>
+      </div>
+      <p><b>정답: 2</b></p>
+    </section>
+
+    <section class="card">
+      <h2>5. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+int main() {
+    int N;
+    long long even_count = 0;
+    long long odd_count = 0;
+    long long even_left = 0;
+    long long odd_left = 0;
+    long long x;
+    int i;
+
+    scanf("%d", &amp;N);
+
+    for (i = 0; i &lt; N; i++) {
+        scanf("%lld", &amp;x);
+
+        if (x % 2 == 0) {
+            // 짝수를 왼쪽으로 모으려면,
+            // 앞에 있던 홀수들을 모두 지나가야 한다.
+            even_left += odd_count;
+            even_count++;
+        } else {
+            // 홀수를 왼쪽으로 모으려면,
+            // 앞에 있던 짝수들을 모두 지나가야 한다.
+            odd_left += even_count;
+            odd_count++;
+        }
+    }
+
+    if (even_left &lt; odd_left) {
+        printf("%lld\n", even_left);
+    } else {
+        printf("%lld\n", odd_left);
+    }
+
+    return 0;
+}</pre>
+    </section>
+  </main>
+
+  <footer>
+    정올 #5125 피하자 학습용 인터랙티브 페이지
+  </footer>
+
+  <script>
+    function makePill(num) {
+      const span = document.createElement('span');
+      span.className = 'pill ' + (Math.abs(num) % 2 === 0 ? 'even' : 'odd');
+      span.textContent = num;
+      return span;
+    }
+
+    function renderRow(id, arr) {
+      const row = document.getElementById(id);
+      row.innerHTML = '';
+      arr.forEach(num => row.appendChild(makePill(num)));
+    }
+
+    function analyze() {
+      const input = document.getElementById('numbersInput').value.trim();
+      const arr = input.length === 0 ? [] : input.split(/\s+/).map(Number).filter(n => !Number.isNaN(n));
+
+      let evenCount = 0;
+      let oddCount = 0;
+      let evenLeft = 0;
+      let oddLeft = 0;
+
+      arr.forEach(x => {
+        if (Math.abs(x) % 2 === 0) {
+          evenLeft += oddCount;
+          evenCount++;
+        } else {
+          oddLeft += evenCount;
+          oddCount++;
+        }
+      });
+
+      const answer = Math.min(evenLeft, oddLeft);
+      const maxValue = Math.max(evenLeft, oddLeft, 1);
+
+      document.getElementById('evenLeftCount').textContent = evenLeft;
+      document.getElementById('oddLeftCount').textContent = oddLeft;
+      document.getElementById('answerCount').textContent = answer;
+
+      document.getElementById('evenBar').style.width = (evenLeft / maxValue * 100) + '%';
+      document.getElementById('oddBar').style.width = (oddLeft / maxValue * 100) + '%';
+
+      renderRow('originalRow', arr);
+
+      const evens = arr.filter(x => Math.abs(x) % 2 === 0);
+      const odds = arr.filter(x => Math.abs(x) % 2 !== 0);
+      renderRow('evenFirstRow', evens.concat(odds));
+      renderRow('oddFirstRow', odds.concat(evens));
+    }
+
+    function setExample(text) {
+      document.getElementById('numbersInput').value = text;
+      analyze();
+    }
+
+    analyze();
+  </script>
+</body>
+</html>
