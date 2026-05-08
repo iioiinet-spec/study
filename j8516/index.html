@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #8516 점프점프 인터랙티브 해설</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      background: linear-gradient(135deg, #ecfeff 0%, #eef2ff 45%, #fff7ed 100%);
+      color: #172033;
+      line-height: 1.7;
+    }
+    header {
+      padding: 60px 22px 44px;
+      text-align: center;
+      color: white;
+      background:
+        radial-gradient(circle at 15% 22%, rgba(34,211,238,.45), transparent 28%),
+        radial-gradient(circle at 85% 18%, rgba(251,191,36,.45), transparent 30%),
+        linear-gradient(135deg, #0f172a, #155e75 48%, #6d28d9);
+      position: relative;
+      overflow: hidden;
+    }
+    header::before, header::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.18);
+    }
+    header::before { width: 280px; height: 280px; left: -100px; bottom: -135px; }
+    header::after { width: 190px; height: 190px; right: -55px; top: -75px; }
+    header h1 {
+      margin: 0;
+      font-size: clamp(30px, 5.3vw, 54px);
+      letter-spacing: -1.5px;
+      position: relative;
+      z-index: 1;
+    }
+    header p {
+      max-width: 920px;
+      margin: 18px auto 0;
+      font-size: 18px;
+      opacity: .95;
+      position: relative;
+      z-index: 1;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      overflow-x: auto;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid #dbe3ef;
+      justify-content: center;
+    }
+    nav a {
+      text-decoration: none;
+      white-space: nowrap;
+      color: #334155;
+      border: 1px solid #dbe3ef;
+      background: #f8fafc;
+      padding: 9px 13px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+    nav a:hover { background: #dbeafe; color: #1d4ed8; }
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 28px 18px 74px;
+    }
+    section {
+      margin: 28px 0;
+      padding: 28px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid #e2e8f0;
+      border-radius: 28px;
+      box-shadow: 0 18px 45px rgba(15,23,42,.08);
+    }
+    h2 {
+      margin: 0 0 18px;
+      font-size: 28px;
+      color: #172554;
+      letter-spacing: -.5px;
+    }
+    h3 { color: #312e81; margin-top: 24px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 8px 22px rgba(15,23,42,.055);
+    }
+    .card strong { color: #1d4ed8; }
+    .danger { background: #fff1f2; border-color: #fecdd3; color: #9f1239; }
+    .safe { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+    .highlight {
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(120deg, #fef3c7, #dbeafe);
+      border-left: 6px solid #2563eb;
+      font-weight: 900;
+    }
+    .formula {
+      display: inline-block;
+      margin: 7px 0;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 900;
+      font-size: 17px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 13px;
+      font-weight: 900;
+      margin: 4px 4px 4px 0;
+    }
+    .pill.blue { background: #dbeafe; color: #1d4ed8; }
+    .pill.orange { background: #ffedd5; color: #c2410c; }
+    .flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .step {
+      flex: 1 1 180px;
+      text-align: center;
+      padding: 15px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid #dbe3ef;
+      font-weight: 900;
+    }
+    .arrow { color: #2563eb; font-size: 24px; font-weight: 900; }
+    pre {
+      overflow-x: auto;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 18px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    code { font-family: "D2Coding", "Consolas", monospace; }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      font-size: 15px;
+      margin: 6px 0 12px;
+      background: white;
+    }
+    textarea { min-height: 90px; resize: vertical; font-family: "D2Coding", Consolas, monospace; }
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 11px 15px;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      margin: 5px 5px 5px 0;
+    }
+    .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn.secondary { background: #7c3aed; }
+    .btn.dark { background: #0f172a; }
+    .result {
+      min-height: 48px;
+      background: #ecfeff;
+      border: 1px solid #67e8f9;
+      padding: 14px;
+      border-radius: 16px;
+      font-weight: 900;
+      color: #155e75;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 16px;
+      background: white;
+      margin: 12px 0;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 11px;
+      text-align: center;
+    }
+    th { background: #1e3a8a; color: white; }
+    details {
+      background: #f8fafc;
+      border: 1px solid #dbe3ef;
+      border-radius: 18px;
+      margin: 12px 0;
+      padding: 14px 18px;
+    }
+    summary { cursor: pointer; color: #1e40af; font-weight: 900; }
+    .building-wrap {
+      display: flex;
+      align-items: end;
+      gap: 8px;
+      min-height: 180px;
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid #dbe3ef;
+      border-radius: 20px;
+      overflow-x: auto;
+    }
+    .building {
+      min-width: 52px;
+      border-radius: 12px 12px 4px 4px;
+      background: linear-gradient(180deg, #93c5fd, #1d4ed8);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: end;
+      padding: 6px;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(37,99,235,.2);
+    }
+    .building.off { background: linear-gradient(180deg, #cbd5e1, #64748b); }
+    .building.now { outline: 4px solid #f59e0b; }
+    .small { font-size: 12px; opacity: .9; }
+    .fenwick-cell {
+      display: inline-block;
+      min-width: 42px;
+      padding: 9px;
+      margin: 4px;
+      border-radius: 12px;
+      background: #eef2ff;
+      color: #3730a3;
+      text-align: center;
+      font-weight: 900;
+      border: 1px solid #c7d2fe;
+    }
+    .fenwick-cell.on { background: #dcfce7; color: #166534; border-color: #86efac; }
+    .quiz-box { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 22px; padding: 20px; }
+    .option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 8px 0;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .option:hover { background: #eff6ff; }
+    .correct { background: #dcfce7 !important; border-color: #22c55e !important; }
+    .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; }
+    footer { text-align: center; padding: 30px; color: #475569; }
+    @media (max-width: 760px) {
+      section { padding: 20px; border-radius: 20px; }
+      nav { justify-content: flex-start; }
+      .building { min-width: 44px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #8516 점프점프</h1>
+    <p>오른쪽 건물로만 이동하고, 높이 차이가 K 이하인 건물로 점프할 수 있을 때 각 건물에 도달 가능한지 Fenwick Tree와 좌표 압축으로 빠르게 판단합니다.</p>
+  </header>
+
+  <nav>
+    <a href="#problem">문제 핵심</a>
+    <a href="#slow">단순 풀이</a>
+    <a href="#idea">핵심 아이디어</a>
+    <a href="#compress">좌표 압축</a>
+    <a href="#fenwick">Fenwick Tree</a>
+    <a href="#example">예제 설명</a>
+    <a href="#code">정답 코드</a>
+    <a href="#simulator">시뮬레이터</a>
+    <a href="#quiz">퀴즈</a>
+  </nav>
+
+  <main>
+    <section id="problem">
+      <h2>1. 문제 핵심</h2>
+      <div class="highlight">정올이는 1번 건물에서 시작합니다. 오른쪽 건물로만 이동할 수 있고, 두 건물의 높이 차이가 K 이하여야 합니다.</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="card"><strong>1.</strong> 현재 건물의 높이: h[i]</div>
+        <div class="card"><strong>2.</strong> 이동하려는 건물의 높이: h[j]</div>
+        <div class="card"><strong>3.</strong> 이동 방향 조건: j &gt; i</div>
+        <div class="card"><strong>4.</strong> 높이 조건: |h[i] - h[j]| ≤ K</div>
+      </div>
+      <p class="formula">j &gt; i 그리고 |h[i] - h[j]| ≤ K</p>
+      <p>입력 범위는 N ≤ 200000, K ≤ 10⁹ 이므로 빠른 알고리즘이 필요합니다.</p>
+    </section>
+
+    <section id="slow">
+      <h2>2. 단순 풀이가 안 되는 이유</h2>
+      <div class="card danger">
+        <h3>2.1 모든 건물 쌍 검사</h3>
+        <pre><code>for (int i = 1; i &lt;= N; i++) {
+    for (int j = i + 1; j &lt;= N; j++) {
+        ...
+    }
+}</code></pre>
+        <p>이 방식은 모든 i, j 쌍을 확인하므로 O(N²)입니다.</p>
+      </div>
+      <h3>2.2 N = 200000이면?</h3>
+      <div class="grid">
+        <div class="card danger"><strong>O(N²)</strong><br>약 40,000,000,000번 수준의 비교가 될 수 있습니다.</div>
+        <div class="card safe"><strong>필요한 방향</strong><br>각 건물마다 빠르게 “올 수 있는 이전 건물”이 있는지만 확인해야 합니다.</div>
+      </div>
+    </section>
+
+    <section id="idea">
+      <h2>3. 핵심 아이디어</h2>
+      <div class="highlight">i번 건물에 도달 가능한지 알고 싶다면, 왼쪽에 있는 도달 가능한 건물 중 높이가 h[i]-K 이상 h[i]+K 이하인 건물이 하나라도 있으면 됩니다.</div>
+      <p class="formula">h[i] - K ≤ 이전 건물 높이 ≤ h[i] + K</p>
+      <div class="flow">
+        <div class="step">왼쪽 건물만 본다</div>
+        <div class="arrow">→</div>
+        <div class="step">도달 가능한 건물만 본다</div>
+        <div class="arrow">→</div>
+        <div class="step">높이 범위 안에 있는지 확인</div>
+        <div class="arrow">→</div>
+        <div class="step">하나라도 있으면 가능</div>
+      </div>
+      <h3>3.1 판단 문장</h3>
+      <p class="formula">현재 건물에 올 수 있는 이전 건물이 존재하는가?</p>
+    </section>
+
+    <section id="compress">
+      <h2>4. 왜 좌표 압축을 쓰는가?</h2>
+      <p>높이는 최대 10⁹입니다. 높이를 그대로 배열 인덱스로 쓰면 배열이 너무 커집니다.</p>
+      <div class="highlight">실제로 등장한 높이만 정렬해서 번호를 붙이면 작은 인덱스로 관리할 수 있습니다.</div>
+      <h3>4.1 예시</h3>
+      <table>
+        <tr><th>원래 높이</th><td>5</td><td>4</td><td>8</td><td>7</td><td>2</td></tr>
+        <tr><th>정렬 후</th><td>2</td><td>4</td><td>5</td><td>7</td><td>8</td></tr>
+        <tr><th>압축 번호</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+      </table>
+      <div class="grid">
+        <div class="card"><strong>2 → 1</strong></div>
+        <div class="card"><strong>4 → 2</strong></div>
+        <div class="card"><strong>5 → 3</strong></div>
+        <div class="card"><strong>7 → 4</strong></div>
+        <div class="card"><strong>8 → 5</strong></div>
+      </div>
+    </section>
+
+    <section id="fenwick">
+      <h2>5. Fenwick Tree에 저장하는 것</h2>
+      <div class="highlight">Fenwick Tree에는 “도달 가능한 건물의 높이”를 저장합니다.</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="card safe"><strong>처음</strong><br>1번 건물은 항상 도달 가능입니다.<pre><code>possible[1] = 1;
+update(pos, 1);</code></pre></div>
+        <div class="card safe"><strong>확인</strong><br>현재 높이 범위 안에 도달 가능한 건물이 있는지 봅니다.<pre><code>if (range_sum(left, right) &gt; 0)</code></pre></div>
+        <div class="card safe"><strong>가능하면 추가</strong><br>현재 건물도 도달 가능 높이로 Fenwick Tree에 넣습니다.<pre><code>update(idx, 1);</code></pre></div>
+      </div>
+
+      <h3>5.1 Fenwick Tree 기본 함수</h3>
+      <details open>
+        <summary>update, sum, range_sum 코드 보기</summary>
+        <pre><code>void update(int idx, int value) {
+    while (idx &lt;= N) {
+        bit[idx] += value;
+        idx += idx & -idx;
+    }
+}
+
+int sum(int idx) {
+    int result = 0;
+
+    while (idx &gt; 0) {
+        result += bit[idx];
+        idx -= idx & -idx;
+    }
+
+    return result;
+}
+
+int range_sum(int left, int right) {
+    if (left &gt; right) return 0;
+    return sum(right) - sum(left - 1);
+}</code></pre>
+      </details>
+
+      <h3>5.2 lower_bound와 upper_bound</h3>
+      <p>높이 범위 [h[i]-K, h[i]+K]를 압축 번호 범위로 바꾸기 위해 이분 탐색을 사용합니다.</p>
+      <p class="formula">left = lower_bound(sorted, low)</p>
+      <p class="formula">right = upper_bound(sorted, high) - 1</p>
+    </section>
+
+    <section id="example">
+      <h2>6. 예제 설명</h2>
+      <div class="card">
+        <h3>6.1 입력</h3>
+        <pre><code>5 2
+5 4 8 7 2</code></pre>
+      </div>
+      <div class="building-wrap" id="exampleBuildings"></div>
+      <h3>6.2 단계별 판단</h3>
+      <details open>
+        <summary>자세한 풀이 보기</summary>
+        <p><strong>1번 건물 높이 5</strong>는 시작점이므로 가능합니다.</p>
+        <p><strong>2번 건물 높이 4</strong>: |5 - 4| = 1이므로 가능합니다.</p>
+        <p><strong>3번 건물 높이 8</strong>: 5와 차이 3, 4와 차이 4이므로 불가능합니다.</p>
+        <p><strong>4번 건물 높이 7</strong>: |5 - 7| = 2이므로 가능합니다.</p>
+        <p><strong>5번 건물 높이 2</strong>: |4 - 2| = 2이므로 가능합니다.</p>
+      </details>
+      <p class="formula">출력: 1 1 0 1 1</p>
+    </section>
+
+    <section id="code">
+      <h2>7. 정답 C 코드</h2>
+      <pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#define MAXN 200005
+
+int N;
+long long K;
+long long h[MAXN];
+long long sorted[MAXN];
+
+int bit[MAXN];
+
+int compare_ll(const void *a, const void *b) {
+    long long x = *(long long *)a;
+    long long y = *(long long *)b;
+
+    if (x &lt; y) return -1;
+    if (x &gt; y) return 1;
+    return 0;
+}
+
+void update(int idx, int value) {
+    while (idx &lt;= N) {
+        bit[idx] += value;
+        idx += idx & -idx;
+    }
+}
+
+int sum(int idx) {
+    int result = 0;
+
+    while (idx &gt; 0) {
+        result += bit[idx];
+        idx -= idx & -idx;
+    }
+
+    return result;
+}
+
+int range_sum(int left, int right) {
+    if (left &gt; right) return 0;
+    return sum(right) - sum(left - 1);
+}
+
+int lower_bound_idx(long long arr[], int size, long long target) {
+    int left = 1;
+    int right = size + 1;
+
+    while (left &lt; right) {
+        int mid = (left + right) / 2;
+
+        if (arr[mid] &gt;= target) {
+            right = mid;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    return left;
+}
+
+int upper_bound_idx(long long arr[], int size, long long target) {
+    int left = 1;
+    int right = size + 1;
+
+    while (left &lt; right) {
+        int mid = (left + right) / 2;
+
+        if (arr[mid] &gt; target) {
+            right = mid;
+        } else {
+            left = mid + 1;
+        }
+    }
+
+    return left;
+}
+
+int main() {
+    scanf("%d %lld", &N, &K);
+
+    for (int i = 1; i &lt;= N; i++) {
+        scanf("%lld", &h[i]);
+        sorted[i] = h[i];
+    }
+
+    qsort(sorted + 1, N, sizeof(long long), compare_ll);
+
+    int possible[MAXN] = {0};
+
+    possible[1] = 1;
+
+    int pos = lower_bound_idx(sorted, N, h[1]);
+    update(pos, 1);
+
+    for (int i = 2; i &lt;= N; i++) {
+        long long low = h[i] - K;
+        long long high = h[i] + K;
+
+        int left = lower_bound_idx(sorted, N, low);
+        int right = upper_bound_idx(sorted, N, high) - 1;
+
+        if (range_sum(left, right) &gt; 0) {
+            possible[i] = 1;
+
+            int idx = lower_bound_idx(sorted, N, h[i]);
+            update(idx, 1);
+        }
+    }
+
+    for (int i = 1; i &lt;= N; i++) {
+        printf("%d ", possible[i]);
+    }
+
+    return 0;
+}</code></pre>
+
+      <h3>7.1 코드 흐름</h3>
+      <div class="flow">
+        <div class="step">입력 받기</div>
+        <div class="arrow">→</div>
+        <div class="step">높이 복사 후 정렬</div>
+        <div class="arrow">→</div>
+        <div class="step">1번 건물 가능 처리</div>
+        <div class="arrow">→</div>
+        <div class="step">각 건물마다 높이 범위 조회</div>
+        <div class="arrow">→</div>
+        <div class="step">가능하면 Fenwick Tree에 추가</div>
+      </div>
+    </section>
+
+    <section id="simulator">
+      <h2>8. 인터랙티브 시뮬레이터</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>8.1 직접 입력</h3>
+          <label>N</label>
+          <input id="nInput" type="number" min="1" value="5" />
+          <label>K</label>
+          <input id="kInput" type="number" min="0" value="2" />
+          <label>건물 높이</label>
+          <textarea id="hInput">5 4 8 7 2</textarea>
+          <button class="btn" onclick="runSim()">시뮬레이션 실행</button>
+          <button class="btn secondary" onclick="loadSample()">예제 불러오기</button>
+          <div id="simResult" class="result">결과가 표시됩니다.</div>
+        </div>
+        <div class="card">
+          <h3>8.2 건물 시각화</h3>
+          <div class="building-wrap" id="simBuildings"></div>
+        </div>
+      </div>
+      <h3>8.3 좌표 압축과 Fenwick 상태</h3>
+      <div class="grid">
+        <div class="card">
+          <h3>압축 높이</h3>
+          <div id="compressResult" class="result">정렬된 높이가 표시됩니다.</div>
+        </div>
+        <div class="card">
+          <h3>도달 가능한 높이 표시</h3>
+          <div id="fenwickVisual"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="complexity">
+      <h2>9. 시간 복잡도</h2>
+      <div class="grid">
+        <div class="card safe"><strong>정렬</strong><br><span class="formula">O(N log N)</span></div>
+        <div class="card safe"><strong>각 건물 조회와 업데이트</strong><br><span class="formula">O(log N)</span></div>
+        <div class="card safe"><strong>전체</strong><br><span class="formula">O(N log N)</span></div>
+      </div>
+      <p>N = 200000이어도 충분히 통과할 수 있습니다.</p>
+    </section>
+
+    <section id="quiz">
+      <h2>10. 개념 확인 퀴즈</h2>
+      <div class="quiz-box">
+        <h3 id="quizQuestion">문제</h3>
+        <div id="quizOptions"></div>
+        <div id="quizFeedback" class="result">정답을 선택해 보세요.</div>
+        <button class="btn secondary" onclick="nextQuiz()">다음 문제</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>11. 최종 정리</h2>
+      <div class="grid">
+        <div class="card danger"><strong>느린 생각</strong><br>모든 이전 건물과 현재 건물을 비교한다.</div>
+        <div class="card safe"><strong>빠른 생각</strong><br>도달 가능한 이전 높이가 현재 높이 ± K 범위에 있는지만 확인한다.</div>
+        <div class="card safe"><strong>좌표 압축</strong><br>큰 높이를 작은 번호로 바꾼다.</div>
+        <div class="card safe"><strong>Fenwick Tree</strong><br>범위 안에 도달 가능한 높이가 있는지 빠르게 구한다.</div>
+      </div>
+      <div class="highlight" style="margin-top:16px;">한 줄 핵심: 현재 건물에 올 수 있는 이전 건물이 존재하는지만 Fenwick Tree로 빠르게 확인한다.</div>
+    </section>
+  </main>
+
+  <footer>정올 #8516 점프점프 수업자료용 인터랙티브 페이지</footer>
+
+  <script>
+    function lowerBound(arr, target) {
+      let l = 0, r = arr.length;
+      while (l < r) {
+        const m = Math.floor((l + r) / 2);
+        if (arr[m] >= target) r = m;
+        else l = m + 1;
+      }
+      return l;
+    }
+    function upperBound(arr, target) {
+      let l = 0, r = arr.length;
+      while (l < r) {
+        const m = Math.floor((l + r) / 2);
+        if (arr[m] > target) r = m;
+        else l = m + 1;
+      }
+      return l;
+    }
+    class BIT {
+      constructor(n) { this.n = n; this.bit = Array(n + 1).fill(0); }
+      update(idx, val) { while (idx <= this.n) { this.bit[idx] += val; idx += idx & -idx; } }
+      sum(idx) { let r = 0; while (idx > 0) { r += this.bit[idx]; idx -= idx & -idx; } return r; }
+      range(l, r) { if (l > r) return 0; return this.sum(r) - this.sum(l - 1); }
+    }
+    function uniqueSorted(arr) {
+      return [...new Set(arr)].sort((a,b)=>a-b);
+    }
+    function drawBuildings(id, h, possible, current=-1) {
+      const box = document.getElementById(id);
+      const maxH = Math.max(...h, 1);
+      box.innerHTML = '';
+      h.forEach((height, idx) => {
+        const div = document.createElement('div');
+        div.className = 'building ' + (possible && possible[idx] ? '' : 'off') + (idx === current ? ' now' : '');
+        div.style.height = `${55 + height / maxH * 95}px`;
+        div.innerHTML = `<span>${height}</span><span class="small">#${idx+1}</span>`;
+        box.appendChild(div);
+      });
+    }
+    function runCore(h, K) {
+      const sorted = uniqueSorted(h);
+      const bit = new BIT(sorted.length);
+      const possible = Array(h.length).fill(0);
+      const logs = [];
+      possible[0] = 1;
+      bit.update(lowerBound(sorted, h[0]) + 1, 1);
+      logs.push(`1번 건물 높이 ${h[0]}: 시작점이므로 가능`);
+      for (let i = 1; i < h.length; i++) {
+        const low = h[i] - K;
+        const high = h[i] + K;
+        const left = lowerBound(sorted, low) + 1;
+        const right = upperBound(sorted, high);
+        const cnt = bit.range(left, right);
+        if (cnt > 0) {
+          possible[i] = 1;
+          bit.update(lowerBound(sorted, h[i]) + 1, 1);
+          logs.push(`${i+1}번 높이 ${h[i]}: 범위 [${low}, ${high}] 안에 도달 가능한 이전 높이가 ${cnt}개 있으므로 가능`);
+        } else {
+          logs.push(`${i+1}번 높이 ${h[i]}: 범위 [${low}, ${high}] 안에 도달 가능한 이전 높이가 없으므로 불가능`);
+        }
+      }
+      return { sorted, possible, logs, bit };
+    }
+    function runSim() {
+      const N = Number(document.getElementById('nInput').value);
+      const K = Number(document.getElementById('kInput').value);
+      let h = document.getElementById('hInput').value.trim().split(/\s+/).map(Number).filter(x => !Number.isNaN(x));
+      h = h.slice(0, N);
+      if (h.length === 0) return;
+      const { sorted, possible, logs, bit } = runCore(h, K);
+      document.getElementById('simResult').textContent = logs.join('\n') + `\n\n출력: ${possible.join(' ')}`;
+      document.getElementById('compressResult').textContent = sorted.map((v,i)=>`${v} → ${i+1}`).join('\n');
+      drawBuildings('simBuildings', h, possible);
+      renderFenwick(sorted, possible, h);
+    }
+    function renderFenwick(sorted, possible, h) {
+      const reachableHeights = new Set();
+      possible.forEach((p,i)=>{ if (p) reachableHeights.add(h[i]); });
+      const box = document.getElementById('fenwickVisual');
+      box.innerHTML = '';
+      sorted.forEach((v,i)=>{
+        const span = document.createElement('span');
+        span.className = 'fenwick-cell ' + (reachableHeights.has(v) ? 'on' : '');
+        span.textContent = `${i+1}:${v}`;
+        box.appendChild(span);
+      });
+    }
+    function loadSample() {
+      document.getElementById('nInput').value = 5;
+      document.getElementById('kInput').value = 2;
+      document.getElementById('hInput').value = '5 4 8 7 2';
+      runSim();
+    }
+    function drawExample() {
+      drawBuildings('exampleBuildings', [5,4,8,7,2], [1,1,0,1,1]);
+    }
+    const quizzes = [
+      { q: '점프점프에서 이동할 수 있는 방향은?', options: ['왼쪽으로만', '오른쪽으로만', '아무 방향이나', '높은 건물로만'], answer: 1, explain: '조건은 j > i이므로 오른쪽 건물로만 이동합니다.' },
+      { q: 'i번 건물에 도달 가능한지 확인할 때 필요한 핵심 조건은?', options: ['왼쪽 도달 가능 건물 중 높이가 h[i]-K 이상 h[i]+K 이하인 것이 있는가', '가장 높은 건물인가', '항상 이전 건물만 보는가', 'K보다 높이가 무조건 큰가'], answer: 0, explain: '현재 건물에 올 수 있는 이전 건물이 하나라도 있으면 가능합니다.' },
+      { q: '높이가 최대 10^9일 때 좌표 압축을 쓰는 이유는?', options: ['높이를 더 크게 만들려고', '배열 인덱스를 작게 바꾸려고', '정렬을 피하려고', 'K를 없애려고'], answer: 1, explain: '실제 등장한 높이에만 번호를 붙여 Fenwick Tree 인덱스로 사용합니다.' },
+      { q: 'Fenwick Tree에는 무엇을 저장하나요?', options: ['모든 건물의 번호', '도달 가능한 건물의 높이 정보', '불가능한 건물만', 'K 값만'], answer: 1, explain: '현재까지 도달 가능한 건물들의 높이를 저장하고 범위 합으로 존재 여부를 확인합니다.' },
+      { q: '전체 시간 복잡도는?', options: ['O(N²)', 'O(N log N)', 'O(1)', 'O(K²)'], answer: 1, explain: '정렬과 각 건물의 Fenwick Tree 조회/업데이트 때문에 O(N log N)입니다.' }
+    ];
+    let quizIndex = 0;
+    function renderQuiz() {
+      const quiz = quizzes[quizIndex];
+      document.getElementById('quizQuestion').textContent = `${quizIndex + 1}. ${quiz.q}`;
+      const box = document.getElementById('quizOptions');
+      box.innerHTML = '';
+      document.getElementById('quizFeedback').textContent = '정답을 선택해 보세요.';
+      quiz.options.forEach((option, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = option;
+        btn.onclick = () => checkAnswer(btn, idx);
+        box.appendChild(btn);
+      });
+    }
+    function checkAnswer(button, idx) {
+      const quiz = quizzes[quizIndex];
+      const buttons = document.querySelectorAll('.option');
+      buttons.forEach((b, i) => {
+        b.disabled = true;
+        if (i === quiz.answer) b.classList.add('correct');
+      });
+      if (idx === quiz.answer) {
+        button.classList.add('correct');
+        document.getElementById('quizFeedback').textContent = `정답입니다. ${quiz.explain}`;
+      } else {
+        button.classList.add('wrong');
+        document.getElementById('quizFeedback').textContent = `아쉽습니다. ${quiz.explain}`;
+      }
+    }
+    function nextQuiz() {
+      quizIndex = (quizIndex + 1) % quizzes.length;
+      renderQuiz();
+    }
+    drawExample();
+    renderQuiz();
+    loadSample();
+  </script>
+</body>
+</html>
