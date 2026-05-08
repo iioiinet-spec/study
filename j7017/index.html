@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #7017 두 배 인터랙티브 해설</title>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      background: linear-gradient(135deg, #eff6ff 0%, #ecfeff 45%, #fff7ed 100%);
+      color: #172033;
+      line-height: 1.7;
+    }
+    header {
+      padding: 60px 22px 44px;
+      text-align: center;
+      color: white;
+      background:
+        radial-gradient(circle at 15% 22%, rgba(34,211,238,.45), transparent 28%),
+        radial-gradient(circle at 85% 18%, rgba(251,191,36,.45), transparent 30%),
+        linear-gradient(135deg, #0f172a, #1d4ed8 50%, #7c2d12);
+      position: relative;
+      overflow: hidden;
+    }
+    header::before, header::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.18);
+    }
+    header::before { width: 280px; height: 280px; left: -100px; bottom: -135px; }
+    header::after { width: 190px; height: 190px; right: -55px; top: -75px; }
+    header h1 {
+      margin: 0;
+      font-size: clamp(30px, 5.3vw, 54px);
+      letter-spacing: -1.5px;
+      position: relative;
+      z-index: 1;
+    }
+    header p {
+      max-width: 900px;
+      margin: 18px auto 0;
+      font-size: 18px;
+      opacity: .95;
+      position: relative;
+      z-index: 1;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      overflow-x: auto;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid #dbe3ef;
+      justify-content: center;
+    }
+    nav a {
+      text-decoration: none;
+      white-space: nowrap;
+      color: #334155;
+      border: 1px solid #dbe3ef;
+      background: #f8fafc;
+      padding: 9px 13px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+    nav a:hover { background: #dbeafe; color: #1d4ed8; }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 18px 74px;
+    }
+    section {
+      margin: 28px 0;
+      padding: 28px;
+      background: rgba(255,255,255,.94);
+      border: 1px solid #e2e8f0;
+      border-radius: 28px;
+      box-shadow: 0 18px 45px rgba(15,23,42,.08);
+    }
+    h2 {
+      margin: 0 0 18px;
+      font-size: 28px;
+      color: #172554;
+      letter-spacing: -.5px;
+    }
+    h3 { color: #312e81; margin-top: 24px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 20px;
+      box-shadow: 0 8px 22px rgba(15,23,42,.055);
+    }
+    .danger {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      color: #9f1239;
+    }
+    .safe {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      color: #166534;
+    }
+    .highlight {
+      padding: 18px;
+      border-radius: 18px;
+      background: linear-gradient(120deg, #fef3c7, #dbeafe);
+      border-left: 6px solid #2563eb;
+      font-weight: 900;
+    }
+    .formula {
+      display: inline-block;
+      margin: 7px 0;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-weight: 900;
+      font-size: 17px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 13px;
+      font-weight: 900;
+      margin: 4px 4px 4px 0;
+    }
+    .pill.blue { background: #dbeafe; color: #1d4ed8; }
+    .pill.orange { background: #ffedd5; color: #c2410c; }
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .step {
+      flex: 1 1 180px;
+      text-align: center;
+      padding: 15px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid #dbe3ef;
+      font-weight: 900;
+    }
+    .arrow { color: #2563eb; font-size: 24px; font-weight: 900; }
+    pre {
+      overflow-x: auto;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 18px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    code { font-family: "D2Coding", "Consolas", monospace; }
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      font-size: 15px;
+      margin: 6px 0 12px;
+      background: white;
+    }
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 11px 15px;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      margin: 5px 5px 5px 0;
+    }
+    .btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .btn.secondary { background: #7c3aed; }
+    .btn.dark { background: #0f172a; }
+    .result {
+      min-height: 48px;
+      background: #ecfeff;
+      border: 1px solid #67e8f9;
+      padding: 14px;
+      border-radius: 16px;
+      font-weight: 900;
+      color: #155e75;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 16px;
+      background: white;
+      margin: 12px 0;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 11px;
+      text-align: center;
+    }
+    th { background: #1e3a8a; color: white; }
+    details {
+      background: #f8fafc;
+      border: 1px solid #dbe3ef;
+      border-radius: 18px;
+      margin: 12px 0;
+      padding: 14px 18px;
+    }
+    summary {
+      cursor: pointer;
+      color: #1e40af;
+      font-weight: 900;
+    }
+    .bar-wrap {
+      display: flex;
+      gap: 4px;
+      align-items: end;
+      min-height: 82px;
+      padding: 12px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      margin-top: 10px;
+    }
+    .bar {
+      flex: 1;
+      min-width: 20px;
+      border-radius: 8px 8px 0 0;
+      background: linear-gradient(180deg, #60a5fa, #1d4ed8);
+      color: white;
+      font-size: 12px;
+      text-align: center;
+      padding-top: 4px;
+      font-weight: 900;
+    }
+    .quiz-box {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 22px;
+      padding: 20px;
+    }
+    .option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 8px 0;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      background: white;
+      border-radius: 14px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+    .option:hover { background: #eff6ff; }
+    .correct { background: #dcfce7 !important; border-color: #22c55e !important; }
+    .wrong { background: #fee2e2 !important; border-color: #ef4444 !important; }
+    footer { text-align: center; padding: 30px; color: #475569; }
+    @media (max-width: 760px) {
+      section { padding: 20px; border-radius: 20px; }
+      nav { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #7017 두 배</h1>
+    <p>숫자들을 작은 순서대로 줄 세우기 위해 숫자를 직접 키우지 않고, “몇 번 두 배 했는지”만 저장해서 빠르게 비교하는 알고리즘을 배웁니다.</p>
+  </header>
+
+  <nav>
+    <a href="#problem">문제 핵심</a>
+    <a href="#slow">시간초과 코드</a>
+    <a href="#idea">핵심 생각</a>
+    <a href="#compare">비교 함수</a>
+    <a href="#binary">이분 탐색</a>
+    <a href="#code">정답 코드</a>
+    <a href="#simulator">시뮬레이터</a>
+    <a href="#quiz">퀴즈</a>
+  </nav>
+
+  <main>
+    <section id="problem">
+      <h2>1. 문제 핵심</h2>
+      <div class="highlight">정올 #7017 “두 배”는 숫자들을 작은 순서대로 만들기 위해 각 숫자를 필요한 만큼 2배 하는 문제입니다.</div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="card"><strong>1.</strong> 앞 숫자보다 현재 숫자가 작으면 현재 숫자를 2배 할 수 있습니다.</div>
+        <div class="card"><strong>2.</strong> 실제 값을 계속 2배 하면 반복이 많아질 수 있습니다.</div>
+        <div class="card"><strong>3.</strong> 큰 수가 되면 overflow 위험도 있습니다.</div>
+        <div class="card"><strong>4.</strong> 그래서 실제 값 대신 두 배 횟수만 저장합니다.</div>
+      </div>
+      <h3>1.1 한 줄 핵심</h3>
+      <p class="formula">숫자를 직접 2배 하지 말고, “몇 번 2배 했는지”만 저장해서 비교한다.</p>
+    </section>
+
+    <section id="slow">
+      <h2>2. 시간초과 나는 쉬운 코드</h2>
+      <div class="card danger">
+        <h3>2.1 위험한 코드</h3>
+        <pre><code>while (cur &lt; prev) {
+    cur *= 2;
+    cnt++;
+}</code></pre>
+        <p>이 코드는 숫자가 커질 때까지 계속 2배 합니다. 반복이 많아질 수 있고, cur가 너무 커져서 overflow가 날 수 있습니다.</p>
+      </div>
+      <h3>2.2 왜 위험한가?</h3>
+      <div class="grid">
+        <div class="card danger"><strong>1. 반복 증가</strong><br>필요한 두 배 횟수가 크면 while문이 오래 돕니다.</div>
+        <div class="card danger"><strong>2. overflow</strong><br>long long 범위를 넘어가면 값이 깨질 수 있습니다.</div>
+        <div class="card danger"><strong>3. 큰 입력에서 위험</strong><br>N이 크면 작은 반복도 전체로는 매우 커질 수 있습니다.</div>
+      </div>
+    </section>
+
+    <section id="idea">
+      <h2>3. 핵심 생각</h2>
+      <div class="highlight">숫자를 직접 크게 만들지 말고, 원래 숫자 × 2의 횟수로 생각합니다.</div>
+      <div class="flow" style="margin-top:16px;">
+        <div class="step">원래 숫자<br>3</div>
+        <div class="arrow">×</div>
+        <div class="step">두 배 4번<br>2⁴</div>
+        <div class="arrow">=</div>
+        <div class="step">실제 값<br>48</div>
+      </div>
+      <p>하지만 실제 값 48을 만들 필요는 없습니다.</p>
+      <div class="grid">
+        <div class="card safe"><strong>기억할 것 1</strong><br>숫자: 3</div>
+        <div class="card safe"><strong>기억할 것 2</strong><br>두 배 횟수: 4</div>
+      </div>
+      <p class="formula">3 × 2⁴</p>
+    </section>
+
+    <section id="compare">
+      <h2>4. 실제로 곱하지 않고 비교하기</h2>
+      <p><code>compare(a, ea, b, eb)</code> 함수는 다음 두 수를 비교합니다.</p>
+      <p class="formula">a × 2^ea</p>
+      <p class="formula">b × 2^eb</p>
+      <h3>4.1 숫자의 2진수 길이</h3>
+      <p><code>bitlen(long long x)</code>는 숫자가 2진수로 몇 자리인지 구합니다.</p>
+      <table>
+        <tr><th>숫자</th><th>2진수</th><th>bitlen</th></tr>
+        <tr><td>1</td><td>1</td><td>1자리</td></tr>
+        <tr><td>2</td><td>10</td><td>2자리</td></tr>
+        <tr><td>4</td><td>100</td><td>3자리</td></tr>
+        <tr><td>8</td><td>1000</td><td>4자리</td></tr>
+      </table>
+      <h3>4.2 비교 흐름</h3>
+      <div class="flow">
+        <div class="step">bitlen(a)+ea 계산</div>
+        <div class="arrow">→</div>
+        <div class="step">bitlen(b)+eb 계산</div>
+        <div class="arrow">→</div>
+        <div class="step">자리수가 다르면 바로 비교</div>
+        <div class="arrow">→</div>
+        <div class="step">자리수가 같으면 shift로 맞춰 비교</div>
+      </div>
+      <details open>
+        <summary>compare 함수 코드 보기</summary>
+        <pre><code>int bitlen(long long x) {
+    int len = 0;
+
+    while (x &gt; 0) {
+        len++;
+        x /= 2;
+    }
+
+    return len;
+}
+
+int compare(long long a, int ea, long long b, int eb) {
+    int la = bitlen(a) + ea;
+    int lb = bitlen(b) + eb;
+
+    if (la &lt; lb) return -1;
+    if (la &gt; lb) return 1;
+
+    if (ea &gt; eb) {
+        a &lt;&lt;= (ea - eb);
+    } else {
+        b &lt;&lt;= (eb - ea);
+    }
+
+    if (a &lt; b) return -1;
+    if (a &gt; b) return 1;
+    return 0;
+}</code></pre>
+      </details>
+    </section>
+
+    <section id="binary">
+      <h2>5. 이분 탐색으로 필요한 두 배 횟수 찾기</h2>
+      <p>현재 숫자를 몇 번 두 배 해야 앞 숫자 이상이 되는지 찾습니다.</p>
+      <div class="highlight">0번, 1번, 2번을 하나씩 확인하지 않고 이분 탐색으로 빠르게 찾습니다.</div>
+      <pre><code>int left = 0;
+int right = prevExp + 40;
+
+while (left &lt; right) {
+    int mid = (left + right) / 2;
+
+    if (compare(a[i], mid, a[i - 1], prevExp) &gt;= 0) {
+        right = mid;
+    } else {
+        left = mid + 1;
+    }
+}</code></pre>
+      <h3>5.1 왜 시간초과가 안 나는가?</h3>
+      <div class="grid">
+        <div class="card danger"><strong>느린 방법</strong><br>계속 2배하면서 확인<br><span class="formula">while 반복</span></div>
+        <div class="card safe"><strong>빠른 방법</strong><br>필요한 횟수를 이분 탐색으로 찾기<br><span class="formula">O(N log N)</span></div>
+      </div>
+    </section>
+
+    <section id="code">
+      <h2>6. 정답 C 코드</h2>
+      <pre><code>#include &lt;stdio.h&gt;
+
+int bitlen(long long x) {
+    int len = 0;
+
+    while (x &gt; 0) {
+        len++;
+        x /= 2;
+    }
+
+    return len;
+}
+
+int compare(long long a, int ea, long long b, int eb) {
+    int la = bitlen(a) + ea;
+    int lb = bitlen(b) + eb;
+
+    if (la &lt; lb) return -1;
+    if (la &gt; lb) return 1;
+
+    if (ea &gt; eb) {
+        a &lt;&lt;= (ea - eb);
+    } else {
+        b &lt;&lt;= (eb - ea);
+    }
+
+    if (a &lt; b) return -1;
+    if (a &gt; b) return 1;
+    return 0;
+}
+
+int main() {
+    int N;
+    scanf("%d", &N);
+
+    long long a[250001];
+
+    for (int i = 0; i &lt; N; i++) {
+        scanf("%lld", &a[i]);
+    }
+
+    long long answer = 0;
+    int prevExp = 0;
+
+    for (int i = 1; i &lt; N; i++) {
+        int left = 0;
+        int right = prevExp + 40;
+
+        while (left &lt; right) {
+            int mid = (left + right) / 2;
+
+            if (compare(a[i], mid, a[i - 1], prevExp) &gt;= 0) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+
+        answer += left;
+        prevExp = left;
+    }
+
+    printf("%lld\n", answer);
+
+    return 0;
+}</code></pre>
+
+      <h3>6.1 코드 작성 순서</h3>
+      <div class="grid">
+        <div class="card"><strong>1단계</strong><br><code>bitlen(long long x)</code><br>숫자의 2진수 길이를 구합니다.</div>
+        <div class="card"><strong>2단계</strong><br><code>compare(a, ea, b, eb)</code><br>실제로 곱하지 않고 두 수를 비교합니다.</div>
+        <div class="card"><strong>3단계</strong><br><code>while (left &lt; right)</code><br>현재 숫자를 몇 번 두 배 해야 하는지 이분 탐색합니다.</div>
+      </div>
+    </section>
+
+    <section id="simulator">
+      <h2>7. 인터랙티브 시뮬레이터</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>7.1 bitlen 실험</h3>
+          <label>숫자 x</label>
+          <input id="bitInput" type="number" min="1" value="8" />
+          <button class="btn" onclick="showBitlen()">bitlen 계산</button>
+          <div id="bitResult" class="result">결과가 표시됩니다.</div>
+        </div>
+        <div class="card">
+          <h3>7.2 a × 2^ea 비교 실험</h3>
+          <label>a</label><input id="aInput" type="number" min="1" value="3" />
+          <label>ea</label><input id="eaInput" type="number" min="0" value="4" />
+          <label>b</label><input id="bInput" type="number" min="1" value="10" />
+          <label>eb</label><input id="ebInput" type="number" min="0" value="1" />
+          <button class="btn secondary" onclick="compareSim()">비교하기</button>
+          <div id="compareResult" class="result">결과가 표시됩니다.</div>
+        </div>
+      </div>
+
+      <h3>7.3 여러 숫자의 두 배 횟수 찾기</h3>
+      <div class="grid">
+        <div class="card">
+          <label>숫자 배열 입력</label>
+          <input id="arrInput" value="10 3 7 2 20" />
+          <button class="btn dark" onclick="runArraySim()">시뮬레이션 실행</button>
+          <div id="arrayResult" class="result">각 숫자에 필요한 두 배 횟수가 표시됩니다.</div>
+        </div>
+        <div class="card">
+          <h3>7.4 두 배 횟수 막대</h3>
+          <div id="barWrap" class="bar-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="quiz">
+      <h2>8. 개념 확인 퀴즈</h2>
+      <div class="quiz-box">
+        <h3 id="quizQuestion">문제</h3>
+        <div id="quizOptions"></div>
+        <div id="quizFeedback" class="result">정답을 선택해 보세요.</div>
+        <button class="btn secondary" onclick="nextQuiz()">다음 문제</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>9. 최종 정리</h2>
+      <div class="grid">
+        <div class="card danger"><strong>피해야 할 생각</strong><br>숫자를 계속 직접 2배 한다.</div>
+        <div class="card safe"><strong>올바른 생각</strong><br>원래 숫자와 두 배 횟수만 기억한다.</div>
+        <div class="card safe"><strong>비교 방법</strong><br>bitlen과 shift를 이용해 큰 수를 직접 만들지 않는다.</div>
+        <div class="card safe"><strong>탐색 방법</strong><br>필요한 횟수는 이분 탐색으로 빠르게 찾는다.</div>
+      </div>
+      <p class="formula">시간 복잡도: O(N log N)</p>
+      <div class="highlight">한 줄 핵심: 숫자를 직접 2배 하지 말고, “몇 번 2배 했는지”만 저장해서 비교한다.</div>
+    </section>
+  </main>
+
+  <footer>정올 #7017 두 배 수업자료용 인터랙티브 페이지</footer>
+
+  <script>
+    function bitlenJS(x) {
+      x = BigInt(x);
+      let len = 0;
+      while (x > 0n) {
+        len++;
+        x /= 2n;
+      }
+      return len;
+    }
+
+    function compareJS(a, ea, b, eb) {
+      a = BigInt(a); b = BigInt(b);
+      ea = Number(ea); eb = Number(eb);
+      const la = bitlenJS(a) + ea;
+      const lb = bitlenJS(b) + eb;
+      if (la < lb) return -1;
+      if (la > lb) return 1;
+      if (ea > eb) a = a << BigInt(ea - eb);
+      else b = b << BigInt(eb - ea);
+      if (a < b) return -1;
+      if (a > b) return 1;
+      return 0;
+    }
+
+    function showBitlen() {
+      const x = BigInt(document.getElementById('bitInput').value || 1);
+      document.getElementById('bitResult').textContent = `${x}의 2진수는 ${x.toString(2)}입니다.\nbitlen(${x}) = ${bitlenJS(x)}자리`;
+    }
+
+    function compareSim() {
+      const a = BigInt(document.getElementById('aInput').value || 1);
+      const ea = Number(document.getElementById('eaInput').value || 0);
+      const b = BigInt(document.getElementById('bInput').value || 1);
+      const eb = Number(document.getElementById('ebInput').value || 0);
+      const cmp = compareJS(a, ea, b, eb);
+      const left = a << BigInt(ea);
+      const right = b << BigInt(eb);
+      let sign = cmp < 0 ? '<' : cmp > 0 ? '>' : '=';
+      document.getElementById('compareResult').textContent = `${a} × 2^${ea} ${sign} ${b} × 2^${eb}\n실제 확인값: ${left} ${sign} ${right}\n비교 함수 결과: ${cmp}`;
+    }
+
+    function runArraySim() {
+      const arr = document.getElementById('arrInput').value.trim().split(/\s+/).map(BigInt).filter(x => x > 0n);
+      if (arr.length === 0) return;
+      let prevExp = 0;
+      let answer = 0;
+      const exps = [0];
+      let text = `a[0] = ${arr[0]}, exp = 0\n`;
+      for (let i = 1; i < arr.length; i++) {
+        let left = 0;
+        let right = prevExp + 40;
+        while (left < right) {
+          const mid = Math.floor((left + right) / 2);
+          if (compareJS(arr[i], mid, arr[i-1], prevExp) >= 0) right = mid;
+          else left = mid + 1;
+        }
+        answer += left;
+        prevExp = left;
+        exps.push(left);
+        text += `a[${i}] = ${arr[i]}, 필요한 두 배 횟수 = ${left}, 누적 answer = ${answer}\n`;
+      }
+      text += `\n최종 정답 = ${answer}`;
+      document.getElementById('arrayResult').textContent = text;
+      renderBars(exps);
+    }
+
+    function renderBars(exps) {
+      const box = document.getElementById('barWrap');
+      const max = Math.max(...exps, 1);
+      box.innerHTML = '';
+      exps.forEach((v, i) => {
+        const div = document.createElement('div');
+        div.className = 'bar';
+        div.style.height = `${28 + (v / max) * 52}px`;
+        div.textContent = `#${i}\n${v}`;
+        box.appendChild(div);
+      });
+    }
+
+    const quizzes = [
+      {
+        q: '시간초과가 날 수 있는 쉬운 코드는 무엇이 문제일까요?',
+        options: ['숫자를 한 번도 비교하지 않아서', 'cur를 계속 직접 2배 해서 반복과 overflow 위험이 있어서', 'scanf를 사용해서', '배열을 사용해서'],
+        answer: 1,
+        explain: 'while(cur < prev) cur *= 2는 반복이 많아지고 overflow 위험이 있습니다.'
+      },
+      {
+        q: '정올 #7017 두 배의 핵심 생각은?',
+        options: ['모든 숫자를 무조건 0으로 만든다', '숫자를 직접 크게 만들지 않고 두 배 횟수만 저장한다', '정렬만 하면 된다', '나눗셈만 사용한다'],
+        answer: 1,
+        explain: '원래 숫자와 몇 번 2배 했는지만 기억해서 비교합니다.'
+      },
+      {
+        q: 'bitlen(8)은 몇 자리일까요? 8의 2진수는 1000입니다.',
+        options: ['1', '2', '3', '4'],
+        answer: 3,
+        explain: '8은 2진수로 1000이므로 4자리입니다.'
+      },
+      {
+        q: 'compare(a, ea, b, eb)는 무엇을 비교하나요?',
+        options: ['a+ea와 b+eb', 'a×2^ea와 b×2^eb', 'a와 b만', 'ea와 eb만'],
+        answer: 1,
+        explain: '실제로 큰 수를 만들지 않고 a×2^ea와 b×2^eb를 비교합니다.'
+      },
+      {
+        q: '필요한 두 배 횟수를 빠르게 찾기 위해 사용하는 방법은?',
+        options: ['선형 탐색만 사용', '이분 탐색', '버블 정렬', 'DFS'],
+        answer: 1,
+        explain: '0번, 1번, 2번을 하나씩 확인하지 않고 이분 탐색으로 찾습니다.'
+      }
+    ];
+    let quizIndex = 0;
+
+    function renderQuiz() {
+      const quiz = quizzes[quizIndex];
+      document.getElementById('quizQuestion').textContent = `${quizIndex + 1}. ${quiz.q}`;
+      const box = document.getElementById('quizOptions');
+      box.innerHTML = '';
+      document.getElementById('quizFeedback').textContent = '정답을 선택해 보세요.';
+      quiz.options.forEach((option, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'option';
+        btn.textContent = option;
+        btn.onclick = () => checkAnswer(btn, idx);
+        box.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(button, idx) {
+      const quiz = quizzes[quizIndex];
+      const buttons = document.querySelectorAll('.option');
+      buttons.forEach((b, i) => {
+        b.disabled = true;
+        if (i === quiz.answer) b.classList.add('correct');
+      });
+      if (idx === quiz.answer) {
+        button.classList.add('correct');
+        document.getElementById('quizFeedback').textContent = `정답입니다. ${quiz.explain}`;
+      } else {
+        button.classList.add('wrong');
+        document.getElementById('quizFeedback').textContent = `아쉽습니다. ${quiz.explain}`;
+      }
+    }
+
+    function nextQuiz() {
+      quizIndex = (quizIndex + 1) % quizzes.length;
+      renderQuiz();
+    }
+
+    renderQuiz();
+    showBitlen();
+    compareSim();
+    runArraySim();
+  </script>
+</body>
+</html>
