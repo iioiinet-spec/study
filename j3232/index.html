@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #3232 두 박스 인터랙티브 학습</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #eff6ff, #fff7ed);
+      color: #172554;
+      line-height: 1.7;
+    }
+
+    header {
+      padding: 52px 18px 36px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #9333ea);
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 14px 32px rgba(37, 99, 235, 0.25);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 54px);
+      letter-spacing: -1px;
+    }
+
+    header p {
+      max-width: 900px;
+      margin: 14px auto 0;
+      font-size: clamp(16px, 2vw, 20px);
+      opacity: 0.96;
+    }
+
+    main {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 28px;
+      padding: 26px;
+      margin: 22px 0;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #1d4ed8;
+      font-size: 28px;
+    }
+
+    h3 { color: #4338ca; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .mini {
+      padding: 20px;
+      border-radius: 22px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .case-box {
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      width: fit-content;
+      color: white;
+    }
+
+    .face { background: #16a34a; }
+    .line { background: #2563eb; }
+    .point { background: #f97316; }
+    .null { background: #64748b; }
+
+    .playground {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 24px;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+    }
+
+    .control-panel {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      padding: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 800;
+      margin-top: 12px;
+      color: #334155;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 11px 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 14px;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input[type="number"]:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    .coord-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin: 6px 4px 0 0;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      background: #1d4ed8;
+    }
+
+    .ghost {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      box-shadow: none;
+    }
+
+    .result {
+      margin-top: 16px;
+      padding: 18px;
+      border-radius: 22px;
+      background: white;
+      border: 2px solid #bfdbfe;
+      text-align: center;
+    }
+
+    .result strong {
+      display: block;
+      font-size: 42px;
+      color: #7c3aed;
+      letter-spacing: 1px;
+    }
+
+    .formula {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 20px;
+      padding: 18px;
+      overflow-x: auto;
+      font-size: 16px;
+    }
+
+    .step-list {
+      counter-reset: step;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .step-list li {
+      counter-increment: step;
+      position: relative;
+      margin: 14px 0;
+      padding: 16px 18px 16px 58px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+    }
+
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 22px;
+      border-radius: 22px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .note {
+      padding: 16px 18px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 18px;
+    }
+
+    .small {
+      color: #64748b;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 26px;
+      color: #64748b;
+    }
+
+    @media (max-width: 920px) {
+      .playground { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #3232 두 박스</h1>
+    <p>두 직사각형 박스가 넓게 겹치는지, 선으로 만나는지, 점으로 만나는지, 아예 안 만나는지 직접 확인해 봅시다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 문제를 쉽게 이해하기</h2>
+      <p>
+        박스 2개가 있습니다. 각 박스는 <b>왼쪽 아래 점</b>과 <b>오른쪽 위 점</b>으로 표현합니다.
+      </p>
+      <div class="formula">
+        첫 번째 박스: (x1, y1), (x2, y2)<br />
+        두 번째 박스: (x3, y3), (x4, y4)
+      </div>
+      <p class="note">
+        색종이 2장을 생각하면 쉽습니다. 색종이가 넓게 겹치면 FACE, 테두리만 닿으면 LINE, 꼭짓점만 닿으면 POINT, 떨어져 있으면 NULL입니다.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>2. 네 가지 결과</h2>
+      <div class="grid">
+        <div class="mini case-box">
+          <span class="tag face">FACE</span>
+          <b>넓이가 있게 겹침</b>
+          <span>가로도 겹치고, 세로도 겹칩니다.</span>
+        </div>
+        <div class="mini case-box">
+          <span class="tag line">LINE</span>
+          <b>선분으로 만남</b>
+          <span>한쪽 방향은 딱 붙고, 다른 방향은 겹칩니다.</span>
+        </div>
+        <div class="mini case-box">
+          <span class="tag point">POINT</span>
+          <b>한 점에서 만남</b>
+          <span>꼭짓점 하나만 서로 닿습니다.</span>
+        </div>
+        <div class="mini case-box">
+          <span class="tag null">NULL</span>
+          <b>만나지 않음</b>
+          <span>가로 또는 세로 방향으로 떨어져 있습니다.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 직접 좌표를 바꿔보기</h2>
+      <div class="playground">
+        <canvas id="canvas" width="720" height="520"></canvas>
+
+        <div class="control-panel">
+          <h3>좌표 입력</h3>
+          <p class="small">좌표 범위는 보기 쉽게 -10부터 10 사이를 추천합니다.</p>
+
+          <h3>박스 A</h3>
+          <div class="coord-grid">
+            <label>x1<input id="x1" type="number" value="1" /></label>
+            <label>y1<input id="y1" type="number" value="2" /></label>
+            <label>x2<input id="x2" type="number" value="6" /></label>
+            <label>y2<input id="y2" type="number" value="6" /></label>
+          </div>
+
+          <h3>박스 B</h3>
+          <div class="coord-grid">
+            <label>x3<input id="x3" type="number" value="4" /></label>
+            <label>y3<input id="y3" type="number" value="4" /></label>
+            <label>x4<input id="x4" type="number" value="9" /></label>
+            <label>y4<input id="y4" type="number" value="8" /></label>
+          </div>
+
+          <button onclick="update()">결과 확인</button>
+          <button class="ghost" onclick="setCase('face')">FACE 예시</button>
+          <button class="ghost" onclick="setCase('line')">LINE 예시</button>
+          <button class="ghost" onclick="setCase('point')">POINT 예시</button>
+          <button class="ghost" onclick="setCase('null')">NULL 예시</button>
+
+          <div class="result">
+            <span>판정 결과</span>
+            <strong id="resultText">FACE</strong>
+            <p id="reasonText">가로와 세로가 모두 겹칩니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. 핵심 공식</h2>
+      <p>두 박스가 얼마나 겹치는지 가로 길이와 세로 길이를 계산합니다.</p>
+      <div class="formula">
+        w = min(x2, x4) - max(x1, x3)<br />
+        h = min(y2, y4) - max(y1, y3)
+      </div>
+      <ol class="step-list">
+        <li><b>w &gt; 0</b>이고 <b>h &gt; 0</b>이면 넓이가 있으므로 FACE입니다.</li>
+        <li><b>w == 0</b>이고 <b>h &gt; 0</b>이거나, <b>w &gt; 0</b>이고 <b>h == 0</b>이면 선으로 만나므로 LINE입니다.</li>
+        <li><b>w == 0</b>이고 <b>h == 0</b>이면 꼭짓점 하나만 만나므로 POINT입니다.</li>
+        <li>그 외에는 떨어져 있으므로 NULL입니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>5. 초등학생도 이해하는 설명</h2>
+      <ol class="step-list">
+        <li>박스 A와 박스 B를 색종이 2장이라고 생각합니다.</li>
+        <li>색종이 2장이 겹쳐서 색이 진하게 보이는 부분이 있으면 FACE입니다.</li>
+        <li>색종이의 변끼리 딱 붙어 있으면 LINE입니다.</li>
+        <li>색종이의 모서리 한 점만 콕 닿으면 POINT입니다.</li>
+        <li>서로 멀리 떨어져 있으면 NULL입니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>6. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+long long min(long long a, long long b) {
+    if (a &lt; b) return a;
+    return b;
+}
+
+long long max(long long a, long long b) {
+    if (a &gt; b) return a;
+    return b;
+}
+
+int main() {
+    long long x1, y1, x2, y2;
+    long long x3, y3, x4, y4;
+    long long w, h;
+
+    scanf("%lld %lld %lld %lld", &amp;x1, &amp;y1, &amp;x2, &amp;y2);
+    scanf("%lld %lld %lld %lld", &amp;x3, &amp;y3, &amp;x4, &amp;y4);
+
+    w = min(x2, x4) - max(x1, x3);
+    h = min(y2, y4) - max(y1, y3);
+
+    if (w &gt; 0 &amp;&amp; h &gt; 0) {
+        printf("FACE\n");
+    }
+    else if ((w == 0 &amp;&amp; h &gt; 0) || (w &gt; 0 &amp;&amp; h == 0)) {
+        printf("LINE\n");
+    }
+    else if (w == 0 &amp;&amp; h == 0) {
+        printf("POINT\n");
+    }
+    else {
+        printf("NULL\n");
+    }
+
+    return 0;
+}</pre>
+    </section>
+  </main>
+
+  <footer>정올 #3232 두 박스 학습용 인터랙티브 페이지</footer>
+
+  <script>
+    const ids = ['x1', 'y1', 'x2', 'y2', 'x3', 'y3', 'x4', 'y4'];
+    ids.forEach(id => document.getElementById(id).addEventListener('input', update));
+
+    function getValue(id) {
+      return Number(document.getElementById(id).value);
+    }
+
+    function min(a, b) { return a < b ? a : b; }
+    function max(a, b) { return a > b ? a : b; }
+
+    function normalizeBox(xa, ya, xb, yb) {
+      return {
+        left: Math.min(xa, xb),
+        right: Math.max(xa, xb),
+        bottom: Math.min(ya, yb),
+        top: Math.max(ya, yb)
+      };
+    }
+
+    function judge(a, b) {
+      const w = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+      const h = Math.min(a.top, b.top) - Math.max(a.bottom, b.bottom);
+
+      if (w > 0 && h > 0) {
+        return { type: 'FACE', reason: `가로 겹침 w=${w}, 세로 겹침 h=${h}. 둘 다 0보다 크므로 넓게 겹칩니다.` };
+      }
+      if ((w === 0 && h > 0) || (w > 0 && h === 0)) {
+        return { type: 'LINE', reason: `한 방향은 딱 붙고, 다른 방향은 겹치므로 선분으로 만납니다. w=${w}, h=${h}` };
+      }
+      if (w === 0 && h === 0) {
+        return { type: 'POINT', reason: `가로와 세로가 모두 딱 0입니다. 꼭짓점 한 점에서 만납니다.` };
+      }
+      return { type: 'NULL', reason: `w=${w}, h=${h}. 둘 중 하나가 음수이므로 서로 떨어져 있습니다.` };
+    }
+
+    function setCase(type) {
+      const cases = {
+        face: [1, 2, 6, 6, 4, 4, 9, 8],
+        line: [1, 2, 6, 6, 6, 3, 9, 5],
+        point: [1, 2, 6, 6, 6, 6, 9, 9],
+        null: [1, 2, 6, 6, 8, 7, 10, 10]
+      };
+      ids.forEach((id, i) => document.getElementById(id).value = cases[type][i]);
+      update();
+    }
+
+    function update() {
+      const a = normalizeBox(getValue('x1'), getValue('y1'), getValue('x2'), getValue('y2'));
+      const b = normalizeBox(getValue('x3'), getValue('y3'), getValue('x4'), getValue('y4'));
+      const result = judge(a, b);
+
+      document.getElementById('resultText').textContent = result.type;
+      document.getElementById('reasonText').textContent = result.reason;
+      draw(a, b, result.type);
+    }
+
+    function draw(a, b, type) {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const minX = Math.min(a.left, b.left, -1) - 1;
+      const maxX = Math.max(a.right, b.right, 1) + 1;
+      const minY = Math.min(a.bottom, b.bottom, -1) - 1;
+      const maxY = Math.max(a.top, b.top, 1) + 1;
+
+      const padding = 56;
+      const scaleX = (W - padding * 2) / (maxX - minX || 1);
+      const scaleY = (H - padding * 2) / (maxY - minY || 1);
+      const scale = Math.min(scaleX, scaleY);
+
+      function sx(x) { return padding + (x - minX) * scale; }
+      function sy(y) { return H - padding - (y - minY) * scale; }
+
+      // grid
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 1;
+      ctx.font = '13px Arial';
+      ctx.fillStyle = '#64748b';
+
+      for (let x = Math.ceil(minX); x <= Math.floor(maxX); x++) {
+        ctx.beginPath();
+        ctx.moveTo(sx(x), sy(minY));
+        ctx.lineTo(sx(x), sy(maxY));
+        ctx.stroke();
+        ctx.fillText(x, sx(x) - 4, sy(0) + 18);
+      }
+      for (let y = Math.ceil(minY); y <= Math.floor(maxY); y++) {
+        ctx.beginPath();
+        ctx.moveTo(sx(minX), sy(y));
+        ctx.lineTo(sx(maxX), sy(y));
+        ctx.stroke();
+        ctx.fillText(y, sx(0) + 8, sy(y) + 4);
+      }
+
+      // axes
+      ctx.strokeStyle = '#94a3b8';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(sx(0), sy(minY));
+      ctx.lineTo(sx(0), sy(maxY));
+      ctx.moveTo(sx(minX), sy(0));
+      ctx.lineTo(sx(maxX), sy(0));
+      ctx.stroke();
+
+      function rect(box, fill, stroke, label) {
+        const x = sx(box.left);
+        const y = sy(box.top);
+        const w = (box.right - box.left) * scale;
+        const h = (box.top - box.bottom) * scale;
+        ctx.fillStyle = fill;
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 4;
+        ctx.fillRect(x, y, w, h);
+        ctx.strokeRect(x, y, w, h);
+        ctx.fillStyle = stroke;
+        ctx.font = 'bold 22px Arial';
+        ctx.fillText(label, x + 10, y + 28);
+      }
+
+      rect(a, 'rgba(37, 99, 235, 0.25)', '#2563eb', 'A');
+      rect(b, 'rgba(239, 68, 68, 0.25)', '#ef4444', 'B');
+
+      const ix1 = Math.max(a.left, b.left);
+      const iy1 = Math.max(a.bottom, b.bottom);
+      const ix2 = Math.min(a.right, b.right);
+      const iy2 = Math.min(a.top, b.top);
+      const w = ix2 - ix1;
+      const h = iy2 - iy1;
+
+      if (type === 'FACE') {
+        ctx.fillStyle = 'rgba(22, 163, 74, 0.45)';
+        ctx.fillRect(sx(ix1), sy(iy2), w * scale, h * scale);
+      } else if (type === 'LINE') {
+        ctx.strokeStyle = '#16a34a';
+        ctx.lineWidth = 8;
+        ctx.beginPath();
+        if (w === 0) {
+          ctx.moveTo(sx(ix1), sy(iy1));
+          ctx.lineTo(sx(ix1), sy(iy2));
+        } else {
+          ctx.moveTo(sx(ix1), sy(iy1));
+          ctx.lineTo(sx(ix2), sy(iy1));
+        }
+        ctx.stroke();
+      } else if (type === 'POINT') {
+        ctx.fillStyle = '#f97316';
+        ctx.beginPath();
+        ctx.arc(sx(ix1), sy(iy1), 9, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    update();
+  </script>
+</body>
+</html>
