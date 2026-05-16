@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #1889 N Queen 인터랙티브 학습</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #eff6ff, #fff7ed);
+      color: #172554;
+      line-height: 1.7;
+    }
+    header {
+      padding: 50px 18px 36px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 14px 32px rgba(37, 99, 235, 0.25);
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 54px);
+      letter-spacing: -1px;
+    }
+    header p {
+      max-width: 920px;
+      margin: 14px auto 0;
+      font-size: clamp(16px, 2vw, 20px);
+      opacity: 0.96;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+    }
+    .card {
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(148,163,184,0.3);
+      border-radius: 28px;
+      padding: 26px;
+      margin: 22px 0;
+      box-shadow: 0 14px 34px rgba(15,23,42,0.08);
+      backdrop-filter: blur(10px);
+    }
+    h2 { margin-top: 0; color: #1d4ed8; font-size: 28px; }
+    h3 { color: #4338ca; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .mini {
+      padding: 18px;
+      border-radius: 22px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .note {
+      padding: 16px 18px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 18px;
+    }
+    .playground {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) 360px;
+      gap: 20px;
+      align-items: start;
+    }
+    .board-wrap {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: auto;
+      padding: 10px;
+    }
+    .board {
+      display: grid;
+      border: 4px solid #1e293b;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 16px 32px rgba(15,23,42,0.16);
+      background: white;
+    }
+    .cell {
+      width: 54px;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 31px;
+      cursor: pointer;
+      user-select: none;
+      position: relative;
+      transition: transform 0.15s ease, outline 0.15s ease;
+    }
+    .cell:hover {
+      outline: 4px solid rgba(37,99,235,0.35);
+      z-index: 2;
+    }
+    .white { background: #f8fafc; }
+    .black { background: #cbd5e1; }
+    .queen { color: #7c3aed; text-shadow: 0 3px 8px rgba(124,58,237,0.25); }
+    .attack { background: #fecaca !important; }
+    .safe { background: #dcfce7 !important; }
+    .try { outline: 5px solid #f97316; z-index: 3; }
+    .current-row::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border: 3px dashed rgba(37,99,235,0.6);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+    .panel {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      padding: 18px;
+    }
+    label {
+      display: block;
+      font-weight: 800;
+      color: #334155;
+      margin-top: 10px;
+    }
+    input, select {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px 13px;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      font-size: 16px;
+      outline: none;
+      background: white;
+    }
+    input:focus, select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+    }
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin: 6px 4px 0 0;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 8px 16px rgba(37,99,235,0.2);
+    }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    .ghost { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; box-shadow: none; }
+    .danger { background: #dc2626; }
+    .danger:hover { background: #b91c1c; }
+    .result-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .score {
+      border-radius: 24px;
+      padding: 18px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      text-align: center;
+    }
+    .score strong {
+      display: block;
+      font-size: 36px;
+      color: #7c3aed;
+      margin-top: 6px;
+      word-break: break-word;
+    }
+    .answer { background: linear-gradient(135deg, #ecfdf5, #f0fdf4); border: 2px solid #86efac; }
+    .path {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border: 2px solid #93c5fd;
+    }
+    .bad-pill { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+    .good-pill { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 10px;
+      text-align: center;
+    }
+    th { background: #eff6ff; color: #1d4ed8; }
+    tr.active-row { background: #fff7ed; outline: 3px solid #fb923c; font-weight: 900; }
+    .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+    .step-list li {
+      counter-increment: step;
+      position: relative;
+      margin: 14px 0;
+      padding: 16px 18px 16px 58px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+    }
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 22px;
+      border-radius: 22px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .highlight { color: #dc2626; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    footer { text-align: center; padding: 26px; color: #64748b; }
+    @media (max-width: 920px) { .playground { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .cell { width: 42px; height: 42px; font-size: 24px; } .card { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #1889 N Queen</h1>
+    <p>N×N 체스판에 N개의 퀸을 서로 공격하지 않게 놓는 방법의 개수를 백트래킹으로 찾아봅니다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 문제를 쉽게 이해하기</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>퀸의 공격 방향</h3>
+          <p>퀸은 <b>가로, 세로, 대각선</b>으로 움직일 수 있습니다.</p>
+        </div>
+        <div class="mini">
+          <h3>목표</h3>
+          <p>N개의 퀸이 서로 공격하지 않도록 놓는 <b>모든 방법의 개수</b>를 구합니다.</p>
+        </div>
+        <div class="mini">
+          <h3>핵심 전략</h3>
+          <p>한 행에 퀸을 하나씩 놓고, 불가능하면 되돌아가는 <b>백트래킹</b>을 사용합니다.</p>
+        </div>
+      </div>
+      <p class="note">초등학생 버전: 퀸은 아주 강한 말입니다. 같은 줄, 같은 세로줄, 대각선에 친구 퀸이 있으면 공격하게 됩니다. 그래서 “여기 놓아도 안전한가?”를 확인하면서 한 줄씩 놓아봅니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 직접 놓아보고 자동 탐색 보기</h2>
+      <div class="playground">
+        <div class="board-wrap">
+          <div id="board" class="board"></div>
+        </div>
+        <div class="panel">
+          <label>N 값 선택</label>
+          <select id="nSelect" onchange="changeN()">
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+          </select>
+          <button onclick="solveNQueen(true)">자동 DFS 실행</button>
+          <button class="ghost" onclick="prevLog()">이전 단계</button>
+          <button class="ghost" onclick="nextLog()">다음 단계</button>
+          <button class="danger" onclick="clearManual()">직접 놓기 초기화</button>
+          <p class="small">체스판을 클릭하면 직접 퀸을 놓을 수 있습니다. 빨간 칸은 공격받는 칸입니다.</p>
+          <div class="result-box">
+            <div class="score answer">
+              <h3>정답 개수</h3>
+              <strong id="answerText">2</strong>
+            </div>
+            <div class="score">
+              <h3>현재 단계</h3>
+              <strong id="statusText">준비</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 현재 퀸 배치 상태</h2>
+      <div id="queenList" class="path"></div>
+      <div class="result-box">
+        <div class="score"><h3>놓은 퀸 수</h3><strong id="queenCount">0</strong></div>
+        <div class="score"><h3>충돌 여부</h3><strong id="judgeText">안전</strong></div>
+        <div class="score"><h3>다음 행</h3><strong id="nextRowText">1행</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. DFS + 백트래킹 과정</h2>
+      <p>자동 DFS 실행을 누르면 퀸을 어디에 놓아보고, 어디에서 충돌하거나 되돌아가는지 확인할 수 있습니다.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>순서</th>
+            <th>행</th>
+            <th>열</th>
+            <th>현재 배치</th>
+            <th>상태</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody id="logTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>5. 왜 대각선을 이렇게 확인할까?</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>같은 열</h3>
+          <pre>col[c]</pre>
+          <p>같은 열 c에 이미 퀸이 있으면 놓을 수 없습니다.</p>
+        </div>
+        <div class="mini">
+          <h3>오른쪽 아래 대각선</h3>
+          <pre>diag1[row + c]</pre>
+          <p>같은 방향 대각선은 row + c 값이 같습니다.</p>
+        </div>
+        <div class="mini">
+          <h3>왼쪽 아래 대각선</h3>
+          <pre>diag2[row - c + N - 1]</pre>
+          <p>row - c는 음수가 될 수 있어서 N-1을 더합니다.</p>
+        </div>
+      </div>
+      <p class="note">쉽게 말하면, 열 번호표와 대각선 번호표를 만들어서 “이미 퀸이 지나가는 길인가?”를 빠르게 확인하는 것입니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>6. 핵심 알고리즘 설명</h2>
+      <ol class="step-list">
+        <li>0행부터 시작해서 한 행에 퀸을 하나씩 놓습니다.</li>
+        <li>현재 행에서 0열부터 N-1열까지 차례대로 놓아봅니다.</li>
+        <li>같은 열, 같은 대각선에 퀸이 없으면 안전합니다.</li>
+        <li>안전하면 퀸을 놓고 다음 행으로 내려갑니다.</li>
+        <li>끝까지 N개를 모두 놓으면 정답 개수를 1 증가시킵니다.</li>
+        <li>다른 경우도 찾아야 하므로 방금 놓은 퀸을 다시 지웁니다.</li>
+        <li>이렇게 놓기와 지우기를 반복하는 것이 백트래킹입니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>7. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+int N;
+int answer = 0;
+
+int col[14];
+int diag1[30];
+int diag2[30];
+
+void dfs(int row) {
+    int c;
+
+    if (row == N) {
+        answer++;
+        return;
+    }
+
+    for (c = 0; c &lt; N; c++) {
+        if (col[c] == 0 &amp;&amp; diag1[row + c] == 0 &amp;&amp; diag2[row - c + N - 1] == 0) {
+            col[c] = 1;
+            diag1[row + c] = 1;
+            diag2[row - c + N - 1] = 1;
+
+            dfs(row + 1);
+
+            col[c] = 0;
+            diag1[row + c] = 0;
+            diag2[row - c + N - 1] = 0;
+        }
+    }
+}
+
+int main() {
+    scanf("%d", &amp;N);
+
+    dfs(0);
+
+    printf("%d\n", answer);
+
+    return 0;
+}</pre>
+    </section>
+  </main>
+
+  <footer>정올 #1889 N Queen 인터랙티브 학습 자료</footer>
+
+  <script>
+    let N = 4;
+    let manualQueens = [];
+    let logs = [];
+    let logIndex = -1;
+    let currentAutoQueens = [];
+    let tryCell = null;
+    let answer = 0;
+
+    function changeN() {
+      N = Number(document.getElementById('nSelect').value);
+      clearManual();
+      solveNQueen(false);
+    }
+
+    function clearManual() {
+      manualQueens = [];
+      currentAutoQueens = [];
+      tryCell = null;
+      logIndex = -1;
+      document.getElementById('statusText').textContent = '준비';
+      updateManualInfo();
+      renderBoard();
+      renderLogs();
+    }
+
+    function hasConflict(queens) {
+      for (let i = 0; i < queens.length; i++) {
+        for (let j = i + 1; j < queens.length; j++) {
+          const a = queens[i], b = queens[j];
+          if (a.r === b.r) return true;
+          if (a.c === b.c) return true;
+          if (Math.abs(a.r - b.r) === Math.abs(a.c - b.c)) return true;
+        }
+      }
+      return false;
+    }
+
+    function isAttacked(r, c, queens) {
+      return queens.some(q => q.r === r || q.c === c || Math.abs(q.r - r) === Math.abs(q.c - c));
+    }
+
+    function renderBoard() {
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+      board.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+      board.style.gridTemplateRows = `repeat(${N}, 1fr)`;
+
+      const queens = logIndex >= 0 && logs[logIndex] ? currentAutoQueens : manualQueens;
+      const conflict = hasConflict(queens);
+      const nextRow = queens.length;
+
+      for (let r = 0; r < N; r++) {
+        for (let c = 0; c < N; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell ' + ((r + c) % 2 === 0 ? 'white' : 'black');
+          const hasQ = queens.some(q => q.r === r && q.c === c);
+          const attacked = isAttacked(r, c, queens) && !hasQ;
+          if (attacked) cell.classList.add('attack');
+          if (!attacked && !hasQ && r === nextRow) cell.classList.add('safe');
+          if (hasQ) cell.classList.add('queen');
+          if (tryCell && tryCell.r === r && tryCell.c === c) cell.classList.add('try');
+          if (r === nextRow && !hasQ && logIndex >= 0) cell.classList.add('current-row');
+          cell.textContent = hasQ ? '♛' : '';
+          cell.title = `${r + 1}행 ${c + 1}열`;
+          cell.onclick = () => toggleManualQueen(r, c);
+          board.appendChild(cell);
+        }
+      }
+      updateManualInfo();
+    }
+
+    function toggleManualQueen(r, c) {
+      if (logIndex >= 0) {
+        logIndex = -1;
+        currentAutoQueens = [];
+        tryCell = null;
+      }
+      const idx = manualQueens.findIndex(q => q.r === r && q.c === c);
+      if (idx >= 0) manualQueens.splice(idx, 1);
+      else manualQueens.push({ r, c });
+      updateManualInfo();
+      renderBoard();
+    }
+
+    function updateManualInfo() {
+      const queens = logIndex >= 0 && logs[logIndex] ? currentAutoQueens : manualQueens;
+      const list = document.getElementById('queenList');
+      list.innerHTML = '';
+      if (queens.length === 0) {
+        const span = document.createElement('span');
+        span.className = 'pill';
+        span.textContent = '아직 없음';
+        list.appendChild(span);
+      } else {
+        queens.forEach(q => {
+          const span = document.createElement('span');
+          span.className = 'pill';
+          span.textContent = `${q.r + 1}행 ${q.c + 1}열`;
+          list.appendChild(span);
+        });
+      }
+      const conflict = hasConflict(queens);
+      document.getElementById('queenCount').textContent = queens.length;
+      document.getElementById('judgeText').textContent = conflict ? '충돌 있음' : '안전';
+      document.getElementById('judgeText').style.color = conflict ? '#dc2626' : '#16a34a';
+      document.getElementById('nextRowText').textContent = queens.length < N ? `${queens.length + 1}행` : '완성';
+    }
+
+    function solveNQueen(showLogs = true) {
+      logs = [];
+      logIndex = -1;
+      answer = 0;
+      const col = Array(N).fill(false);
+      const diag1 = Array(2 * N).fill(false);
+      const diag2 = Array(2 * N).fill(false);
+      const placed = [];
+
+      function dfs(row) {
+        if (row === N) {
+          answer++;
+          logs.push({ row, c: '-', placed: placed.map(q => ({...q})), state: '정답 발견', desc: `${N}개의 퀸을 모두 안전하게 놓았습니다. 정답 개수 +1`, tryCell: null });
+          return;
+        }
+
+        for (let c = 0; c < N; c++) {
+          const safe = !col[c] && !diag1[row + c] && !diag2[row - c + N - 1];
+          logs.push({
+            row,
+            c,
+            placed: placed.map(q => ({...q})),
+            state: safe ? '놓기 가능' : '충돌',
+            desc: safe ? `${row + 1}행 ${c + 1}열은 열/대각선 충돌이 없어 놓을 수 있습니다.` : `${row + 1}행 ${c + 1}열은 같은 열 또는 대각선에 퀸이 있어 놓을 수 없습니다.`,
+            tryCell: { r: row, c }
+          });
+
+          if (safe) {
+            col[c] = true;
+            diag1[row + c] = true;
+            diag2[row - c + N - 1] = true;
+            placed.push({ r: row, c });
+            logs.push({ row, c, placed: placed.map(q => ({...q})), state: '퀸 놓음', desc: `${row + 1}행 ${c + 1}열에 퀸을 놓고 다음 행으로 이동합니다.`, tryCell: null });
+            dfs(row + 1);
+            placed.pop();
+            col[c] = false;
+            diag1[row + c] = false;
+            diag2[row - c + N - 1] = false;
+            logs.push({ row, c, placed: placed.map(q => ({...q})), state: '되돌리기', desc: `다른 경우를 찾기 위해 ${row + 1}행 ${c + 1}열의 퀸을 지웁니다. 이것이 백트래킹입니다.`, tryCell: null });
+          }
+        }
+      }
+
+      dfs(0);
+      document.getElementById('answerText').textContent = answer;
+      renderLogs();
+      if (showLogs && logs.length) {
+        logIndex = 0;
+        showLog();
+      } else {
+        document.getElementById('statusText').textContent = `정답 ${answer}개`;
+      }
+    }
+
+    function renderLogs() {
+      const tbody = document.getElementById('logTable');
+      tbody.innerHTML = '';
+      const maxShow = 160;
+      logs.slice(0, maxShow).forEach((l, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === logIndex) tr.className = 'active-row';
+        const placement = l.placed.length ? l.placed.map(q => `(${q.r + 1},${q.c + 1})`).join(' ') : '-';
+        tr.innerHTML = `<td>${idx + 1}</td><td>${l.row === N ? '완성' : l.row + 1}</td><td>${l.c === '-' ? '-' : l.c + 1}</td><td>${placement}</td><td>${l.state}</td><td>${l.desc}</td>`;
+        tbody.appendChild(tr);
+      });
+      if (logs.length > maxShow) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="6">탐색 로그가 많아 처음 ${maxShow}개만 표시합니다. 전체 로그 수: ${logs.length}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function nextLog() {
+      if (!logs.length) solveNQueen(true);
+      if (logIndex < logs.length - 1) {
+        logIndex++;
+        showLog();
+      }
+    }
+
+    function prevLog() {
+      if (logIndex > 0) {
+        logIndex--;
+        showLog();
+      }
+    }
+
+    function showLog() {
+      const l = logs[logIndex];
+      currentAutoQueens = l.placed.map(q => ({...q}));
+      tryCell = l.tryCell;
+      document.getElementById('statusText').textContent = `${logIndex + 1}/${logs.length} ${l.state}`;
+      renderLogs();
+      renderBoard();
+    }
+
+    solveNQueen(false);
+    renderBoard();
+  </script>
+</body>
+</html>
