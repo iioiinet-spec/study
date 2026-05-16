@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #1681 해밀턴 순환회로 인터랙티브 학습</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #eff6ff, #fff7ed);
+      color: #172554;
+      line-height: 1.7;
+    }
+    header {
+      padding: 50px 18px 36px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 14px 32px rgba(37, 99, 235, 0.25);
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 54px);
+      letter-spacing: -1px;
+    }
+    header p {
+      max-width: 920px;
+      margin: 14px auto 0;
+      font-size: clamp(16px, 2vw, 20px);
+      opacity: 0.96;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      border-radius: 28px;
+      padding: 26px;
+      margin: 22px 0;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(10px);
+    }
+    h2 { margin-top: 0; color: #1d4ed8; font-size: 28px; }
+    h3 { color: #4338ca; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .mini {
+      padding: 18px;
+      border-radius: 22px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .note {
+      padding: 16px 18px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 18px;
+    }
+    .playground {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 20px;
+      align-items: start;
+    }
+    canvas {
+      width: 100%;
+      height: auto;
+      background: white;
+      border: 2px solid #cbd5e1;
+      border-radius: 24px;
+      box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+    }
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      margin-top: 8px;
+      padding: 13px 14px;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      font-size: 15px;
+      outline: none;
+      font-family: Consolas, monospace;
+      background: white;
+    }
+    input, select {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px 13px;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      font-size: 16px;
+      outline: none;
+      background: white;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+    label { display: block; font-weight: 800; color: #334155; margin-top: 10px; }
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin: 6px 4px 0 0;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.2);
+    }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    .ghost {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #cbd5e1;
+      box-shadow: none;
+    }
+    .danger { background: #dc2626; }
+    .danger:hover { background: #b91c1c; }
+    .result-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .score {
+      border-radius: 24px;
+      padding: 18px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      text-align: center;
+    }
+    .score strong {
+      display: block;
+      font-size: 34px;
+      color: #7c3aed;
+      margin-top: 6px;
+      word-break: break-word;
+    }
+    .answer {
+      background: linear-gradient(135deg, #ecfdf5, #f0fdf4);
+      border: 2px solid #86efac;
+    }
+    .path {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+    .city-pill, .arrow-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+    .city-pill {
+      background: #dbeafe;
+      color: #1d4ed8;
+      border: 2px solid #93c5fd;
+    }
+    .arrow-pill { color: #64748b; }
+    .bad { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+    .good { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 10px;
+      text-align: center;
+    }
+    th { background: #eff6ff; color: #1d4ed8; }
+    tr.active-row { background: #fff7ed; outline: 3px solid #fb923c; font-weight: 900; }
+    .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+    .step-list li {
+      counter-increment: step;
+      position: relative;
+      margin: 14px 0;
+      padding: 16px 18px 16px 58px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+    }
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 22px;
+      border-radius: 22px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .highlight { color: #dc2626; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    footer { text-align: center; padding: 26px; color: #64748b; }
+    @media (max-width: 920px) { .playground { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #1681 해밀턴 순환회로</h1>
+    <p>회사에서 출발해 모든 장소를 한 번씩 방문하고 다시 회사로 돌아오는 최소 비용 경로를 찾아봅니다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 문제를 쉽게 이해하기</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>해밀턴 순환회로</h3>
+          <p>모든 도시를 <b>딱 한 번씩</b> 방문하고 다시 출발 도시로 돌아오는 길입니다.</p>
+        </div>
+        <div class="mini">
+          <h3>정올 1681의 목표</h3>
+          <p>1번 회사에서 출발해서 모든 장소를 방문한 뒤 1번으로 돌아오는 <b>최소 비용</b>을 구합니다.</p>
+        </div>
+        <div class="mini">
+          <h3>주의할 점</h3>
+          <p>비용표의 <b>0은 길이 없음</b>입니다. 또한 i→j 비용과 j→i 비용이 다를 수 있습니다.</p>
+        </div>
+      </div>
+      <p class="note">초등학생 버전: 택배 아저씨가 회사에서 출발해 모든 집을 한 번씩만 들르고 다시 회사로 돌아와야 합니다. 여러 길 중에서 기름값이 가장 적게 드는 길을 찾는 문제입니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 그래프와 최소 경로 직접 확인하기</h2>
+      <div class="playground">
+        <canvas id="graphCanvas" width="760" height="560"></canvas>
+        <div>
+          <label>N과 비용 행렬</label>
+          <textarea id="matrixInput">5
+0 14 4 10 20
+14 0 7 8 7
+4 5 0 7 16
+11 7 9 0 2
+18 7 17 4 0</textarea>
+          <button onclick="loadMatrix()">행렬 불러오기</button>
+          <button class="ghost" onclick="setExample1()">예제 복원</button>
+          <button onclick="solveAll()">최소 경로 찾기</button>
+          <button class="ghost" onclick="prevLog()">이전 탐색</button>
+          <button class="ghost" onclick="nextLog()">다음 탐색</button>
+          <button class="danger" onclick="resetManual()">수동 경로 초기화</button>
+          <p class="small">도시 원을 클릭하면 직접 경로를 선택할 수 있습니다. 1번에서 시작합니다.</p>
+        </div>
+      </div>
+
+      <div class="result-box">
+        <div class="score answer">
+          <h3>최소 비용</h3>
+          <strong id="bestCost">30</strong>
+        </div>
+        <div class="score">
+          <h3>최소 경로</h3>
+          <strong id="bestPathText">1→4→5→2→3→1</strong>
+        </div>
+        <div class="score">
+          <h3>현재 탐색 상태</h3>
+          <strong id="logStatus">준비</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 수동으로 경로 만들어보기</h2>
+      <p>도시를 클릭해서 1번에서 출발하는 경로를 만들어 보세요. 모든 도시를 방문하면 1번으로 돌아갈 수 있는지 확인합니다.</p>
+      <div id="manualPath" class="path"></div>
+      <div class="result-box">
+        <div class="score"><h3>현재 비용</h3><strong id="manualCost">0</strong></div>
+        <div class="score"><h3>방문 개수</h3><strong id="manualCount">1</strong></div>
+        <div class="score"><h3>판정</h3><strong id="manualJudge">진행 중</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>4. DFS + 백트래킹 과정</h2>
+      <p>자동 탐색을 누르면 DFS가 어떤 경로를 보고, 어떤 경로를 가지치기하는지 표로 볼 수 있습니다.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>순서</th>
+            <th>현재 경로</th>
+            <th>현재 비용</th>
+            <th>상태</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody id="logTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>5. 핵심 알고리즘 설명</h2>
+      <ol class="step-list">
+        <li>1번 회사에서 출발합니다.</li>
+        <li>아직 방문하지 않은 도시 중에서 갈 수 있는 도시를 하나 선택합니다.</li>
+        <li>그 도시를 방문 표시하고 비용을 더합니다.</li>
+        <li>모든 도시를 방문했다면 다시 1번으로 돌아갈 수 있는지 확인합니다.</li>
+        <li>돌아갈 수 있으면 총비용으로 정답을 갱신합니다.</li>
+        <li>현재 비용이 이미 찾은 정답보다 크거나 같으면 더 볼 필요가 없으므로 가지치기합니다.</li>
+        <li>다른 경로도 확인하기 위해 방문 표시를 다시 해제하고 돌아갑니다. 이것이 백트래킹입니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>6. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+#define INF 987654321
+
+int N;
+int cost[14][14];
+int visited[14];
+int answer = INF;
+
+void dfs(int now, int count, int sum) {
+    int next;
+
+    // 가지치기: 이미 현재 비용이 정답보다 크거나 같으면 중단
+    if (sum &gt;= answer) {
+        return;
+    }
+
+    // 모든 장소를 방문한 경우
+    if (count == N) {
+        // 현재 위치에서 회사 1번으로 돌아갈 수 있어야 함
+        if (cost[now][1] != 0) {
+            if (sum + cost[now][1] &lt; answer) {
+                answer = sum + cost[now][1];
+            }
+        }
+        return;
+    }
+
+    // 다음 방문할 장소 선택
+    for (next = 2; next &lt;= N; next++) {
+        if (visited[next] == 0 &amp;&amp; cost[now][next] != 0) {
+            visited[next] = 1;
+            dfs(next, count + 1, sum + cost[now][next]);
+            visited[next] = 0;
+        }
+    }
+}
+
+int main() {
+    int i, j;
+
+    scanf("%d", &amp;N);
+
+    for (i = 1; i &lt;= N; i++) {
+        for (j = 1; j &lt;= N; j++) {
+            scanf("%d", &amp;cost[i][j]);
+        }
+    }
+
+    visited[1] = 1;
+    dfs(1, 1, 0);
+
+    printf("%d\n", answer);
+
+    return 0;
+}</pre>
+    </section>
+
+    <section class="card">
+      <h2>7. 수업용 정리</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>DFS</h3>
+          <p>한 길을 끝까지 가보고, 막히면 돌아와서 다른 길을 시도합니다.</p>
+        </div>
+        <div class="mini">
+          <h3>백트래킹</h3>
+          <p>방문 표시를 했다가, 다른 경우를 보기 위해 다시 방문 해제합니다.</p>
+        </div>
+        <div class="mini">
+          <h3>가지치기</h3>
+          <p>이미 비용이 너무 크면 더 가도 정답이 될 수 없으므로 빨리 포기합니다.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>정올 #1681 해밀턴 순환회로 인터랙티브 학습 자료</footer>
+
+  <script>
+    let N = 5;
+    let cost = [];
+    let positions = [];
+    let manual = [1];
+    let logs = [];
+    let logIndex = -1;
+    let bestCost = Infinity;
+    let bestPath = [];
+
+    function setExample1() {
+      document.getElementById('matrixInput').value = `5\n0 14 4 10 20\n14 0 7 8 7\n4 5 0 7 16\n11 7 9 0 2\n18 7 17 4 0`;
+      loadMatrix();
+    }
+
+    function loadMatrix() {
+      const text = document.getElementById('matrixInput').value.trim();
+      const lines = text.split(/\n+/).map(line => line.trim()).filter(Boolean);
+      N = Number(lines[0]);
+      cost = Array.from({ length: N + 1 }, () => Array(N + 1).fill(0));
+      for (let i = 1; i <= N; i++) {
+        const nums = (lines[i] || '').split(/\s+/).map(Number);
+        for (let j = 1; j <= N; j++) cost[i][j] = nums[j - 1] || 0;
+      }
+      manual = [1];
+      logs = [];
+      logIndex = -1;
+      bestCost = Infinity;
+      bestPath = [];
+      computePositions();
+      solveAll(false);
+      updateManual();
+      drawGraph();
+    }
+
+    function computePositions() {
+      const cx = 380, cy = 275, r = 190;
+      positions = Array(N + 1).fill(null);
+      for (let i = 1; i <= N; i++) {
+        const angle = -Math.PI / 2 + (i - 1) * 2 * Math.PI / N;
+        positions[i] = { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
+      }
+    }
+
+    function solveAll(showLogs = true) {
+      logs = [];
+      logIndex = -1;
+      bestCost = Infinity;
+      bestPath = [];
+      const visited = Array(N + 1).fill(false);
+      visited[1] = true;
+
+      function dfs(now, count, sum, path) {
+        if (sum >= bestCost) {
+          logs.push({ path: [...path], sum, state: '가지치기', desc: `현재 비용 ${sum}이 이미 최소 비용 ${bestCost}보다 크거나 같아서 중단` });
+          return;
+        }
+
+        logs.push({ path: [...path], sum, state: '탐색', desc: `${now}번 도시에서 다음 도시를 고르는 중` });
+
+        if (count === N) {
+          if (cost[now][1] !== 0) {
+            const total = sum + cost[now][1];
+            const finalPath = [...path, 1];
+            if (total < bestCost) {
+              bestCost = total;
+              bestPath = finalPath;
+              logs.push({ path: finalPath, sum: total, state: '정답 갱신', desc: `1번으로 돌아와 총비용 ${total}. 최소 비용 갱신` });
+            } else {
+              logs.push({ path: finalPath, sum: total, state: '완성', desc: `순환회로 완성, 하지만 현재 최소 비용보다 큼` });
+            }
+          } else {
+            logs.push({ path: [...path], sum, state: '실패', desc: `${now}번에서 1번으로 돌아가는 길이 없음` });
+          }
+          return;
+        }
+
+        for (let next = 2; next <= N; next++) {
+          if (!visited[next] && cost[now][next] !== 0) {
+            visited[next] = true;
+            dfs(next, count + 1, sum + cost[now][next], [...path, next]);
+            visited[next] = false;
+          }
+        }
+      }
+
+      dfs(1, 1, 0, [1]);
+      document.getElementById('bestCost').textContent = bestCost === Infinity ? '불가능' : bestCost;
+      document.getElementById('bestPathText').textContent = bestPath.length ? bestPath.join('→') : '없음';
+      renderLogs();
+      if (showLogs && logs.length) {
+        logIndex = 0;
+        showLog();
+      } else {
+        document.getElementById('logStatus').textContent = '최소 경로 계산 완료';
+      }
+      drawGraph();
+    }
+
+    function renderLogs() {
+      const tbody = document.getElementById('logTable');
+      tbody.innerHTML = '';
+      logs.slice(0, 120).forEach((l, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === logIndex) tr.className = 'active-row';
+        tr.innerHTML = `<td>${idx + 1}</td><td>${l.path.join('→')}</td><td>${l.sum}</td><td>${l.state}</td><td>${l.desc}</td>`;
+        tbody.appendChild(tr);
+      });
+      if (logs.length > 120) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="5">탐색 로그가 많아 처음 120개만 표시합니다. 전체 로그 수: ${logs.length}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function nextLog() {
+      if (!logs.length) solveAll(true);
+      if (logIndex < logs.length - 1) {
+        logIndex++;
+        showLog();
+      }
+    }
+
+    function prevLog() {
+      if (logIndex > 0) {
+        logIndex--;
+        showLog();
+      }
+    }
+
+    function showLog() {
+      const l = logs[logIndex];
+      document.getElementById('logStatus').textContent = `${logIndex + 1}/${logs.length} ${l.state}`;
+      renderLogs();
+      drawGraph(l.path);
+    }
+
+    function resetManual() {
+      manual = [1];
+      updateManual();
+      drawGraph();
+    }
+
+    function updateManual() {
+      const div = document.getElementById('manualPath');
+      div.innerHTML = '';
+      manual.forEach((v, idx) => {
+        const city = document.createElement('span');
+        city.className = 'city-pill';
+        city.textContent = v;
+        div.appendChild(city);
+        if (idx < manual.length - 1) {
+          const arrow = document.createElement('span');
+          arrow.className = 'arrow-pill';
+          arrow.textContent = '→';
+          div.appendChild(arrow);
+        }
+      });
+
+      let sum = 0;
+      let ok = true;
+      for (let i = 0; i < manual.length - 1; i++) {
+        const a = manual[i], b = manual[i + 1];
+        if (cost[a][b] === 0) ok = false;
+        sum += cost[a][b];
+      }
+      let judge = '진행 중';
+      if (!ok) judge = '갈 수 없는 길 포함';
+      else if (manual.length === N) {
+        const last = manual[manual.length - 1];
+        if (cost[last][1] !== 0) {
+          judge = `1번으로 돌아가면 총 ${sum + cost[last][1]}`;
+        } else {
+          judge = '1번으로 돌아갈 수 없음';
+        }
+      }
+      document.getElementById('manualCost').textContent = sum;
+      document.getElementById('manualCount').textContent = manual.length;
+      document.getElementById('manualJudge').textContent = judge;
+    }
+
+    function drawGraph(pathOverride = null) {
+      const canvas = document.getElementById('graphCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const path = pathOverride || manual;
+      const edgeSet = new Set();
+      for (let i = 0; i < path.length - 1; i++) edgeSet.add(`${path[i]}-${path[i + 1]}`);
+      if (!pathOverride && manual.length === N) edgeSet.add(`${manual[manual.length - 1]}-1`);
+      if (pathOverride && pathOverride.length > 1) {
+        for (let i = 0; i < pathOverride.length - 1; i++) edgeSet.add(`${pathOverride[i]}-${pathOverride[i + 1]}`);
+      }
+
+      // draw directed edges, only nonzero, limit visual clutter by faint lines
+      for (let i = 1; i <= N; i++) {
+        for (let j = 1; j <= N; j++) {
+          if (i !== j && cost[i][j] !== 0) {
+            const a = positions[i], b = positions[j];
+            const selected = edgeSet.has(`${i}-${j}`);
+            drawArrow(ctx, a.x, a.y, b.x, b.y, selected ? '#dc2626' : 'rgba(100,116,139,0.22)', selected ? 4 : 1.2, cost[i][j], selected);
+          }
+        }
+      }
+
+      for (let i = 1; i <= N; i++) {
+        const p = positions[i];
+        const visited = path.includes(i);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 26, 0, Math.PI * 2);
+        ctx.fillStyle = i === 1 ? '#f97316' : visited ? '#dbeafe' : '#f8fafc';
+        ctx.fill();
+        ctx.strokeStyle = visited ? '#2563eb' : '#94a3b8';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.fillStyle = i === 1 ? 'white' : '#1d4ed8';
+        ctx.font = 'bold 20px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(i, p.x, p.y);
+      }
+    }
+
+    function drawArrow(ctx, x1, y1, x2, y2, color, width, label, selected) {
+      const dx = x2 - x1, dy = y2 - y1;
+      const angle = Math.atan2(dy, dx);
+      const startR = 31, endR = 33;
+      const sx = x1 + Math.cos(angle) * startR;
+      const sy = y1 + Math.sin(angle) * startR;
+      const ex = x2 - Math.cos(angle) * endR;
+      const ey = y2 - Math.sin(angle) * endR;
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+      const head = selected ? 12 : 7;
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - head * Math.cos(angle - Math.PI / 6), ey - head * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(ex - head * Math.cos(angle + Math.PI / 6), ey - head * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+      if (selected) {
+        const mx = (sx + ex) / 2;
+        const my = (sy + ey) / 2;
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = '#dc2626';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(mx - 16, my - 13, 32, 26, 8);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#dc2626';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(label, mx, my);
+      }
+    }
+
+    CanvasRenderingContext2D.prototype.roundRect = CanvasRenderingContext2D.prototype.roundRect || function(x, y, w, h, r) {
+      this.beginPath();
+      this.moveTo(x + r, y);
+      this.arcTo(x + w, y, x + w, y + h, r);
+      this.arcTo(x + w, y + h, x, y + h, r);
+      this.arcTo(x, y + h, x, y, r);
+      this.arcTo(x, y, x + w, y, r);
+      this.closePath();
+    };
+
+    document.getElementById('graphCanvas').addEventListener('click', e => {
+      const rect = e.target.getBoundingClientRect();
+      const scaleX = e.target.width / rect.width;
+      const scaleY = e.target.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      for (let i = 1; i <= N; i++) {
+        const p = positions[i];
+        const d = Math.hypot(x - p.x, y - p.y);
+        if (d <= 32) {
+          if (i === 1) return;
+          if (!manual.includes(i) && manual.length < N) {
+            manual.push(i);
+            updateManual();
+            drawGraph();
+          }
+          return;
+        }
+      }
+    });
+
+    loadMatrix();
+  </script>
+</body>
+</html>
