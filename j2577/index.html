@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #2577 회전초밥(고) 인터랙티브 학습</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #eff6ff, #fff7ed);
+      color: #172554;
+      line-height: 1.7;
+    }
+    header {
+      padding: 50px 18px 36px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 14px 32px rgba(37,99,235,0.25);
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 54px);
+      letter-spacing: -1px;
+    }
+    header p {
+      max-width: 920px;
+      margin: 14px auto 0;
+      font-size: clamp(16px, 2vw, 20px);
+      opacity: .96;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+    }
+    .card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(148,163,184,.3);
+      border-radius: 28px;
+      padding: 26px;
+      margin: 22px 0;
+      box-shadow: 0 14px 34px rgba(15,23,42,.08);
+      backdrop-filter: blur(10px);
+    }
+    h2 { margin-top: 0; color: #1d4ed8; font-size: 28px; }
+    h3 { color: #4338ca; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .mini {
+      padding: 18px;
+      border-radius: 22px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .note {
+      padding: 16px 18px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 18px;
+    }
+    .playground {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) 360px;
+      gap: 20px;
+      align-items: start;
+    }
+    .visual {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      padding: 18px;
+      overflow-x: auto;
+    }
+    .belt {
+      position: relative;
+      min-height: 420px;
+      border-radius: 24px;
+      background: radial-gradient(circle at center, #ffffff 0 28%, #e2e8f0 29% 31%, #f8fafc 32% 100%);
+      border: 2px solid #cbd5e1;
+      overflow: hidden;
+    }
+    .plate {
+      position: absolute;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+      background: white;
+      border: 3px solid #94a3b8;
+      box-shadow: 0 8px 16px rgba(15,23,42,.12);
+      font-weight: 900;
+      transition: all .25s ease;
+    }
+    .plate .idx { font-size: 10px; color: #64748b; line-height: 1; }
+    .plate .num { font-size: 19px; color: #172554; line-height: 1.1; }
+    .plate.selected {
+      background: #dbeafe;
+      border-color: #2563eb;
+      transform: translate(-50%, -50%) scale(1.14);
+      z-index: 3;
+    }
+    .plate.coupon {
+      box-shadow: 0 0 0 5px rgba(249,115,22,.24), 0 8px 16px rgba(15,23,42,.12);
+    }
+    .center-info {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      background: white;
+      border: 3px solid #bfdbfe;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 18px;
+      box-shadow: 0 14px 28px rgba(15,23,42,.1);
+    }
+    .center-info strong {
+      display: block;
+      font-size: 38px;
+      color: #7c3aed;
+      line-height: 1.1;
+    }
+    .panel {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      padding: 18px;
+    }
+    label { display: block; font-weight: 800; color: #334155; margin-top: 10px; }
+    input, textarea {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px 13px;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      font-size: 16px;
+      outline: none;
+      background: white;
+    }
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+    }
+    input:focus, textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+    }
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin: 6px 4px 0 0;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+      box-shadow: 0 8px 16px rgba(37,99,235,.2);
+    }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    .ghost { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; box-shadow: none; }
+    .result-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .score {
+      border-radius: 24px;
+      padding: 18px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      text-align: center;
+    }
+    .score strong {
+      display: block;
+      font-size: 34px;
+      color: #7c3aed;
+      margin-top: 6px;
+      word-break: break-word;
+    }
+    .answer { background: linear-gradient(135deg, #ecfdf5, #f0fdf4); border: 2px solid #86efac; }
+    .window-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0;
+      align-items: center;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border: 2px solid #93c5fd;
+    }
+    .coupon-pill { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+    .best-pill { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+    th { background: #eff6ff; color: #1d4ed8; }
+    tr.active-row { background: #fff7ed; outline: 3px solid #fb923c; font-weight: 900; }
+    .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+    .step-list li {
+      counter-increment: step;
+      position: relative;
+      margin: 14px 0;
+      padding: 16px 18px 16px 58px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+    }
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 22px;
+      border-radius: 22px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .highlight { color: #dc2626; font-weight: 900; }
+    .success { color: #16a34a; font-weight: 900; }
+    .fail { color: #dc2626; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    footer { text-align: center; padding: 26px; color: #64748b; }
+    @media (max-width: 920px) { .playground { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .card { padding: 20px; } .plate { width: 46px; height: 46px; } .plate .num { font-size: 15px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #2577 회전초밥(고)</h1>
+    <p>원형 초밥 벨트에서 연속 k개를 먹을 때, 쿠폰 초밥까지 포함해 먹을 수 있는 최대 종류 수를 슬라이딩 윈도우로 구합니다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 문제를 쉽게 이해하기</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>회전 벨트</h3>
+          <p>초밥 접시가 원형으로 놓여 있습니다. 끝까지 가면 다시 처음으로 돌아옵니다.</p>
+        </div>
+        <div class="mini">
+          <h3>연속 k개 선택</h3>
+          <p>어떤 위치에서 시작해서 연속된 k개의 접시를 먹습니다.</p>
+        </div>
+        <div class="mini">
+          <h3>쿠폰 초밥</h3>
+          <p>선택한 k개 안에 쿠폰 초밥이 없으면 쿠폰으로 한 종류를 더 먹을 수 있습니다.</p>
+        </div>
+      </div>
+      <p class="note">초등학생 버전: 초밥 기차에서 연속으로 k접시를 골라 먹습니다. 그런데 쿠폰 초밥이 내가 고른 접시 안에 없으면 공짜로 하나 더 먹을 수 있습니다. 그래서 “서로 다른 초밥 종류가 최대 몇 개인가?”를 찾습니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 직접 입력하고 창 이동 보기</h2>
+      <div class="playground">
+        <div class="visual">
+          <h3>원형 초밥 벨트</h3>
+          <div id="belt" class="belt">
+            <div class="center-info">
+              <span>현재 종류 수</span>
+              <strong id="centerKind">4</strong>
+              <span id="centerCoupon">쿠폰 +1</span>
+            </div>
+          </div>
+        </div>
+        <div class="panel">
+          <label>입력 데이터</label>
+          <textarea id="inputData">8 30 4 30
+2
+7
+9
+25
+7
+9
+7
+30</textarea>
+          <button onclick="loadInput()">입력 적용</button>
+          <button class="ghost" onclick="setExample()">예제 복원</button>
+          <button onclick="solve(true)">슬라이딩 실행</button>
+          <button class="ghost" onclick="prevStep()">이전 창</button>
+          <button class="ghost" onclick="nextStep()">다음 창</button>
+          <p class="small">입력 형식: 첫 줄 N d k c, 다음 줄부터 초밥 번호 N개입니다.</p>
+        </div>
+      </div>
+
+      <div class="result-box">
+        <div class="score answer"><h3>정답 최대 종류 수</h3><strong id="answerText">5</strong></div>
+        <div class="score"><h3>현재 시작 위치</h3><strong id="startText">0</strong></div>
+        <div class="score"><h3>현재 창의 종류 수</h3><strong id="kindText">4</strong></div>
+        <div class="score"><h3>쿠폰 포함 결과</h3><strong id="couponResultText">5</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 현재 먹는 k개 접시</h2>
+      <div id="windowRow" class="window-row"></div>
+      <p id="stepExplain" class="note">슬라이딩 실행을 누르면 현재 창의 종류 수와 쿠폰 처리를 확인할 수 있습니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>4. 슬라이딩 윈도우 과정</h2>
+      <p>한 칸 이동할 때마다 처음부터 다시 세지 않고, <span class="highlight">맨 앞 초밥 1개 제거</span>와 <span class="highlight">새 초밥 1개 추가</span>만 합니다.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>시작 위치</th>
+            <th>제거</th>
+            <th>추가</th>
+            <th>창 안 종류</th>
+            <th>쿠폰</th>
+            <th>총 종류</th>
+            <th>최댓값</th>
+          </tr>
+        </thead>
+        <tbody id="stepTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>5. 핵심 알고리즘 설명</h2>
+      <ol class="step-list">
+        <li>처음 0번 접시부터 k개를 선택합니다.</li>
+        <li>cnt[초밥번호] 배열에 현재 창 안에 각 초밥이 몇 개 있는지 저장합니다.</li>
+        <li>새로운 초밥 종류가 들어오면 kind를 1 증가시킵니다.</li>
+        <li>창을 한 칸 옮길 때는 왼쪽 끝 초밥을 제거하고 오른쪽 새 초밥을 추가합니다.</li>
+        <li>벨트가 원형이므로 인덱스가 N을 넘어가면 % N으로 처음으로 돌아갑니다.</li>
+        <li>쿠폰 초밥 c가 현재 창 안에 없으면 kind + 1을 계산합니다.</li>
+        <li>모든 시작 위치를 확인하면서 가장 큰 값을 정답으로 저장합니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>6. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+int sushi[3000001];
+int cnt[3001];
+
+int main() {
+    int N, d, k, c;
+    int i;
+    int kind = 0;
+    int answer = 0;
+
+    scanf("%d %d %d %d", &amp;N, &amp;d, &amp;k, &amp;c);
+
+    for (i = 0; i &lt; N; i++) {
+        scanf("%d", &amp;sushi[i]);
+    }
+
+    // 처음 k개 접시를 선택
+    for (i = 0; i &lt; k; i++) {
+        if (cnt[sushi[i]] == 0) {
+            kind++;
+        }
+        cnt[sushi[i]]++;
+    }
+
+    // 쿠폰 초밥 포함 여부 확인
+    if (cnt[c] == 0) {
+        answer = kind + 1;
+    } else {
+        answer = kind;
+    }
+
+    // 시작 위치를 1부터 N-1까지 이동
+    for (i = 1; i &lt; N; i++) {
+        int remove = sushi[i - 1];
+        int add = sushi[(i + k - 1) % N];
+
+        // 맨 앞 초밥 제거
+        cnt[remove]--;
+        if (cnt[remove] == 0) {
+            kind--;
+        }
+
+        // 새 초밥 추가
+        if (cnt[add] == 0) {
+            kind++;
+        }
+        cnt[add]++;
+
+        // 쿠폰 초밥 계산
+        if (cnt[c] == 0) {
+            if (kind + 1 &gt; answer) {
+                answer = kind + 1;
+            }
+        } else {
+            if (kind &gt; answer) {
+                answer = kind;
+            }
+        }
+    }
+
+    printf("%d\n", answer);
+
+    return 0;
+}</pre>
+    </section>
+
+    <section class="card">
+      <h2>7. 초등학생도 이해하는 한 줄 정리</h2>
+      <p class="note">초밥 창문을 한 칸씩 옮기면서, 나간 접시 하나 빼고 새로 들어온 접시 하나만 더해 계산하는 방법입니다. 그래서 빠릅니다.</p>
+    </section>
+  </main>
+
+  <footer>정올 #2577 회전초밥(고) 인터랙티브 학습 자료</footer>
+
+  <script>
+    let N = 8, d = 30, k = 4, c = 30;
+    let sushi = [2,7,9,25,7,9,7,30];
+    let steps = [];
+    let stepIndex = 0;
+    let answer = 0;
+
+    function setExample() {
+      document.getElementById('inputData').value = `8 30 4 30\n2\n7\n9\n25\n7\n9\n7\n30`;
+      loadInput();
+    }
+
+    function loadInput() {
+      const nums = document.getElementById('inputData').value.trim().split(/\s+/).map(Number).filter(v => !Number.isNaN(v));
+      if (nums.length < 4) return;
+      N = nums[0]; d = nums[1]; k = nums[2]; c = nums[3];
+      sushi = nums.slice(4, 4 + N);
+      while (sushi.length < N) sushi.push(1);
+      solve(false);
+    }
+
+    function solve(showFirst = true) {
+      steps = [];
+      const cnt = Array(Math.max(d + 1, Math.max(...sushi, c) + 1)).fill(0);
+      let kind = 0;
+      answer = 0;
+
+      for (let i = 0; i < k; i++) {
+        const x = sushi[i % N];
+        if (cnt[x] === 0) kind++;
+        cnt[x]++;
+      }
+      let total = cnt[c] === 0 ? kind + 1 : kind;
+      answer = total;
+      steps.push({
+        start: 0,
+        remove: '-',
+        add: '-',
+        kind,
+        couponAdd: cnt[c] === 0,
+        total,
+        answer,
+        cnt: [...cnt],
+        desc: `처음 ${k}개 접시를 선택합니다. 쿠폰 초밥 ${c}번이 ${cnt[c] === 0 ? '없으므로 +1' : '이미 있으므로 +0'}입니다.`
+      });
+
+      for (let start = 1; start < N; start++) {
+        const remove = sushi[start - 1];
+        cnt[remove]--;
+        if (cnt[remove] === 0) kind--;
+
+        const addIndex = (start + k - 1) % N;
+        const add = sushi[addIndex];
+        if (cnt[add] === 0) kind++;
+        cnt[add]++;
+
+        total = cnt[c] === 0 ? kind + 1 : kind;
+        if (total > answer) answer = total;
+        steps.push({
+          start,
+          remove,
+          add,
+          kind,
+          couponAdd: cnt[c] === 0,
+          total,
+          answer,
+          cnt: [...cnt],
+          desc: `${start}번 위치에서 시작합니다. ${remove}번 초밥을 빼고, ${add}번 초밥을 새로 넣습니다. 쿠폰은 ${cnt[c] === 0 ? '사용 가능' : '이미 창 안에 있음'}입니다.`
+        });
+      }
+
+      document.getElementById('answerText').textContent = answer;
+      stepIndex = showFirst ? 0 : 0;
+      renderAll();
+    }
+
+    function selectedIndices(start) {
+      const arr = [];
+      for (let i = 0; i < k; i++) arr.push((start + i) % N);
+      return arr;
+    }
+
+    function renderBelt() {
+      const belt = document.getElementById('belt');
+      const keep = belt.querySelector('.center-info');
+      belt.innerHTML = '';
+      belt.appendChild(keep);
+      const step = steps[stepIndex] || steps[0];
+      const selected = new Set(selectedIndices(step.start));
+      const rect = belt.getBoundingClientRect();
+      const w = Math.max(320, belt.clientWidth || 760);
+      const h = 420;
+      const cx = w / 2;
+      const cy = h / 2;
+      const r = Math.min(w, h) * 0.39;
+
+      for (let i = 0; i < N; i++) {
+        const angle = -Math.PI / 2 + i * 2 * Math.PI / N;
+        const x = cx + r * Math.cos(angle);
+        const y = cy + r * Math.sin(angle);
+        const div = document.createElement('div');
+        div.className = 'plate';
+        if (selected.has(i)) div.classList.add('selected');
+        if (sushi[i] === c) div.classList.add('coupon');
+        div.style.left = x + 'px';
+        div.style.top = y + 'px';
+        div.innerHTML = `<span class="idx">${i}</span><span class="num">${sushi[i]}</span>`;
+        belt.appendChild(div);
+      }
+    }
+
+    function renderWindow() {
+      const row = document.getElementById('windowRow');
+      row.innerHTML = '';
+      const step = steps[stepIndex] || steps[0];
+      const indices = selectedIndices(step.start);
+      indices.forEach(idx => {
+        const span = document.createElement('span');
+        span.className = 'pill';
+        if (sushi[idx] === c) span.classList.add('coupon-pill');
+        span.textContent = `${idx}번:${sushi[idx]}`;
+        row.appendChild(span);
+      });
+      const coupon = document.createElement('span');
+      coupon.className = 'pill coupon-pill';
+      coupon.textContent = step.couponAdd ? `쿠폰 ${c}번 +1` : `쿠폰 ${c}번 이미 있음`;
+      row.appendChild(coupon);
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('stepTable');
+      tbody.innerHTML = '';
+      steps.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === stepIndex) tr.className = 'active-row';
+        tr.innerHTML = `
+          <td>${s.start}</td>
+          <td>${s.remove}</td>
+          <td>${s.add}</td>
+          <td>${s.kind}</td>
+          <td class="${s.couponAdd ? 'success' : 'fail'}">${s.couponAdd ? '+1' : '+0'}</td>
+          <td>${s.total}</td>
+          <td>${s.answer}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAll() {
+      const s = steps[stepIndex] || steps[0];
+      if (!s) return;
+      document.getElementById('centerKind').textContent = s.kind;
+      document.getElementById('centerCoupon').textContent = s.couponAdd ? '쿠폰 +1' : '쿠폰 +0';
+      document.getElementById('startText').textContent = s.start;
+      document.getElementById('kindText').textContent = s.kind;
+      document.getElementById('couponResultText').textContent = s.total;
+      document.getElementById('stepExplain').innerHTML = `<b>${s.start}번 위치 시작</b>: ${s.desc}<br>현재 창 안 종류 수는 <b>${s.kind}</b>, 쿠폰 포함 결과는 <b>${s.total}</b>, 지금까지 최댓값은 <b>${s.answer}</b>입니다.`;
+      renderBelt();
+      renderWindow();
+      renderTable();
+    }
+
+    function nextStep() {
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        renderAll();
+      }
+    }
+
+    function prevStep() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderAll();
+      }
+    }
+
+    window.addEventListener('resize', renderBelt);
+    loadInput();
+  </script>
+</body>
+</html>
