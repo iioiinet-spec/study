@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #3297 구간의 합(PURQ) 1 인터랙티브 학습</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #eff6ff, #fff7ed);
+      color: #172554;
+      line-height: 1.7;
+    }
+    header {
+      padding: 50px 18px 36px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 14px 32px rgba(37,99,235,.25);
+    }
+    header h1 { margin: 0; font-size: clamp(30px, 5vw, 54px); letter-spacing: -1px; }
+    header p { max-width: 940px; margin: 14px auto 0; font-size: clamp(16px, 2vw, 20px); opacity: .96; }
+    main { max-width: 1200px; margin: 0 auto; padding: 26px 18px 60px; }
+    .card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(148,163,184,.3);
+      border-radius: 28px;
+      padding: 26px;
+      margin: 22px 0;
+      box-shadow: 0 14px 34px rgba(15,23,42,.08);
+      backdrop-filter: blur(10px);
+    }
+    h2 { margin-top: 0; color: #1d4ed8; font-size: 28px; }
+    h3 { color: #4338ca; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .mini { padding: 18px; border-radius: 22px; background: #f8fafc; border: 1px solid #e2e8f0; }
+    .note { padding: 16px 18px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 18px; }
+    .playground { display: grid; grid-template-columns: minmax(320px, 1fr) 360px; gap: 20px; align-items: start; }
+    .visual { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; overflow-x: auto; }
+    .panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; }
+    label { display: block; font-weight: 800; color: #334155; margin-top: 10px; }
+    input, textarea, select {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px 13px;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      font-size: 16px;
+      outline: none;
+      background: white;
+    }
+    textarea { min-height: 145px; resize: vertical; font-family: Consolas, monospace; font-size: 14px; }
+    input:focus, textarea:focus, select:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.12); }
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin: 6px 4px 0 0;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+      box-shadow: 0 8px 16px rgba(37,99,235,.2);
+    }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    .ghost { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; box-shadow: none; }
+    .danger { background: #dc2626; }
+    .danger:hover { background: #b91c1c; }
+    .result-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-top: 18px; }
+    .score { border-radius: 24px; padding: 18px; background: white; border: 2px solid #e5e7eb; text-align: center; }
+    .score strong { display: block; font-size: 34px; color: #7c3aed; margin-top: 6px; word-break: break-word; }
+    .answer { background: linear-gradient(135deg, #ecfdf5, #f0fdf4); border: 2px solid #86efac; }
+    .array-row { display: flex; gap: 8px; margin: 14px 0 22px; min-width: max-content; }
+    .cell {
+      width: 62px;
+      min-height: 62px;
+      border-radius: 16px;
+      background: white;
+      border: 2px solid #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 14px rgba(15,23,42,.08);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .cell .idx { font-size: 12px; color: #64748b; font-weight: 900; }
+    .cell .val { font-size: 20px; color: #172554; font-weight: 900; }
+    .cell.active { background: #ffedd5; border-color: #f97316; transform: translateY(-4px) scale(1.04); }
+    .cell.query { background: #dbeafe; border-color: #2563eb; }
+    .cell.updated { background: #dcfce7; border-color: #16a34a; }
+    .tree-cell { background: #f5f3ff; border-color: #a78bfa; }
+    .tree-cell.active { background: #fef3c7; border-color: #f59e0b; }
+    .path { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; align-items: center; }
+    .pill, .arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+    .pill { background: #dbeafe; color: #1d4ed8; border: 2px solid #93c5fd; }
+    .sum-pill { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    .update-pill { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+    .arrow { color: #64748b; min-width: 20px; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 18px; overflow: hidden; }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+    th { background: #eff6ff; color: #1d4ed8; }
+    tr.active-row { background: #fff7ed; outline: 3px solid #fb923c; font-weight: 900; }
+    .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+    .step-list li {
+      counter-increment: step;
+      position: relative;
+      margin: 14px 0;
+      padding: 16px 18px 16px 58px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+    }
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 22px;
+      border-radius: 22px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .code-inline { background: #e2e8f0; padding: 2px 7px; border-radius: 8px; font-weight: 900; color: #1e293b; }
+    .highlight { color: #dc2626; font-weight: 900; }
+    .success { color: #16a34a; font-weight: 900; }
+    .fail { color: #dc2626; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    footer { text-align: center; padding: 26px; color: #64748b; }
+    @media (max-width: 920px) { .playground { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .card { padding: 20px; } .cell { width: 52px; min-height: 56px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #3297 구간의 합(PURQ) 1</h1>
+    <p>Point Update와 Range Query를 펜윅 트리로 빠르게 처리하는 과정을 직접 확인합니다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 문제를 쉽게 이해하기</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>Point Update</h3>
+          <p>배열의 <b>한 위치 값</b>을 새 값으로 바꿉니다.</p>
+          <pre>1 idx newValue</pre>
+        </div>
+        <div class="mini">
+          <h3>Range Query</h3>
+          <p>배열의 <b>left부터 right까지</b>의 합을 구합니다.</p>
+          <pre>2 left right</pre>
+        </div>
+        <div class="mini">
+          <h3>펜윅 트리</h3>
+          <p>여러 칸의 합을 미리 묶어 저장해서 변경과 구간 합을 빠르게 처리합니다.</p>
+          <pre>O(log N)</pre>
+        </div>
+      </div>
+      <p class="note">초등학생 버전: 숫자 카드가 아주 많이 줄 서 있습니다. 매번 하나씩 다 더하면 느리니, 몇 장씩 묶은 합을 미리 적어두는 방법이 펜윅 트리입니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 직접 명령 실행하기</h2>
+      <div class="playground">
+        <div class="visual">
+          <h3>원래 배열 arr</h3>
+          <div id="arrRow" class="array-row"></div>
+          <h3>펜윅 트리 tree</h3>
+          <div id="treeRow" class="array-row"></div>
+          <h3>현재 이동 경로</h3>
+          <div id="pathView" class="path"></div>
+          <p id="stepExplain" class="note">명령을 실행하면 update 또는 prefix_sum의 인덱스 이동 과정이 표시됩니다.</p>
+        </div>
+        <div class="panel">
+          <label>초기 배열</label>
+          <input id="arrayInput" value="1 2 3 4 5 6 7 8 9 10" />
+          <label>명령 목록</label>
+          <textarea id="commandInput">2 1 5
+1 7 -5
+2 7 8
+2 1 10</textarea>
+          <button onclick="loadData()">데이터 적용</button>
+          <button onclick="runAll()">전체 실행</button>
+          <button class="ghost" onclick="prevStep()">이전 단계</button>
+          <button class="ghost" onclick="nextStep()">다음 단계</button>
+          <button class="danger" onclick="resetData()">초기화</button>
+          <p class="small">명령 1 a b: a번째 값을 b로 변경<br>명령 2 a b: a~b 구간 합 출력</p>
+        </div>
+      </div>
+
+      <div class="result-box">
+        <div class="score answer"><h3>마지막 질의 결과</h3><strong id="lastResult">15</strong></div>
+        <div class="score"><h3>현재 명령</h3><strong id="currentCommand">2 1 5</strong></div>
+        <div class="score"><h3>현재 단계</h3><strong id="statusText">준비</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 실행 결과와 단계 표</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>단계</th>
+            <th>명령</th>
+            <th>작업</th>
+            <th>idx</th>
+            <th>계산</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody id="stepTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>4. 펜윅 트리 핵심 공식</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>lowbit</h3>
+          <pre>idx &amp; -idx</pre>
+          <p>idx가 담당하는 묶음 크기를 구합니다.</p>
+        </div>
+        <div class="mini">
+          <h3>update 이동</h3>
+          <pre>idx += idx &amp; -idx</pre>
+          <p>값 변경이 영향을 주는 다음 묶음으로 이동합니다.</p>
+        </div>
+        <div class="mini">
+          <h3>prefix_sum 이동</h3>
+          <pre>idx -= idx &amp; -idx</pre>
+          <p>앞에서부터 idx까지의 합을 만들기 위해 필요한 묶음을 거꾸로 더합니다.</p>
+        </div>
+      </div>
+      <p class="note">예를 들어 idx=6이면 6의 이진수는 110이고, idx &amp; -idx는 2입니다. 그래서 6번 tree는 2칸짜리 묶음을 담당한다고 생각할 수 있습니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>5. 구간 합을 왜 prefix_sum으로 구할까?</h2>
+      <p>left부터 right까지의 합은 다음처럼 구합니다.</p>
+      <pre>range_sum(left, right) = prefix_sum(right) - prefix_sum(left - 1)</pre>
+      <ol class="step-list">
+        <li>prefix_sum(right)는 1번부터 right번까지의 합입니다.</li>
+        <li>prefix_sum(left - 1)는 1번부터 left-1번까지의 합입니다.</li>
+        <li>둘을 빼면 left번부터 right번까지의 합만 남습니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>6. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+#define MAX 1000001
+
+int N, M;
+long long arr[MAX];
+long long tree[MAX];
+
+void update(int idx, long long diff) {
+    while (idx &lt;= N) {
+        tree[idx] += diff;
+        idx += idx &amp; -idx;
+    }
+}
+
+long long prefix_sum(int idx) {
+    long long sum = 0;
+
+    while (idx &gt; 0) {
+        sum += tree[idx];
+        idx -= idx &amp; -idx;
+    }
+
+    return sum;
+}
+
+long long range_sum(int left, int right) {
+    return prefix_sum(right) - prefix_sum(left - 1);
+}
+
+int main() {
+    int i;
+    int cmd, a;
+    long long b;
+
+    scanf("%d", &amp;N);
+
+    for (i = 1; i &lt;= N; i++) {
+        scanf("%lld", &amp;arr[i]);
+        update(i, arr[i]);
+    }
+
+    scanf("%d", &amp;M);
+
+    for (i = 0; i &lt; M; i++) {
+        scanf("%d %d %lld", &amp;cmd, &amp;a, &amp;b);
+
+        if (cmd == 1) {
+            long long diff = b - arr[a];
+            arr[a] = b;
+            update(a, diff);
+        } else {
+            printf("%lld\n", range_sum(a, (int)b));
+        }
+    }
+
+    return 0;
+}</pre>
+    </section>
+
+    <section class="card">
+      <h2>7. 수업용 한 줄 정리</h2>
+      <p class="note">펜윅 트리는 “값 하나가 바뀌면 관련 묶음만 고치고, 구간 합은 필요한 묶음만 빠르게 더하는 자료구조”입니다.</p>
+    </section>
+  </main>
+
+  <footer>정올 #3297 구간의 합(PURQ) 1 인터랙티브 학습 자료</footer>
+
+  <script>
+    let N = 10;
+    let originalArr = [];
+    let arr = [];
+    let tree = [];
+    let commands = [];
+    let steps = [];
+    let stepIndex = -1;
+    let activeArr = new Set();
+    let activeTree = new Set();
+    let queryArr = new Set();
+    let lastResult = '-';
+
+    function lowbit(x) { return x & -x; }
+
+    function buildTree() {
+      tree = Array(N + 1).fill(0);
+      for (let i = 1; i <= N; i++) internalUpdate(i, arr[i], false);
+    }
+
+    function internalUpdate(idx, diff, log, commandText = '') {
+      while (idx <= N) {
+        if (log) {
+          steps.push({
+            command: commandText,
+            type: 'update',
+            idx,
+            calc: `tree[${idx}] += ${diff}`,
+            desc: `${idx}번 tree에 diff=${diff}를 더합니다. 다음 idx는 ${idx} + lowbit(${idx}) = ${idx + lowbit(idx)}입니다.`,
+            arrSnapshot: [...arr],
+            treeSnapshot: [...tree],
+            activeTree: [idx],
+            activeArr: [],
+            queryArr: [],
+            result: lastResult,
+            path: [idx]
+          });
+        }
+        tree[idx] += diff;
+        idx += lowbit(idx);
+      }
+    }
+
+    function prefixSum(idx, log, commandText, label) {
+      let sum = 0;
+      const path = [];
+      while (idx > 0) {
+        path.push(idx);
+        if (log) {
+          steps.push({
+            command: commandText,
+            type: 'prefix',
+            idx,
+            calc: `${label}: sum += tree[${idx}] = ${sum} + ${tree[idx]}`,
+            desc: `${label} 계산 중입니다. tree[${idx}]를 더하고 다음 idx는 ${idx} - lowbit(${idx}) = ${idx - lowbit(idx)}입니다.`,
+            arrSnapshot: [...arr],
+            treeSnapshot: [...tree],
+            activeTree: [idx],
+            activeArr: [],
+            queryArr: [],
+            result: lastResult,
+            path: [...path]
+          });
+        }
+        sum += tree[idx];
+        idx -= lowbit(idx);
+      }
+      return { sum, path };
+    }
+
+    function parseCommands() {
+      const lines = document.getElementById('commandInput').value.trim().split(/\n+/).map(x => x.trim()).filter(Boolean);
+      return lines.map(line => line.split(/\s+/).map(Number)).filter(x => x.length >= 3);
+    }
+
+    function loadData() {
+      const nums = document.getElementById('arrayInput').value.trim().split(/\s+/).map(Number).filter(v => !Number.isNaN(v));
+      N = nums.length;
+      originalArr = [0, ...nums];
+      arr = [...originalArr];
+      commands = parseCommands();
+      buildTree();
+      steps = [];
+      stepIndex = -1;
+      lastResult = '-';
+      document.getElementById('lastResult').textContent = '-';
+      document.getElementById('currentCommand').textContent = '-';
+      document.getElementById('statusText').textContent = '준비';
+      renderAll();
+    }
+
+    function resetData() {
+      arr = [...originalArr];
+      buildTree();
+      steps = [];
+      stepIndex = -1;
+      lastResult = '-';
+      document.getElementById('lastResult').textContent = '-';
+      document.getElementById('currentCommand').textContent = '-';
+      document.getElementById('statusText').textContent = '초기화';
+      renderAll();
+    }
+
+    function runAll() {
+      arr = [...originalArr];
+      buildTree();
+      steps = [];
+      lastResult = '-';
+      commands = parseCommands();
+
+      for (const cmd of commands) {
+        const [type, a, b] = cmd;
+        const commandText = cmd.join(' ');
+        if (type === 1) {
+          const diff = b - arr[a];
+          steps.push({
+            command: commandText,
+            type: 'change',
+            idx: a,
+            calc: `diff = ${b} - ${arr[a]} = ${diff}`,
+            desc: `${a}번째 값을 ${arr[a]}에서 ${b}로 바꿉니다. 펜윅 트리에는 차이 diff=${diff}만 반영합니다.`,
+            arrSnapshot: [...arr],
+            treeSnapshot: [...tree],
+            activeTree: [],
+            activeArr: [a],
+            queryArr: [],
+            result: lastResult,
+            path: [a]
+          });
+          arr[a] = b;
+          internalUpdate(a, diff, true, commandText);
+          steps.push({
+            command: commandText,
+            type: 'done',
+            idx: a,
+            calc: `arr[${a}] = ${b}`,
+            desc: `변경 완료: arr[${a}]가 ${b}가 되었습니다.`,
+            arrSnapshot: [...arr],
+            treeSnapshot: [...tree],
+            activeTree: [],
+            activeArr: [a],
+            queryArr: [],
+            result: lastResult,
+            path: []
+          });
+        } else if (type === 2) {
+          const left = a;
+          const right = b;
+          const queryCells = [];
+          for (let i = left; i <= right; i++) queryCells.push(i);
+          steps.push({
+            command: commandText,
+            type: 'query-start',
+            idx: `${left}~${right}`,
+            calc: `range_sum(${left}, ${right}) = prefix_sum(${right}) - prefix_sum(${left - 1})`,
+            desc: `${left}번부터 ${right}번까지의 합을 구합니다.`,
+            arrSnapshot: [...arr],
+            treeSnapshot: [...tree],
+            activeTree: [],
+            activeArr: [],
+            queryArr: queryCells,
+            result: lastResult,
+            path: []
+          });
+          const rightSum = prefixSum(right, true, commandText, `prefix_sum(${right})`);
+          const leftSum = prefixSum(left - 1, true, commandText, `prefix_sum(${left - 1})`);
+          lastResult = rightSum.sum - leftSum.sum;
+          steps.push({
+            command: commandText,
+            type: 'query-done',
+            idx: `${left}~${right}`,
+            calc: `${rightSum.sum} - ${leftSum.sum} = ${lastResult}`,
+            desc: `구간 합 결과는 ${lastResult}입니다.`,
+            arrSnapshot: [...arr],
+            treeSnapshot: [...tree],
+            activeTree: [...rightSum.path, ...leftSum.path],
+            activeArr: [],
+            queryArr: queryCells,
+            result: lastResult,
+            path: [...rightSum.path, ...leftSum.path]
+          });
+        }
+      }
+
+      stepIndex = steps.length ? 0 : -1;
+      renderAll();
+    }
+
+    function renderArrayRow(id, data, kind) {
+      const row = document.getElementById(id);
+      row.innerHTML = '';
+      for (let i = 1; i <= N; i++) {
+        const div = document.createElement('div');
+        div.className = 'cell ' + (kind === 'tree' ? 'tree-cell' : '');
+        if (activeArr.has(i)) div.classList.add('active');
+        if (activeTree.has(i)) div.classList.add('active');
+        if (queryArr.has(i) && kind === 'arr') div.classList.add('query');
+        div.innerHTML = `<span class="idx">${kind === 'tree' ? 'tree' : 'arr'}[${i}]</span><span class="val">${data[i]}</span>`;
+        row.appendChild(div);
+      }
+    }
+
+    function renderPath(path, type) {
+      const div = document.getElementById('pathView');
+      div.innerHTML = '';
+      if (!path || !path.length) {
+        const span = document.createElement('span');
+        span.className = 'pill';
+        span.textContent = '이동 없음';
+        div.appendChild(span);
+        return;
+      }
+      path.forEach((v, idx) => {
+        const span = document.createElement('span');
+        span.className = 'pill ' + (type === 'update' ? 'update-pill' : 'sum-pill');
+        span.textContent = v;
+        div.appendChild(span);
+        if (idx < path.length - 1) {
+          const arrow = document.createElement('span');
+          arrow.className = 'arrow';
+          arrow.textContent = '→';
+          div.appendChild(arrow);
+        }
+      });
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('stepTable');
+      tbody.innerHTML = '';
+      steps.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === stepIndex) tr.className = 'active-row';
+        tr.innerHTML = `<td>${idx + 1}</td><td>${s.command}</td><td>${s.type}</td><td>${s.idx}</td><td>${s.calc}</td><td>${s.desc}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderAll() {
+      let arrSnap = arr;
+      let treeSnap = tree;
+      activeArr = new Set();
+      activeTree = new Set();
+      queryArr = new Set();
+      let path = [];
+      let type = 'query';
+
+      if (stepIndex >= 0 && steps[stepIndex]) {
+        const s = steps[stepIndex];
+        arrSnap = s.arrSnapshot;
+        treeSnap = s.treeSnapshot;
+        activeArr = new Set(s.activeArr || []);
+        activeTree = new Set(s.activeTree || []);
+        queryArr = new Set(s.queryArr || []);
+        path = s.path || [];
+        type = s.type.includes('update') || s.type === 'change' ? 'update' : 'query';
+        document.getElementById('currentCommand').textContent = s.command;
+        document.getElementById('lastResult').textContent = s.result;
+        document.getElementById('statusText').textContent = `${stepIndex + 1}/${steps.length}`;
+        document.getElementById('stepExplain').innerHTML = `<b>${stepIndex + 1}단계</b>: ${s.desc}<br><span class="code-inline">${s.calc}</span>`;
+      } else {
+        document.getElementById('stepExplain').textContent = '명령을 실행하면 update 또는 prefix_sum의 인덱스 이동 과정이 표시됩니다.';
+      }
+
+      renderArrayRow('arrRow', arrSnap, 'arr');
+      renderArrayRow('treeRow', treeSnap, 'tree');
+      renderPath(path, type);
+      renderTable();
+    }
+
+    function nextStep() {
+      if (!steps.length) runAll();
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        renderAll();
+      }
+    }
+
+    function prevStep() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderAll();
+      }
+    }
+
+    loadData();
+  </script>
+</body>
+</html>
