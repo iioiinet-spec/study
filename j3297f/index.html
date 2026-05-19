@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>펜윅 트리 Fenwick Tree BIT 인터랙티브 학습</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #eff6ff, #fff7ed);
+      color: #172554;
+      line-height: 1.7;
+    }
+    header {
+      padding: 50px 18px 36px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 14px 32px rgba(37,99,235,.25);
+    }
+    header h1 { margin: 0; font-size: clamp(30px, 5vw, 54px); letter-spacing: -1px; }
+    header p { max-width: 940px; margin: 14px auto 0; font-size: clamp(16px, 2vw, 20px); opacity: .96; }
+    main { max-width: 1200px; margin: 0 auto; padding: 26px 18px 60px; }
+    .card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(148,163,184,.3);
+      border-radius: 28px;
+      padding: 26px;
+      margin: 22px 0;
+      box-shadow: 0 14px 34px rgba(15,23,42,.08);
+      backdrop-filter: blur(10px);
+    }
+    h2 { margin-top: 0; color: #1d4ed8; font-size: 28px; }
+    h3 { color: #4338ca; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .mini { padding: 18px; border-radius: 22px; background: #f8fafc; border: 1px solid #e2e8f0; }
+    .note { padding: 16px 18px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 18px; }
+    .playground { display: grid; grid-template-columns: minmax(320px, 1fr) 360px; gap: 20px; align-items: start; }
+    .visual { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; overflow-x: auto; }
+    .panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; }
+    label { display: block; font-weight: 800; color: #334155; margin-top: 10px; }
+    input, select {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px 13px;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      font-size: 16px;
+      outline: none;
+      background: white;
+    }
+    input:focus, select:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.12); }
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin: 6px 4px 0 0;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+      box-shadow: 0 8px 16px rgba(37,99,235,.2);
+    }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    .ghost { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; box-shadow: none; }
+    .danger { background: #dc2626; }
+    .danger:hover { background: #b91c1c; }
+    .result-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; margin-top: 18px; }
+    .score { border-radius: 24px; padding: 18px; background: white; border: 2px solid #e5e7eb; text-align: center; }
+    .score strong { display: block; font-size: 34px; color: #7c3aed; margin-top: 6px; word-break: break-word; }
+    .answer { background: linear-gradient(135deg, #ecfdf5, #f0fdf4); border: 2px solid #86efac; }
+    .array-row { display: flex; gap: 8px; margin: 14px 0 22px; min-width: max-content; }
+    .cell {
+      width: 66px;
+      min-height: 68px;
+      border-radius: 16px;
+      background: white;
+      border: 2px solid #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 14px rgba(15,23,42,.08);
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+    .cell .idx { font-size: 12px; color: #64748b; font-weight: 900; }
+    .cell .val { font-size: 20px; color: #172554; font-weight: 900; }
+    .cell .range { font-size: 10px; color: #64748b; font-weight: 800; }
+    .cell.active { background: #ffedd5; border-color: #f97316; transform: translateY(-4px) scale(1.04); }
+    .cell.query { background: #dbeafe; border-color: #2563eb; }
+    .cell.updated { background: #dcfce7; border-color: #16a34a; }
+    .tree-cell { background: #f5f3ff; border-color: #a78bfa; }
+    .tree-cell.active { background: #fef3c7; border-color: #f59e0b; }
+    .path { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; align-items: center; }
+    .pill, .arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-weight: 900;
+    }
+    .pill { background: #dbeafe; color: #1d4ed8; border: 2px solid #93c5fd; }
+    .sum-pill { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    .update-pill { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+    .arrow { color: #64748b; min-width: 20px; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 18px; overflow: hidden; }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+    th { background: #eff6ff; color: #1d4ed8; }
+    tr.active-row { background: #fff7ed; outline: 3px solid #fb923c; font-weight: 900; }
+    .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+    .step-list li {
+      counter-increment: step;
+      position: relative;
+      margin: 14px 0;
+      padding: 16px 18px 16px 58px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+    }
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 22px;
+      border-radius: 22px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .code-inline { background: #e2e8f0; padding: 2px 7px; border-radius: 8px; font-weight: 900; color: #1e293b; }
+    .highlight { color: #dc2626; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    footer { text-align: center; padding: 26px; color: #64748b; }
+    @media (max-width: 920px) { .playground { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .card { padding: 20px; } .cell { width: 55px; min-height: 62px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>펜윅 트리 Fenwick Tree / BIT</h1>
+    <p>한 위치 값 변경과 구간 합을 빠르게 처리하는 자료구조를 배열, 묶음 합, 인덱스 이동으로 이해합니다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 펜윅 트리란?</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>빠른 값 변경</h3>
+          <p>특정 위치 값이 바뀌면 관련된 묶음 합만 고칩니다.</p>
+          <pre>update(idx, diff)</pre>
+        </div>
+        <div class="mini">
+          <h3>빠른 누적합</h3>
+          <p>1번부터 idx번까지의 합을 묶음 몇 개로 빠르게 구합니다.</p>
+          <pre>prefix_sum(idx)</pre>
+        </div>
+        <div class="mini">
+          <h3>빠른 구간합</h3>
+          <p>left부터 right까지의 합은 누적합 2개를 빼서 구합니다.</p>
+          <pre>range_sum(l, r)</pre>
+        </div>
+      </div>
+      <p class="note">초등학생 버전: 숫자 카드가 많을 때 매번 하나씩 더하면 느립니다. 그래서 1장, 2장, 4장, 8장처럼 묶음 합을 미리 적어두고 필요한 묶음만 빠르게 더합니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 직접 실행해보기</h2>
+      <div class="playground">
+        <div class="visual">
+          <h3>원래 배열 arr</h3>
+          <div id="arrRow" class="array-row"></div>
+          <h3>펜윅 트리 tree <span class="small">각 칸 아래는 담당 구간</span></h3>
+          <div id="treeRow" class="array-row"></div>
+          <h3>인덱스 이동 경로</h3>
+          <div id="pathView" class="path"></div>
+          <p id="stepExplain" class="note">실행 버튼을 누르면 idx가 어떻게 이동하는지 표시됩니다.</p>
+        </div>
+        <div class="panel">
+          <label>초기 배열</label>
+          <input id="arrayInput" value="1 2 3 4 5 6 7 8" />
+
+          <label>실습 종류</label>
+          <select id="modeSelect" onchange="changeMode()">
+            <option value="update">update: 한 위치 값 변경</option>
+            <option value="prefix">prefix_sum: 1번부터 idx까지 합</option>
+            <option value="range">range_sum: left부터 right까지 합</option>
+          </select>
+
+          <div id="updateInputs">
+            <label>변경 위치 idx</label>
+            <input id="updateIdx" type="number" value="3" />
+            <label>새 값 newValue</label>
+            <input id="newValue" type="number" value="10" />
+          </div>
+
+          <div id="prefixInputs" style="display:none;">
+            <label>idx</label>
+            <input id="prefixIdx" type="number" value="7" />
+          </div>
+
+          <div id="rangeInputs" style="display:none;">
+            <label>left</label>
+            <input id="leftIdx" type="number" value="3" />
+            <label>right</label>
+            <input id="rightIdx" type="number" value="7" />
+          </div>
+
+          <button onclick="loadArray()">배열 적용</button>
+          <button onclick="runPractice()">실행</button>
+          <button class="ghost" onclick="prevStep()">이전 단계</button>
+          <button class="ghost" onclick="nextStep()">다음 단계</button>
+          <button class="danger" onclick="resetArray()">초기화</button>
+        </div>
+      </div>
+
+      <div class="result-box">
+        <div class="score answer"><h3>결과</h3><strong id="resultText">-</strong></div>
+        <div class="score"><h3>현재 idx</h3><strong id="idxText">-</strong></div>
+        <div class="score"><h3>lowbit</h3><strong id="lowbitText">-</strong></div>
+        <div class="score"><h3>현재 단계</h3><strong id="statusText">준비</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 단계별 실행 표</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>단계</th>
+            <th>작업</th>
+            <th>idx</th>
+            <th>lowbit</th>
+            <th>계산</th>
+            <th>다음 이동</th>
+          </tr>
+        </thead>
+        <tbody id="stepTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>4. tree[idx]가 담당하는 구간</h2>
+      <p>펜윅 트리의 각 칸은 배열의 특정 구간 합을 저장합니다.</p>
+      <pre>tree[idx] = arr[idx - lowbit(idx) + 1] + ... + arr[idx]</pre>
+      <div id="rangeExplain" class="grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>5. 구현 순서</h2>
+      <ol class="step-list">
+        <li>배열은 1번 인덱스부터 사용합니다.</li>
+        <li>tree 배열을 만들고 모두 0으로 시작합니다.</li>
+        <li>초기 값을 넣을 때마다 update(i, arr[i])를 호출합니다.</li>
+        <li>값을 바꿀 때는 새 값과 기존 값의 차이 diff를 계산합니다.</li>
+        <li>update에서는 idx += idx &amp; -idx로 이동합니다.</li>
+        <li>prefix_sum에서는 idx -= idx &amp; -idx로 이동합니다.</li>
+        <li>구간 합은 prefix_sum(right) - prefix_sum(left - 1)입니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>6. 전체 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+#define MAX 1000001
+
+int N;
+long long arr[MAX];
+long long tree[MAX];
+
+void update(int idx, long long diff) {
+    while (idx &lt;= N) {
+        tree[idx] += diff;
+        idx += idx &amp; -idx;
+    }
+}
+
+long long prefix_sum(int idx) {
+    long long sum = 0;
+
+    while (idx &gt; 0) {
+        sum += tree[idx];
+        idx -= idx &amp; -idx;
+    }
+
+    return sum;
+}
+
+long long range_sum(int left, int right) {
+    return prefix_sum(right) - prefix_sum(left - 1);
+}
+
+int main() {
+    int i;
+
+    scanf("%d", &amp;N);
+
+    for (i = 1; i &lt;= N; i++) {
+        scanf("%lld", &amp;arr[i]);
+        update(i, arr[i]);
+    }
+
+    printf("1~N 합 = %lld\n", prefix_sum(N));
+    printf("2~4 합 = %lld\n", range_sum(2, 4));
+
+    return 0;
+}</pre>
+    </section>
+
+    <section class="card">
+      <h2>7. 핵심 한 줄 정리</h2>
+      <p class="note">펜윅 트리는 “배열의 합을 여러 묶음으로 저장해 두고, 값 변경과 구간 합을 logN번 이동으로 해결하는 방법”입니다.</p>
+    </section>
+  </main>
+
+  <footer>펜윅 트리 Fenwick Tree / BIT 인터랙티브 학습 자료</footer>
+
+  <script>
+    let N = 8;
+    let originalArr = [];
+    let arr = [];
+    let tree = [];
+    let steps = [];
+    let stepIndex = -1;
+    let activeArr = new Set();
+    let activeTree = new Set();
+    let queryArr = new Set();
+    let resultValue = '-';
+
+    function lowbit(x) { return x & -x; }
+
+    function changeMode() {
+      const mode = document.getElementById('modeSelect').value;
+      document.getElementById('updateInputs').style.display = mode === 'update' ? 'block' : 'none';
+      document.getElementById('prefixInputs').style.display = mode === 'prefix' ? 'block' : 'none';
+      document.getElementById('rangeInputs').style.display = mode === 'range' ? 'block' : 'none';
+    }
+
+    function buildTree() {
+      tree = Array(N + 1).fill(0);
+      for (let i = 1; i <= N; i++) {
+        let idx = i;
+        while (idx <= N) {
+          tree[idx] += arr[i];
+          idx += lowbit(idx);
+        }
+      }
+    }
+
+    function loadArray() {
+      const nums = document.getElementById('arrayInput').value.trim().split(/\s+/).map(Number).filter(v => !Number.isNaN(v));
+      N = nums.length;
+      originalArr = [0, ...nums];
+      arr = [...originalArr];
+      buildTree();
+      steps = [];
+      stepIndex = -1;
+      resultValue = '-';
+      document.getElementById('resultText').textContent = '-';
+      document.getElementById('idxText').textContent = '-';
+      document.getElementById('lowbitText').textContent = '-';
+      document.getElementById('statusText').textContent = '준비';
+      renderAll();
+    }
+
+    function resetArray() {
+      arr = [...originalArr];
+      buildTree();
+      steps = [];
+      stepIndex = -1;
+      resultValue = '-';
+      renderAll();
+    }
+
+    function addStep(obj) {
+      steps.push({
+        arrSnapshot: [...arr],
+        treeSnapshot: [...tree],
+        activeArr: [],
+        activeTree: [],
+        queryArr: [],
+        result: resultValue,
+        path: [],
+        ...obj
+      });
+    }
+
+    function runPractice() {
+      steps = [];
+      stepIndex = -1;
+      resultValue = '-';
+      const mode = document.getElementById('modeSelect').value;
+
+      if (mode === 'update') {
+        const idx0 = Number(document.getElementById('updateIdx').value);
+        const newValue = Number(document.getElementById('newValue').value);
+        if (idx0 < 1 || idx0 > N) return;
+        const oldValue = arr[idx0];
+        const diff = newValue - oldValue;
+        addStep({
+          type: '값 변경 준비', idx: idx0, low: lowbit(idx0), calc: `diff = ${newValue} - ${oldValue} = ${diff}`,
+          move: 'update 시작', activeArr: [idx0], path: [idx0],
+          desc: `${idx0}번 값을 ${oldValue}에서 ${newValue}로 바꿉니다. tree에는 차이 diff=${diff}만 반영합니다.`
+        });
+        arr[idx0] = newValue;
+        let idx = idx0;
+        const path = [];
+        while (idx <= N) {
+          path.push(idx);
+          addStep({
+            type: 'update', idx, low: lowbit(idx), calc: `tree[${idx}] += ${diff}`,
+            move: `${idx} + ${lowbit(idx)} = ${idx + lowbit(idx)}`,
+            activeArr: [idx0], activeTree: [idx], path: [...path],
+            desc: `arr[${idx0}]의 변화는 tree[${idx}] 묶음에도 영향을 줍니다.`
+          });
+          tree[idx] += diff;
+          idx += lowbit(idx);
+        }
+        resultValue = '변경 완료';
+        addStep({
+          type: '완료', idx: '-', low: '-', calc: `arr[${idx0}] = ${newValue}`,
+          move: '끝', activeArr: [idx0], path,
+          desc: `update가 끝났습니다. 이동 경로는 ${path.join(' → ')}입니다.`, result: resultValue
+        });
+      }
+
+      if (mode === 'prefix') {
+        let idx = Number(document.getElementById('prefixIdx').value);
+        if (idx < 1) idx = 0;
+        if (idx > N) idx = N;
+        let sum = 0;
+        const path = [];
+        const originalIdx = idx;
+        while (idx > 0) {
+          path.push(idx);
+          addStep({
+            type: 'prefix_sum', idx, low: lowbit(idx), calc: `sum += tree[${idx}] = ${sum} + ${tree[idx]}`,
+            move: `${idx} - ${lowbit(idx)} = ${idx - lowbit(idx)}`,
+            activeTree: [idx], queryArr: Array.from({ length: originalIdx }, (_, i) => i + 1), path: [...path],
+            desc: `1번부터 ${originalIdx}번까지의 합을 만들기 위해 tree[${idx}] 묶음을 더합니다.`
+          });
+          sum += tree[idx];
+          idx -= lowbit(idx);
+        }
+        resultValue = sum;
+        addStep({
+          type: '결과', idx: '-', low: '-', calc: `prefix_sum(${originalIdx}) = ${sum}`,
+          move: '끝', queryArr: Array.from({ length: originalIdx }, (_, i) => i + 1), path,
+          desc: `누적합 결과는 ${sum}입니다. 이동 경로는 ${path.join(' → ')}입니다.`, result: resultValue
+        });
+      }
+
+      if (mode === 'range') {
+        let left = Number(document.getElementById('leftIdx').value);
+        let right = Number(document.getElementById('rightIdx').value);
+        if (left > right) [left, right] = [right, left];
+        left = Math.max(1, left);
+        right = Math.min(N, right);
+        const queryCells = [];
+        for (let i = left; i <= right; i++) queryCells.push(i);
+
+        addStep({
+          type: 'range_sum 준비', idx: `${left}~${right}`, low: '-', calc: `prefix_sum(${right}) - prefix_sum(${left - 1})`,
+          move: 'prefix_sum 2번 계산', queryArr: queryCells,
+          desc: `${left}번부터 ${right}번까지의 합은 prefix_sum(${right})에서 prefix_sum(${left - 1})을 빼면 됩니다.`
+        });
+
+        const rightResult = prefixForRange(right, `prefix_sum(${right})`, queryCells);
+        const leftResult = prefixForRange(left - 1, `prefix_sum(${left - 1})`, queryCells);
+        resultValue = rightResult.sum - leftResult.sum;
+        addStep({
+          type: 'range_sum 결과', idx: `${left}~${right}`, low: '-', calc: `${rightResult.sum} - ${leftResult.sum} = ${resultValue}`,
+          move: '끝', queryArr: queryCells, path: [...rightResult.path, ...leftResult.path],
+          desc: `구간 합 결과는 ${resultValue}입니다.`, result: resultValue
+        });
+      }
+
+      stepIndex = steps.length ? 0 : -1;
+      renderAll();
+    }
+
+    function prefixForRange(idx, label, queryCells) {
+      let sum = 0;
+      const path = [];
+      while (idx > 0) {
+        path.push(idx);
+        addStep({
+          type: label, idx, low: lowbit(idx), calc: `sum += tree[${idx}] = ${sum} + ${tree[idx]}`,
+          move: `${idx} - ${lowbit(idx)} = ${idx - lowbit(idx)}`,
+          activeTree: [idx], queryArr: queryCells, path: [...path],
+          desc: `${label} 계산 중입니다. tree[${idx}]를 더합니다.`
+        });
+        sum += tree[idx];
+        idx -= lowbit(idx);
+      }
+      return { sum, path };
+    }
+
+    function renderArrayRow(id, data, kind) {
+      const row = document.getElementById(id);
+      row.innerHTML = '';
+      for (let i = 1; i <= N; i++) {
+        const div = document.createElement('div');
+        div.className = 'cell ' + (kind === 'tree' ? 'tree-cell' : '');
+        if (activeArr.has(i)) div.classList.add('active');
+        if (activeTree.has(i)) div.classList.add('active');
+        if (queryArr.has(i) && kind === 'arr') div.classList.add('query');
+        const rangeText = kind === 'tree' ? `${i - lowbit(i) + 1}~${i}` : '';
+        div.innerHTML = `<span class="idx">${kind}[${i}]</span><span class="val">${data[i]}</span><span class="range">${rangeText}</span>`;
+        row.appendChild(div);
+      }
+    }
+
+    function renderPath(path, type) {
+      const div = document.getElementById('pathView');
+      div.innerHTML = '';
+      if (!path || !path.length) {
+        const span = document.createElement('span');
+        span.className = 'pill';
+        span.textContent = '이동 없음';
+        div.appendChild(span);
+        return;
+      }
+      path.forEach((v, idx) => {
+        const span = document.createElement('span');
+        span.className = 'pill ' + (type.includes('update') || type.includes('변경') ? 'update-pill' : 'sum-pill');
+        span.textContent = v;
+        div.appendChild(span);
+        if (idx < path.length - 1) {
+          const arrow = document.createElement('span');
+          arrow.className = 'arrow';
+          arrow.textContent = '→';
+          div.appendChild(arrow);
+        }
+      });
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('stepTable');
+      tbody.innerHTML = '';
+      steps.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === stepIndex) tr.className = 'active-row';
+        tr.innerHTML = `<td>${idx + 1}</td><td>${s.type}</td><td>${s.idx}</td><td>${s.low}</td><td>${s.calc}</td><td>${s.move}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderRangeExplain() {
+      const wrap = document.getElementById('rangeExplain');
+      wrap.innerHTML = '';
+      for (let i = 1; i <= N; i++) {
+        const div = document.createElement('div');
+        div.className = 'mini';
+        const lb = lowbit(i);
+        div.innerHTML = `<h3>tree[${i}]</h3><p>lowbit(${i}) = <b>${lb}</b></p><pre>담당 구간: arr[${i - lb + 1}] ~ arr[${i}]</pre>`;
+        wrap.appendChild(div);
+      }
+    }
+
+    function renderAll() {
+      let arrSnap = arr;
+      let treeSnap = tree;
+      activeArr = new Set();
+      activeTree = new Set();
+      queryArr = new Set();
+      let path = [];
+      let type = '';
+
+      if (stepIndex >= 0 && steps[stepIndex]) {
+        const s = steps[stepIndex];
+        arrSnap = s.arrSnapshot;
+        treeSnap = s.treeSnapshot;
+        activeArr = new Set(s.activeArr || []);
+        activeTree = new Set(s.activeTree || []);
+        queryArr = new Set(s.queryArr || []);
+        path = s.path || [];
+        type = s.type;
+        document.getElementById('resultText').textContent = s.result;
+        document.getElementById('idxText').textContent = s.idx;
+        document.getElementById('lowbitText').textContent = s.low;
+        document.getElementById('statusText').textContent = `${stepIndex + 1}/${steps.length}`;
+        document.getElementById('stepExplain').innerHTML = `<b>${stepIndex + 1}단계</b>: ${s.desc}<br><span class="code-inline">${s.calc}</span>`;
+      } else {
+        document.getElementById('resultText').textContent = resultValue;
+        document.getElementById('idxText').textContent = '-';
+        document.getElementById('lowbitText').textContent = '-';
+        document.getElementById('stepExplain').textContent = '실행 버튼을 누르면 idx가 어떻게 이동하는지 표시됩니다.';
+      }
+
+      renderArrayRow('arrRow', arrSnap, 'arr');
+      renderArrayRow('treeRow', treeSnap, 'tree');
+      renderPath(path, type);
+      renderTable();
+      renderRangeExplain();
+    }
+
+    function nextStep() {
+      if (!steps.length) runPractice();
+      if (stepIndex < steps.length - 1) {
+        stepIndex++;
+        renderAll();
+      }
+    }
+
+    function prevStep() {
+      if (stepIndex > 0) {
+        stepIndex--;
+        renderAll();
+      }
+    }
+
+    changeMode();
+    loadArray();
+  </script>
+</body>
+</html>
