@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #1457 영역 구하기 인터랙티브 학습</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #eff6ff, #fff7ed);
+      color: #172554;
+      line-height: 1.7;
+    }
+    header {
+      padding: 50px 18px 36px;
+      text-align: center;
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 14px 32px rgba(37,99,235,0.25);
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 54px);
+      letter-spacing: -1px;
+    }
+    header p {
+      max-width: 920px;
+      margin: 14px auto 0;
+      font-size: clamp(16px, 2vw, 20px);
+      opacity: .96;
+    }
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 26px 18px 60px;
+    }
+    .card {
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(148,163,184,.3);
+      border-radius: 28px;
+      padding: 26px;
+      margin: 22px 0;
+      box-shadow: 0 14px 34px rgba(15,23,42,.08);
+      backdrop-filter: blur(10px);
+    }
+    h2 { margin-top: 0; color: #1d4ed8; font-size: 28px; }
+    h3 { color: #4338ca; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .mini {
+      padding: 18px;
+      border-radius: 22px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .note {
+      padding: 16px 18px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 18px;
+    }
+    .playground {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) 360px;
+      gap: 20px;
+      align-items: start;
+    }
+    .board-wrap {
+      overflow: auto;
+      padding: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+    }
+    .board {
+      display: grid;
+      width: fit-content;
+      border: 3px solid #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 16px 32px rgba(15,23,42,.12);
+    }
+    .cell {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #cbd5e1;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      user-select: none;
+      transition: transform .12s ease, outline .12s ease;
+    }
+    .cell:hover { outline: 3px solid rgba(37,99,235,.45); z-index: 2; transform: scale(1.04); }
+    .empty { background: #ffffff; color: #94a3b8; }
+    .blocked { background: #334155; color: white; }
+    .visited { background: #bfdbfe; color: #1d4ed8; }
+    .current { background: #f97316 !important; color: white; outline: 4px solid #fed7aa; z-index: 3; }
+    .area1 { background: #dcfce7; color: #15803d; }
+    .area2 { background: #e0e7ff; color: #4338ca; }
+    .area3 { background: #fef3c7; color: #b45309; }
+    .area4 { background: #fae8ff; color: #a21caf; }
+    .area5 { background: #ccfbf1; color: #0f766e; }
+    .panel {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 24px;
+      padding: 18px;
+    }
+    label { display: block; font-weight: 800; color: #334155; margin-top: 10px; }
+    input, textarea {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px 13px;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      font-size: 16px;
+      outline: none;
+      background: white;
+    }
+    textarea {
+      min-height: 170px;
+      resize: vertical;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+    }
+    input:focus, textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+    }
+    button {
+      border: none;
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin: 6px 4px 0 0;
+      background: #2563eb;
+      color: white;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+      box-shadow: 0 8px 16px rgba(37,99,235,.2);
+    }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    .ghost { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; box-shadow: none; }
+    .danger { background: #dc2626; }
+    .danger:hover { background: #b91c1c; }
+    .result-box {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+    .score {
+      border-radius: 24px;
+      padding: 18px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      text-align: center;
+    }
+    .score strong {
+      display: block;
+      font-size: 34px;
+      color: #7c3aed;
+      margin-top: 6px;
+      word-break: break-word;
+    }
+    .answer { background: linear-gradient(135deg, #ecfdf5, #f0fdf4); border: 2px solid #86efac; }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 800;
+      color: #334155;
+    }
+    .swatch { width: 22px; height: 22px; border-radius: 7px; border: 1px solid #cbd5e1; }
+    .path {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42px;
+      height: 42px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-weight: 900;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border: 2px solid #93c5fd;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+    th { background: #eff6ff; color: #1d4ed8; }
+    tr.active-row { background: #fff7ed; outline: 3px solid #fb923c; font-weight: 900; }
+    .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+    .step-list li {
+      counter-increment: step;
+      position: relative;
+      margin: 14px 0;
+      padding: 16px 18px 16px 58px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+    }
+    .step-list li::before {
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+    pre {
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 22px;
+      border-radius: 22px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .highlight { color: #dc2626; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    footer { text-align: center; padding: 26px; color: #64748b; }
+    @media (max-width: 920px) { .playground { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .cell { width: 32px; height: 32px; font-size: 10px; } .card { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #1457 영역 구하기</h1>
+    <p>직사각형이 칠해진 모눈종이에서 남은 빈 영역의 개수와 각 영역의 넓이를 DFS/BFS로 찾아봅니다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 문제를 쉽게 이해하기</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>모눈종이</h3>
+          <p>M×N 크기의 격자가 있습니다. 각 칸은 빈 칸이거나 직사각형으로 칠해진 칸입니다.</p>
+        </div>
+        <div class="mini">
+          <h3>영역</h3>
+          <p>빈 칸끼리 위, 아래, 왼쪽, 오른쪽으로 연결되어 있으면 하나의 영역입니다.</p>
+        </div>
+        <div class="mini">
+          <h3>정답</h3>
+          <p>빈 영역의 개수와 각 영역의 넓이를 오름차순으로 출력합니다.</p>
+        </div>
+      </div>
+      <p class="note">초등학생 버전: 색칠된 칸은 벽이고, 하얀 칸은 빈 땅입니다. 서로 붙어 있는 빈 땅 덩어리가 몇 개인지, 각 덩어리의 칸 수가 몇 개인지 세는 문제입니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 예제 입력으로 직접 확인하기</h2>
+      <div class="playground">
+        <div>
+          <div class="legend">
+            <span class="legend-item"><span class="swatch" style="background:#fff"></span>빈 칸</span>
+            <span class="legend-item"><span class="swatch" style="background:#334155"></span>직사각형</span>
+            <span class="legend-item"><span class="swatch" style="background:#bfdbfe"></span>탐색 중</span>
+            <span class="legend-item"><span class="swatch" style="background:#f97316"></span>현재 칸</span>
+          </div>
+          <div class="board-wrap">
+            <div id="board" class="board"></div>
+          </div>
+        </div>
+        <div class="panel">
+          <label>입력 데이터</label>
+          <textarea id="inputData">5 7 3
+0 2 4 4
+1 1 2 5
+4 0 6 2</textarea>
+          <button onclick="loadInput()">입력 적용</button>
+          <button class="ghost" onclick="setExample()">예제 복원</button>
+          <button onclick="findAreas(true)">영역 찾기</button>
+          <button class="ghost" onclick="prevStep()">이전 탐색</button>
+          <button class="ghost" onclick="nextStep()">다음 탐색</button>
+          <button class="danger" onclick="clearSearch()">탐색 초기화</button>
+          <p class="small">빈 칸을 클릭하면 직접 벽으로 바꾸거나 다시 빈 칸으로 바꿀 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="result-box">
+        <div class="score answer"><h3>영역 개수</h3><strong id="areaCountText">3</strong></div>
+        <div class="score"><h3>넓이 오름차순</h3><strong id="areaSizesText">1 7 13</strong></div>
+        <div class="score"><h3>현재 단계</h3><strong id="statusText">준비</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 현재 탐색 결과</h2>
+      <div id="areaPills" class="path"></div>
+      <table>
+        <thead>
+          <tr>
+            <th>순서</th>
+            <th>현재 칸</th>
+            <th>영역 번호</th>
+            <th>현재 영역 넓이</th>
+            <th>설명</th>
+          </tr>
+        </thead>
+        <tbody id="logTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>4. 좌표 처리 핵심</h2>
+      <p>입력으로 직사각형의 왼쪽 아래 점과 오른쪽 위 점이 주어집니다.</p>
+      <pre>입력: x1 y1 x2 y2
+칠하는 칸: x1 &lt;= x &lt; x2, y1 &lt;= y &lt; y2</pre>
+      <ol class="step-list">
+        <li>x는 열 번호로 생각합니다. 그래서 배열에서는 c가 됩니다.</li>
+        <li>y는 행 번호로 생각합니다. 그래서 배열에서는 r이 됩니다.</li>
+        <li>x2와 y2는 포함하지 않습니다. 따라서 반복문은 r &lt; y2, c &lt; x2까지입니다.</li>
+        <li>예를 들어 0 2 4 4라면 x는 0,1,2,3이고 y는 2,3입니다. 총 4×2=8칸을 칠합니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>5. DFS/BFS 설명</h2>
+      <ol class="step-list">
+        <li>격자를 왼쪽 위부터 차례대로 봅니다.</li>
+        <li>아직 방문하지 않은 빈 칸을 찾으면 새로운 영역이 시작됩니다.</li>
+        <li>그 칸에서 위, 아래, 왼쪽, 오른쪽으로 갈 수 있는 빈 칸을 계속 찾습니다.</li>
+        <li>갈 수 있는 칸이 없으면 하나의 영역 탐색이 끝납니다.</li>
+        <li>그 영역에서 방문한 칸의 개수가 넓이입니다.</li>
+        <li>모든 영역을 찾은 뒤 넓이를 오름차순으로 정렬합니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>6. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+int M, N, K;
+int map[101][101];
+int area[10001];
+int areaCount = 0;
+
+int dr[4] = {-1, 1, 0, 0};
+int dc[4] = {0, 0, -1, 1};
+
+int dfs(int r, int c) {
+    int i;
+    int size = 1;
+
+    map[r][c] = 1;
+
+    for (i = 0; i &lt; 4; i++) {
+        int nr = r + dr[i];
+        int nc = c + dc[i];
+
+        if (nr &gt;= 0 &amp;&amp; nr &lt; M &amp;&amp; nc &gt;= 0 &amp;&amp; nc &lt; N) {
+            if (map[nr][nc] == 0) {
+                size += dfs(nr, nc);
+            }
+        }
+    }
+
+    return size;
+}
+
+void sortArea() {
+    int i, j, temp;
+
+    for (i = 0; i &lt; areaCount - 1; i++) {
+        for (j = i + 1; j &lt; areaCount; j++) {
+            if (area[i] &gt; area[j]) {
+                temp = area[i];
+                area[i] = area[j];
+                area[j] = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    int i, j;
+    int x1, y1, x2, y2;
+    int r, c;
+
+    scanf("%d %d %d", &amp;M, &amp;N, &amp;K);
+
+    for (i = 0; i &lt; K; i++) {
+        scanf("%d %d %d %d", &amp;x1, &amp;y1, &amp;x2, &amp;y2);
+
+        for (r = y1; r &lt; y2; r++) {
+            for (c = x1; c &lt; x2; c++) {
+                map[r][c] = 1;
+            }
+        }
+    }
+
+    for (i = 0; i &lt; M; i++) {
+        for (j = 0; j &lt; N; j++) {
+            if (map[i][j] == 0) {
+                area[areaCount] = dfs(i, j);
+                areaCount++;
+            }
+        }
+    }
+
+    sortArea();
+
+    printf("%d\n", areaCount);
+
+    for (i = 0; i &lt; areaCount; i++) {
+        printf("%d ", area[i]);
+    }
+
+    printf("\n");
+
+    return 0;
+}</pre>
+    </section>
+  </main>
+
+  <footer>정올 #1457 영역 구하기 인터랙티브 학습 자료</footer>
+
+  <script>
+    let M = 5, N = 7, K = 3;
+    let grid = [];
+    let labels = [];
+    let logs = [];
+    let logIndex = -1;
+    let areaSizes = [];
+    let currentCell = null;
+
+    function setExample() {
+      document.getElementById('inputData').value = `5 7 3\n0 2 4 4\n1 1 2 5\n4 0 6 2`;
+      loadInput();
+    }
+
+    function makeEmptyGrid() {
+      grid = Array.from({ length: M }, () => Array(N).fill(0));
+      labels = Array.from({ length: M }, () => Array(N).fill(0));
+    }
+
+    function loadInput() {
+      const text = document.getElementById('inputData').value.trim();
+      const nums = text.split(/\s+/).map(Number);
+      if (nums.length < 3) return;
+      M = nums[0]; N = nums[1]; K = nums[2];
+      makeEmptyGrid();
+      let idx = 3;
+      for (let i = 0; i < K; i++) {
+        const x1 = nums[idx++], y1 = nums[idx++], x2 = nums[idx++], y2 = nums[idx++];
+        for (let r = y1; r < y2; r++) {
+          for (let c = x1; c < x2; c++) {
+            if (r >= 0 && r < M && c >= 0 && c < N) grid[r][c] = 1;
+          }
+        }
+      }
+      clearSearch(false);
+      findAreas(false);
+      renderBoard();
+    }
+
+    function clearSearch(render = true) {
+      labels = Array.from({ length: M }, () => Array(N).fill(0));
+      logs = [];
+      logIndex = -1;
+      areaSizes = [];
+      currentCell = null;
+      document.getElementById('statusText').textContent = '준비';
+      document.getElementById('areaCountText').textContent = '0';
+      document.getElementById('areaSizesText').textContent = '-';
+      renderLogs();
+      renderAreaPills();
+      if (render) renderBoard();
+    }
+
+    function findAreas(showSteps = true) {
+      labels = Array.from({ length: M }, () => Array(N).fill(0));
+      logs = [];
+      areaSizes = [];
+      currentCell = null;
+      let areaId = 0;
+      const dr = [-1, 1, 0, 0];
+      const dc = [0, 0, -1, 1];
+
+      for (let r = 0; r < M; r++) {
+        for (let c = 0; c < N; c++) {
+          if (grid[r][c] === 0 && labels[r][c] === 0) {
+            areaId++;
+            let q = [[r, c]];
+            labels[r][c] = areaId;
+            let head = 0;
+            let size = 0;
+            logs.push({ r, c, areaId, size: 0, desc: `새로운 빈 영역 ${areaId}번 시작: (${r}, ${c})` });
+
+            while (head < q.length) {
+              const [cr, cc] = q[head++];
+              size++;
+              logs.push({ r: cr, c: cc, areaId, size, desc: `${areaId}번 영역에서 (${cr}, ${cc}) 칸을 방문했습니다.` });
+              for (let d = 0; d < 4; d++) {
+                const nr = cr + dr[d];
+                const nc = cc + dc[d];
+                if (nr >= 0 && nr < M && nc >= 0 && nc < N) {
+                  if (grid[nr][nc] === 0 && labels[nr][nc] === 0) {
+                    labels[nr][nc] = areaId;
+                    q.push([nr, nc]);
+                    logs.push({ r: nr, c: nc, areaId, size, desc: `인접한 빈 칸 (${nr}, ${nc})을 발견하여 큐에 넣었습니다.` });
+                  }
+                }
+              }
+            }
+            areaSizes.push(size);
+            logs.push({ r: '-', c: '-', areaId, size, desc: `${areaId}번 영역 종료. 넓이는 ${size}입니다.` });
+          }
+        }
+      }
+
+      const sorted = [...areaSizes].sort((a, b) => a - b);
+      document.getElementById('areaCountText').textContent = areaSizes.length;
+      document.getElementById('areaSizesText').textContent = sorted.length ? sorted.join(' ') : '-';
+      renderAreaPills();
+      renderLogs();
+      if (showSteps && logs.length) {
+        logIndex = 0;
+        showStep();
+      } else {
+        document.getElementById('statusText').textContent = `영역 ${areaSizes.length}개 발견`;
+        renderBoard();
+      }
+    }
+
+    function renderBoard() {
+      const board = document.getElementById('board');
+      board.innerHTML = '';
+      board.style.gridTemplateColumns = `repeat(${N}, 1fr)`;
+      board.style.gridTemplateRows = `repeat(${M}, 1fr)`;
+      for (let r = 0; r < M; r++) {
+        for (let c = 0; c < N; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (grid[r][c] === 1) cell.classList.add('blocked');
+          else if (currentCell && currentCell.r === r && currentCell.c === c) cell.classList.add('current');
+          else if (labels[r][c] > 0) cell.classList.add('area' + (((labels[r][c] - 1) % 5) + 1));
+          else cell.classList.add('empty');
+          cell.textContent = grid[r][c] === 1 ? '■' : (labels[r][c] ? labels[r][c] : '');
+          cell.title = `행 r=${r}, 열 c=${c}`;
+          cell.onclick = () => toggleCell(r, c);
+          board.appendChild(cell);
+        }
+      }
+    }
+
+    function toggleCell(r, c) {
+      grid[r][c] = grid[r][c] ? 0 : 1;
+      clearSearch(false);
+      renderBoard();
+    }
+
+    function renderAreaPills() {
+      const div = document.getElementById('areaPills');
+      div.innerHTML = '';
+      if (!areaSizes.length) {
+        const span = document.createElement('span');
+        span.className = 'pill';
+        span.textContent = '아직 없음';
+        div.appendChild(span);
+        return;
+      }
+      areaSizes.forEach((size, idx) => {
+        const span = document.createElement('span');
+        span.className = 'pill';
+        span.textContent = `${idx + 1}번: ${size}칸`;
+        div.appendChild(span);
+      });
+    }
+
+    function renderLogs() {
+      const tbody = document.getElementById('logTable');
+      tbody.innerHTML = '';
+      const maxShow = 140;
+      logs.slice(0, maxShow).forEach((l, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === logIndex) tr.className = 'active-row';
+        tr.innerHTML = `<td>${idx + 1}</td><td>${l.r === '-' ? '-' : '(' + l.r + ', ' + l.c + ')'}</td><td>${l.areaId}</td><td>${l.size}</td><td>${l.desc}</td>`;
+        tbody.appendChild(tr);
+      });
+      if (logs.length > maxShow) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="5">탐색 로그가 많아 처음 ${maxShow}개만 표시합니다. 전체 로그 수: ${logs.length}</td>`;
+        tbody.appendChild(tr);
+      }
+    }
+
+    function nextStep() {
+      if (!logs.length) findAreas(true);
+      if (logIndex < logs.length - 1) {
+        logIndex++;
+        showStep();
+      }
+    }
+
+    function prevStep() {
+      if (logIndex > 0) {
+        logIndex--;
+        showStep();
+      }
+    }
+
+    function showStep() {
+      const l = logs[logIndex];
+      document.getElementById('statusText').textContent = `${logIndex + 1}/${logs.length}`;
+      currentCell = l.r === '-' ? null : { r: l.r, c: l.c };
+      // Rebuild labels as of current step for animation
+      labels = Array.from({ length: M }, () => Array(N).fill(0));
+      for (let i = 0; i <= logIndex; i++) {
+        const item = logs[i];
+        if (item.r !== '-' && grid[item.r][item.c] === 0) labels[item.r][item.c] = item.areaId;
+      }
+      renderLogs();
+      renderBoard();
+    }
+
+    loadInput();
+  </script>
+</body>
+</html>
