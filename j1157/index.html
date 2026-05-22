@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 1157번 버블정렬 인터렉티브 해설</title>
+  <style>
+    * { box-sizing: border-box; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      background: #f4f7fb;
+      color: #1f2937;
+      line-height: 1.75;
+    }
+    header {
+      background: linear-gradient(135deg, #0f172a, #2563eb, #06b6d4);
+      color: white;
+      text-align: center;
+      padding: 64px 22px 54px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 900;
+      line-height: 1.25;
+    }
+    header p {
+      max-width: 930px;
+      margin: 18px auto 0;
+      color: #dbeafe;
+      font-size: 1.08rem;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #bfdbfe;
+      padding: 12px 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+    }
+    nav a {
+      display: inline-block;
+      text-decoration: none;
+      color: #1d4ed8;
+      font-weight: 800;
+      margin: 4px 7px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #eff6ff;
+      transition: 0.2s;
+    }
+    nav a:hover { background: #2563eb; color: white; }
+    main { max-width: 1180px; margin: 0 auto; padding: 30px 18px 80px; }
+    section {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 24px;
+      padding: 32px;
+      margin: 26px 0;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+    h2 {
+      margin-top: 0;
+      color: #1e3a8a;
+      font-size: 1.9rem;
+      border-left: 8px solid #2563eb;
+      padding-left: 15px;
+    }
+    h3 { color: #111827; font-size: 1.35rem; margin-top: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card {
+      background: linear-gradient(180deg, #eff6ff, #ffffff);
+      border: 1px solid #bfdbfe;
+      border-radius: 18px;
+      padding: 18px;
+      font-weight: 700;
+    }
+    .card strong { display: block; color: #2563eb; font-size: 1.22rem; margin-bottom: 8px; }
+    .note { background: #fff7ed; border-left: 6px solid #f97316; border-radius: 14px; padding: 16px 18px; margin: 18px 0; font-weight: 700; }
+    .tip { background: #ecfdf5; border-left: 6px solid #10b981; border-radius: 14px; padding: 16px 18px; margin: 18px 0; font-weight: 700; }
+    .warning { background: #fef2f2; border-left: 6px solid #ef4444; border-radius: 14px; padding: 16px 18px; margin: 18px 0; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; border-radius: 14px; overflow: hidden; }
+    th { background: #1d4ed8; color: white; padding: 12px; text-align: center; }
+    td { border: 1px solid #dbeafe; padding: 12px; text-align: center; background: white; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    pre {
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 20px;
+      border-radius: 18px;
+      overflow-x: auto;
+      line-height: 1.65;
+      border: 1px solid #334155;
+      font-size: 0.94rem;
+    }
+    code { font-family: "Consolas", "D2Coding", monospace; }
+    .inline-code { background: #e0f2fe; color: #075985; padding: 2px 7px; border-radius: 7px; font-weight: 800; }
+    .simulator {
+      background: #111827;
+      color: white;
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 20px;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.25);
+    }
+    .sim-title { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+    .sim-title h3 { margin: 0; color: #f8fafc; }
+    .badge { display: inline-block; background: #38bdf8; color: #082f49; border-radius: 999px; padding: 6px 12px; font-weight: 900; font-size: 0.9rem; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; align-items: center; }
+    input {
+      min-width: 320px;
+      max-width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      outline: none;
+      font-family: "Consolas", "D2Coding", monospace;
+    }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 900;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      transition: 0.18s;
+    }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    button.green { background: #10b981; }
+    button.orange { background: #f97316; }
+    button.gray { background: #64748b; }
+    .visual-area {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 22px;
+      overflow-x: auto;
+      min-height: 260px;
+    }
+    .bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      min-height: 180px;
+      padding: 18px 0;
+    }
+    .bar-wrap { text-align: center; min-width: 58px; }
+    .bar {
+      width: 58px;
+      min-height: 35px;
+      border-radius: 12px 12px 6px 6px;
+      background: linear-gradient(180deg, #bfdbfe, #2563eb);
+      color: white;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 8px;
+      font-weight: 900;
+      box-shadow: 0 10px 20px rgba(59,130,246,0.25);
+      transition: 0.25s;
+    }
+    .bar.compare { background: linear-gradient(180deg, #fde68a, #f59e0b); color: #451a03; transform: translateY(-8px); }
+    .bar.swap { background: linear-gradient(180deg, #fecaca, #ef4444); }
+    .bar.fixed { background: linear-gradient(180deg, #bbf7d0, #22c55e); color: #052e16; }
+    .idx { color: #cbd5e1; font-size: 0.82rem; margin-top: 8px; font-weight: 800; }
+    .state-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 16px; }
+    .state-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 14px; text-align: center; }
+    .state-card span { display: block; color: #93c5fd; font-size: 0.9rem; font-weight: 800; }
+    .state-card strong { display: block; margin-top: 4px; color: #f8fafc; font-size: 1.25rem; }
+    .log {
+      margin-top: 16px;
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 16px;
+      height: 180px;
+      overflow-y: auto;
+      color: #dbeafe;
+      font-family: "Consolas", "D2Coding", monospace;
+      font-size: 0.92rem;
+    }
+    .output-box {
+      margin-top: 16px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 16px;
+      color: #facc15;
+      font-family: "Consolas", "D2Coding", monospace;
+      white-space: pre-wrap;
+      min-height: 90px;
+      font-weight: 900;
+    }
+    .step-box { background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 18px; padding: 20px; margin: 18px 0; }
+    .summary-list li { margin: 9px 0; font-weight: 650; }
+    footer { background: #0f172a; color: white; text-align: center; padding: 32px 20px; font-weight: 700; }
+    @media (max-width: 700px) {
+      section { padding: 22px 16px; }
+      input { min-width: 100%; }
+      .bar-wrap { min-width: 46px; }
+      .bar { width: 46px; font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 1157번 버블정렬<br />인터렉티브 해설</h1>
+    <p>버블 정렬의 각 단계가 끝날 때마다 배열 상태를 출력하는 과정을 직접 확인하는 수업용 HTML 자료입니다.</p>
+  </header>
+
+  <nav>
+    <a href="#problem">문제 이해</a>
+    <a href="#concept">버블정렬 개념</a>
+    <a href="#simulator">시뮬레이터</a>
+    <a href="#code">정답 코드</a>
+    <a href="#trace">예제 추적</a>
+    <a href="#explain">코드 설명</a>
+    <a href="#complexity">복잡도</a>
+    <a href="#summary">핵심 정리</a>
+  </nav>
+
+  <main>
+    <section id="problem">
+      <h2>1. 문제 이해</h2>
+      <p>정올 1157번 버블정렬은 숫자들을 버블 정렬로 오름차순 정렬하면서, <strong>각 단계가 끝날 때마다 배열 전체를 출력</strong>하는 문제입니다.</p>
+      <div class="warning">주의: 최종 정렬 결과만 출력하면 틀립니다. 바깥 반복문 한 번이 끝날 때마다 배열 상태를 출력해야 합니다.</div>
+      <div class="step-box">
+        <h3>예시</h3>
+        <pre><code>입력
+4
+62 23 32 15
+
+출력
+23 32 15 62
+23 15 32 62
+15 23 32 62</code></pre>
+      </div>
+    </section>
+
+    <section id="concept">
+      <h2>2. 버블정렬 개념</h2>
+      <p>버블 정렬은 서로 옆에 있는 두 숫자를 비교해서, 왼쪽 숫자가 더 크면 서로 바꾸는 정렬 방법입니다.</p>
+      <div class="grid">
+        <div class="card"><strong>비교</strong>arr[j]와 arr[j+1]을 비교합니다.</div>
+        <div class="card"><strong>교환</strong>왼쪽 값이 더 크면 두 값을 바꿉니다.</div>
+        <div class="card"><strong>한 단계 완료</strong>한 바퀴가 끝나면 가장 큰 값이 맨 뒤로 갑니다.</div>
+        <div class="card"><strong>출력</strong>정올 1157은 각 단계 완료 후 배열을 출력합니다.</div>
+      </div>
+      <h3>2.1 핵심 코드 구조</h3>
+      <pre><code>for (int i = 0; i &lt; n - 1; i++) {
+    for (int j = 0; j &lt; n - 1 - i; j++) {
+        if (arr[j] &gt; arr[j + 1]) {
+            swap;
+        }
+    }
+
+    배열 전체 출력;
+}</code></pre>
+      <div class="tip">뒤쪽은 이미 정렬되었기 때문에 안쪽 반복문은 n - 1 - i까지만 비교합니다.</div>
+    </section>
+
+    <section id="simulator">
+      <h2>3. 인터렉티브 버블정렬 시뮬레이터</h2>
+      <p>배열을 입력하고 한 번 비교 또는 한 단계 실행을 눌러 보세요.</p>
+      <div class="simulator">
+        <div class="sim-title">
+          <h3>Bubble Sort Simulator</h3>
+          <span class="badge">정올 1157</span>
+        </div>
+        <div class="controls">
+          <input id="arrInput" value="62 23 32 15" />
+          <button class="green" onclick="loadArray()">배열 적용</button>
+          <button onclick="nextCompare()">한 번 비교</button>
+          <button class="orange" onclick="runOnePass()">한 단계 실행</button>
+          <button class="gray" onclick="resetSim()">초기화</button>
+        </div>
+
+        <div class="visual-area">
+          <div class="bars" id="bars"></div>
+        </div>
+
+        <div class="state-grid">
+          <div class="state-card"><span>현재 단계 i</span><strong id="iState">0</strong></div>
+          <div class="state-card"><span>현재 비교 j</span><strong id="jState">0</strong></div>
+          <div class="state-card"><span>비교 범위</span><strong id="rangeState">n-1</strong></div>
+          <div class="state-card"><span>현재 상태</span><strong id="statusState">대기</strong></div>
+        </div>
+
+        <h3 style="color:#f8fafc;">정올 출력 결과</h3>
+        <div class="output-box" id="outputBox"></div>
+        <div class="log" id="logBox"></div>
+      </div>
+    </section>
+
+    <section id="code">
+      <h2>4. 정답 C 코드</h2>
+      <pre><code>#include &lt;stdio.h&gt;
+
+int main() {
+    int n;
+    int arr[101];
+
+    scanf("%d", &n);
+
+    for (int i = 0; i &lt; n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    for (int i = 0; i &lt; n - 1; i++) {
+        for (int j = 0; j &lt; n - 1 - i; j++) {
+            if (arr[j] &gt; arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+
+        for (int j = 0; j &lt; n; j++) {
+            printf("%d ", arr[j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}</code></pre>
+    </section>
+
+    <section id="trace">
+      <h2>5. 예제 추적</h2>
+      <div class="step-box">
+        <h3>입력</h3>
+        <pre><code>4
+62 23 32 15</code></pre>
+      </div>
+      <h3>5.1 1단계</h3>
+      <pre><code>62 23 비교 → 교환: 23 62 32 15
+62 32 비교 → 교환: 23 32 62 15
+62 15 비교 → 교환: 23 32 15 62
+
+1단계 출력: 23 32 15 62</code></pre>
+      <h3>5.2 2단계</h3>
+      <pre><code>23 32 비교 → 그대로: 23 32 15 62
+32 15 비교 → 교환: 23 15 32 62
+
+2단계 출력: 23 15 32 62</code></pre>
+      <h3>5.3 3단계</h3>
+      <pre><code>23 15 비교 → 교환: 15 23 32 62
+
+3단계 출력: 15 23 32 62</code></pre>
+    </section>
+
+    <section id="explain">
+      <h2>6. 코드 자세한 설명</h2>
+      <h3>6.1 배열 입력</h3>
+      <pre><code>scanf("%d", &n);
+for (int i = 0; i &lt; n; i++) {
+    scanf("%d", &arr[i]);
+}</code></pre>
+      <p>정렬할 숫자의 개수와 숫자들을 배열에 저장합니다.</p>
+
+      <h3>6.2 바깥 반복문</h3>
+      <pre><code>for (int i = 0; i &lt; n - 1; i++)</code></pre>
+      <p>버블 정렬은 최대 n-1단계가 필요합니다. 한 단계가 끝날 때마다 뒤쪽에 정렬된 값이 하나씩 생깁니다.</p>
+
+      <h3>6.3 안쪽 반복문</h3>
+      <pre><code>for (int j = 0; j &lt; n - 1 - i; j++)</code></pre>
+      <p>인접한 두 원소 arr[j]와 arr[j+1]을 비교합니다. 이미 정렬된 뒤쪽은 비교할 필요가 없기 때문에 n-1-i까지만 비교합니다.</p>
+
+      <h3>6.4 교환</h3>
+      <pre><code>if (arr[j] &gt; arr[j + 1]) {
+    int temp = arr[j];
+    arr[j] = arr[j + 1];
+    arr[j + 1] = temp;
+}</code></pre>
+      <p>오름차순 정렬이므로 왼쪽 값이 오른쪽 값보다 크면 두 값을 바꿉니다.</p>
+
+      <h3>6.5 단계별 출력</h3>
+      <pre><code>for (int j = 0; j &lt; n; j++) {
+    printf("%d ", arr[j]);
+}
+printf("\n");</code></pre>
+      <p>정올 1157번의 핵심입니다. 정렬이 모두 끝난 후가 아니라, 바깥 반복문 한 단계가 끝날 때마다 출력합니다.</p>
+    </section>
+
+    <section id="complexity">
+      <h2>7. 시간복잡도</h2>
+      <table>
+        <thead><tr><th>항목</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td>비교 횟수</td><td>(n-1) + (n-2) + ... + 1</td></tr>
+          <tr><td>시간복잡도</td><td>O(N²)</td></tr>
+          <tr><td>메모리복잡도</td><td>O(N)</td></tr>
+        </tbody>
+      </table>
+      <div class="note">버블 정렬은 구현은 쉽지만, 큰 데이터에는 느립니다. 이 문제는 버블 정렬의 동작 과정을 확인하는 교육용 문제입니다.</div>
+    </section>
+
+    <section id="summary">
+      <h2>8. 핵심 정리</h2>
+      <ol class="summary-list">
+        <li>버블 정렬은 인접한 두 숫자를 비교합니다.</li>
+        <li>왼쪽 숫자가 더 크면 두 숫자를 교환합니다.</li>
+        <li>한 단계가 끝나면 가장 큰 값이 맨 뒤로 이동합니다.</li>
+        <li>뒤쪽은 이미 정렬되었으므로 다시 비교하지 않습니다.</li>
+        <li>정올 1157번은 각 단계가 끝날 때마다 배열을 출력해야 합니다.</li>
+        <li>시간복잡도는 O(N²)입니다.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer>정올 1157번 버블정렬 · 인터렉티브 C언어 해설 자료</footer>
+
+  <script>
+    let arr = [62, 23, 32, 15];
+    let original = [...arr];
+    let i = 0;
+    let j = 0;
+    let lastCompare = [];
+    let lastSwap = false;
+    let outputLines = [];
+
+    const bars = document.getElementById("bars");
+    const iState = document.getElementById("iState");
+    const jState = document.getElementById("jState");
+    const rangeState = document.getElementById("rangeState");
+    const statusState = document.getElementById("statusState");
+    const outputBox = document.getElementById("outputBox");
+    const logBox = document.getElementById("logBox");
+    const arrInput = document.getElementById("arrInput");
+
+    function addLog(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      logBox.appendChild(div);
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function render() {
+      bars.innerHTML = "";
+      const maxVal = Math.max(...arr.map(v => Math.abs(v)), 1);
+      arr.forEach((value, idx) => {
+        const wrap = document.createElement("div");
+        wrap.className = "bar-wrap";
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        if (lastCompare.includes(idx)) bar.classList.add(lastSwap ? "swap" : "compare");
+        if (idx >= arr.length - i && i > 0) bar.classList.add("fixed");
+        bar.style.height = `${Math.max(35, Math.abs(value) / maxVal * 150)}px`;
+        bar.textContent = value;
+        const label = document.createElement("div");
+        label.className = "idx";
+        label.textContent = `idx ${idx}`;
+        wrap.appendChild(bar);
+        wrap.appendChild(label);
+        bars.appendChild(wrap);
+      });
+
+      iState.textContent = i;
+      jState.textContent = j;
+      rangeState.textContent = arr.length > 1 ? `j < ${arr.length - 1 - i}` : "-";
+      outputBox.textContent = outputLines.join("\n");
+    }
+
+    function loadArray() {
+      const values = arrInput.value.trim().split(/\s+/).map(Number).filter(v => !Number.isNaN(v));
+      if (values.length < 2) {
+        addLog("숫자를 2개 이상 입력하세요.");
+        return;
+      }
+      arr = values;
+      original = [...arr];
+      i = 0;
+      j = 0;
+      lastCompare = [];
+      lastSwap = false;
+      outputLines = [];
+      logBox.innerHTML = "";
+      statusState.textContent = "배열 적용";
+      addLog(`배열 적용: ${arr.join(" ")}`);
+      render();
+    }
+
+    function finishPass() {
+      const line = arr.join(" ");
+      outputLines.push(line);
+      addLog(`${i + 1}단계 완료 → 출력: ${line}`);
+      i++;
+      j = 0;
+      lastCompare = [];
+      lastSwap = false;
+      if (i >= arr.length - 1) {
+        statusState.textContent = "정렬 완료";
+        addLog("정렬 완료");
+      } else {
+        statusState.textContent = "다음 단계 대기";
+      }
+    }
+
+    function nextCompare() {
+      if (i >= arr.length - 1) {
+        statusState.textContent = "정렬 완료";
+        addLog("이미 정렬이 끝났습니다.");
+        render();
+        return;
+      }
+
+      if (j >= arr.length - 1 - i) {
+        finishPass();
+        render();
+        return;
+      }
+
+      lastCompare = [j, j + 1];
+      if (arr[j] > arr[j + 1]) {
+        const beforeA = arr[j];
+        const beforeB = arr[j + 1];
+        const temp = arr[j];
+        arr[j] = arr[j + 1];
+        arr[j + 1] = temp;
+        lastSwap = true;
+        statusState.textContent = "교환";
+        addLog(`i=${i}, j=${j}: ${beforeA} > ${beforeB} → 교환`);
+      } else {
+        lastSwap = false;
+        statusState.textContent = "그대로";
+        addLog(`i=${i}, j=${j}: ${arr[j]} <= ${arr[j + 1]} → 그대로`);
+      }
+      j++;
+      render();
+    }
+
+    function runOnePass() {
+      if (i >= arr.length - 1) {
+        addLog("이미 정렬이 끝났습니다.");
+        return;
+      }
+      const currentPass = i;
+      while (i === currentPass && i < arr.length - 1) {
+        nextCompare();
+      }
+    }
+
+    function resetSim() {
+      arr = [...original];
+      i = 0;
+      j = 0;
+      lastCompare = [];
+      lastSwap = false;
+      outputLines = [];
+      logBox.innerHTML = "";
+      statusState.textContent = "초기화";
+      addLog(`초기화: ${arr.join(" ")}`);
+      render();
+    }
+
+    render();
+    addLog("시뮬레이터 시작: 한 번 비교 또는 한 단계 실행을 눌러 보세요.");
+  </script>
+</body>
+</html>

@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 2259번 참외밭 인터렉티브 해설</title>
+  <style>
+    * { box-sizing: border-box; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+      line-height: 1.75;
+    }
+    header {
+      background: linear-gradient(135deg, #14532d, #16a34a, #facc15);
+      color: white;
+      text-align: center;
+      padding: 64px 22px 54px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 900;
+      line-height: 1.25;
+    }
+    header p {
+      max-width: 940px;
+      margin: 18px auto 0;
+      color: #ecfccb;
+      font-size: 1.08rem;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #bbf7d0;
+      padding: 12px 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+      box-shadow: 0 4px 18px rgba(15, 23, 42, 0.08);
+    }
+    nav a {
+      display: inline-block;
+      text-decoration: none;
+      color: #15803d;
+      font-weight: 800;
+      margin: 4px 7px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      transition: 0.2s;
+    }
+    nav a:hover { background: #16a34a; color: white; }
+    main { max-width: 1180px; margin: 0 auto; padding: 30px 18px 80px; }
+    section {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 24px;
+      padding: 32px;
+      margin: 26px 0;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+    h2 {
+      margin-top: 0;
+      color: #166534;
+      font-size: 1.9rem;
+      border-left: 8px solid #22c55e;
+      padding-left: 15px;
+    }
+    h3 { color: #111827; font-size: 1.35rem; margin-top: 28px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 16px; margin-top: 18px; }
+    .card {
+      background: linear-gradient(180deg, #ecfdf5, #ffffff);
+      border: 1px solid #bbf7d0;
+      border-radius: 18px;
+      padding: 18px;
+      font-weight: 700;
+    }
+    .card strong { display: block; color: #16a34a; font-size: 1.22rem; margin-bottom: 8px; }
+    .note { background: #fff7ed; border-left: 6px solid #f97316; border-radius: 14px; padding: 16px 18px; margin: 18px 0; font-weight: 700; }
+    .tip { background: #ecfdf5; border-left: 6px solid #10b981; border-radius: 14px; padding: 16px 18px; margin: 18px 0; font-weight: 700; }
+    .warning { background: #fef2f2; border-left: 6px solid #ef4444; border-radius: 14px; padding: 16px 18px; margin: 18px 0; font-weight: 700; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; border-radius: 14px; overflow: hidden; }
+    th { background: #15803d; color: white; padding: 12px; text-align: center; }
+    td { border: 1px solid #bbf7d0; padding: 12px; text-align: center; background: white; }
+    tr:nth-child(even) td { background: #f0fdf4; }
+    pre {
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 20px;
+      border-radius: 18px;
+      overflow-x: auto;
+      line-height: 1.65;
+      border: 1px solid #334155;
+      font-size: 0.94rem;
+    }
+    code { font-family: "Consolas", "D2Coding", monospace; }
+    .inline-code { background: #dcfce7; color: #166534; padding: 2px 7px; border-radius: 7px; font-weight: 800; }
+    .simulator {
+      background: #111827;
+      color: white;
+      border-radius: 24px;
+      padding: 24px;
+      margin-top: 20px;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.25);
+    }
+    .sim-title { display: flex; justify-content: space-between; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+    .sim-title h3 { margin: 0; color: #f8fafc; }
+    .badge { display: inline-block; background: #facc15; color: #422006; border-radius: 999px; padding: 6px 12px; font-weight: 900; font-size: 0.9rem; }
+    .controls { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0; align-items: flex-start; }
+    .input-group { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    input, textarea {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-weight: 800;
+      outline: none;
+      font-family: "Consolas", "D2Coding", monospace;
+    }
+    input { width: 110px; }
+    textarea { width: min(100%, 500px); min-height: 170px; resize: vertical; }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 900;
+      cursor: pointer;
+      background: #16a34a;
+      color: white;
+      transition: 0.18s;
+    }
+    button:hover { transform: translateY(-2px); background: #15803d; }
+    button.orange { background: #f97316; }
+    button.blue { background: #2563eb; }
+    button.gray { background: #64748b; }
+    .visual-area {
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 22px;
+      overflow-x: auto;
+      min-height: 430px;
+    }
+    .svg-box {
+      width: 100%;
+      min-width: 620px;
+      height: 360px;
+      background: #07111f;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      margin-bottom: 16px;
+    }
+    .svg-text { fill: #f8fafc; font-weight: 900; font-size: 14px; font-family: Pretendard, Arial, sans-serif; }
+    .svg-small { fill: #fecaca; font-weight: 900; font-size: 13px; font-family: Pretendard, Arial, sans-serif; }
+    .svg-big { fill: #bbf7d0; font-weight: 900; font-size: 15px; font-family: Pretendard, Arial, sans-serif; }
+    .state-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 16px; }
+    .state-card { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 14px; text-align: center; }
+    .state-card span { display: block; color: #bbf7d0; font-size: 0.9rem; font-weight: 800; }
+    .state-card strong { display: block; margin-top: 4px; color: #f8fafc; font-size: 1.2rem; }
+    .log {
+      margin-top: 16px;
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 16px;
+      height: 180px;
+      overflow-y: auto;
+      color: #dcfce7;
+      font-family: "Consolas", "D2Coding", monospace;
+      font-size: 0.92rem;
+    }
+    .step-box { background: #f8fafc; border: 1px dashed #94a3b8; border-radius: 18px; padding: 20px; margin: 18px 0; }
+    .summary-list li { margin: 9px 0; font-weight: 650; }
+    footer { background: #0f172a; color: white; text-align: center; padding: 32px 20px; font-weight: 700; }
+    @media (max-width: 700px) {
+      section { padding: 22px 16px; }
+      textarea { width: 100%; }
+      .svg-box { min-width: 560px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 2259번 참외밭<br />인터렉티브 해설</h1>
+    <p>큰 직사각형에서 작은 직사각형을 빼는 원리와 원형 인덱스를 직접 확인하는 수업용 HTML 자료입니다.</p>
+  </header>
+
+  <nav>
+    <a href="#problem">문제 이해</a>
+    <a href="#idea">핵심 아이디어</a>
+    <a href="#simulator">시뮬레이터</a>
+    <a href="#explain">코드 설명</a>
+    <a href="#trace">예제 추적</a>
+    <a href="#complexity">복잡도</a>
+    <a href="#summary">핵심 정리</a>
+    <a href="#code">정답 코드</a>
+  </nav>
+
+  <main>
+    <section id="problem">
+      <h2>1. 문제 이해</h2>
+      <p>참외밭은 ㄱ자 모양의 육각형입니다. 1㎡당 자라는 참외 개수 K와 밭 둘레의 6개 변 정보가 주어질 때, 전체 참외 개수를 구해야 합니다.</p>
+      <table>
+        <thead><tr><th>방향 번호</th><th>의미</th><th>분류</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>동쪽</td><td>가로</td></tr>
+          <tr><td>2</td><td>서쪽</td><td>가로</td></tr>
+          <tr><td>3</td><td>남쪽</td><td>세로</td></tr>
+          <tr><td>4</td><td>북쪽</td><td>세로</td></tr>
+        </tbody>
+      </table>
+      <div class="warning">방향과 길이가 6개만 주어지므로 복잡한 좌표 계산 없이 큰 직사각형과 작은 직사각형을 찾으면 됩니다.</div>
+    </section>
+
+    <section id="idea">
+      <h2>2. 핵심 아이디어</h2>
+      <div class="grid">
+        <div class="card"><strong>큰 직사각형</strong>가장 긴 가로 × 가장 긴 세로</div>
+        <div class="card"><strong>작은 직사각형</strong>안쪽으로 파인 부분의 넓이</div>
+        <div class="card"><strong>참외밭 넓이</strong>큰 직사각형 넓이 − 작은 직사각형 넓이</div>
+        <div class="card"><strong>정답</strong>참외밭 넓이 × K</div>
+      </div>
+      <h3>2.1 작은 직사각형은 어떻게 찾을까?</h3>
+      <p>가장 긴 가로의 양옆 세로 길이 차이가 작은 직사각형의 세로입니다. 가장 긴 세로의 양옆 가로 길이 차이가 작은 직사각형의 가로입니다.</p>
+      <pre><code>smallHeight = |가장 긴 가로의 양옆 변 길이 차이|
+smallWidth  = |가장 긴 세로의 양옆 변 길이 차이|</code></pre>
+      <div class="tip">6개의 변은 원처럼 이어져 있으므로 이전 인덱스와 다음 인덱스를 구할 때 % 6을 사용합니다.</div>
+    </section>
+
+    <section id="simulator">
+      <h2>3. 인터렉티브 참외밭 계산기</h2>
+      <p>기본 예제를 그대로 계산하거나, 직접 K와 6개 변을 바꿔서 확인해 보세요.</p>
+      <div class="simulator">
+        <div class="sim-title">
+          <h3>Melon Field Simulator</h3>
+          <span class="badge">정올 2259</span>
+        </div>
+        <div class="controls">
+          <div class="input-group">
+            <label>K <input id="kInput" type="number" value="7" /></label>
+          </div>
+          <textarea id="edgeInput">4 50
+2 160
+3 30
+1 60
+3 20
+1 100</textarea>
+          <button onclick="calculateField()">계산하기</button>
+          <button class="blue" onclick="fillExample()">예제 입력</button>
+          <button class="gray" onclick="clearLog()">로그 지우기</button>
+        </div>
+        <div class="visual-area">
+          <svg id="fieldSvg" class="svg-box" viewBox="0 0 720 360" preserveAspectRatio="xMidYMid meet"></svg>
+          <table id="edgeTable"></table>
+        </div>
+        <div class="state-grid">
+          <div class="state-card"><span>큰 가로</span><strong id="maxWidthState">-</strong></div>
+          <div class="state-card"><span>큰 세로</span><strong id="maxHeightState">-</strong></div>
+          <div class="state-card"><span>작은 가로</span><strong id="smallWidthState">-</strong></div>
+          <div class="state-card"><span>작은 세로</span><strong id="smallHeightState">-</strong></div>
+          <div class="state-card"><span>밭 넓이</span><strong id="areaState">-</strong></div>
+          <div class="state-card"><span>정답</span><strong id="answerState">-</strong></div>
+        </div>
+        <div class="log" id="logBox"></div>
+      </div>
+    </section>
+
+    <section id="explain">
+      <h2>4. 코드 자세한 설명</h2>
+      <h3>4.1 입력 저장</h3>
+      <pre><code>int dir[6];
+int len[6];
+
+for (int i = 0; i &lt; 6; i++) {
+    scanf("%d %d", &dir[i], &len[i]);
+}</code></pre>
+      <p>방향과 길이를 각각 배열에 저장합니다. 변은 항상 6개입니다.</p>
+
+      <h3>4.2 가장 긴 가로와 세로 찾기</h3>
+      <pre><code>if (dir[i] == 1 || dir[i] == 2)</code></pre>
+      <p>방향 1과 2는 가로 방향입니다.</p>
+      <pre><code>else</code></pre>
+      <p>방향 3과 4는 세로 방향입니다.</p>
+      <div class="note">가장 긴 가로와 가장 긴 세로는 큰 직사각형의 가로와 세로가 됩니다.</div>
+
+      <h3>4.3 원형 인덱스</h3>
+      <pre><code>(index + 5) % 6  // 이전 변
+(index + 1) % 6  // 다음 변</code></pre>
+      <p>6개의 변은 원처럼 연결되어 있으므로 0번 앞은 5번, 5번 뒤는 0번입니다. 그래서 % 6을 사용합니다.</p>
+
+      <h3>4.4 작은 직사각형 구하기</h3>
+      <pre><code>int smallHeight = abs(len[(maxWidthIndex + 5) % 6] - len[(maxWidthIndex + 1) % 6]);
+int smallWidth = abs(len[(maxHeightIndex + 5) % 6] - len[(maxHeightIndex + 1) % 6]);</code></pre>
+      <p>가장 긴 가로의 양옆 세로 차이가 작은 세로입니다. 가장 긴 세로의 양옆 가로 차이가 작은 가로입니다.</p>
+
+      <h3>4.5 넓이와 정답</h3>
+      <pre><code>int bigArea = maxWidth * maxHeight;
+int smallArea = smallWidth * smallHeight;
+
+printf("%d\n", (bigArea - smallArea) * K);</code></pre>
+      <p>참외밭 넓이를 구한 뒤 1㎡당 참외 개수 K를 곱합니다.</p>
+    </section>
+
+    <section id="trace">
+      <h2>5. 예제 추적</h2>
+      <div class="step-box">
+        <pre><code>입력
+7
+4 50
+2 160
+3 30
+1 60
+3 20
+1 100</code></pre>
+      </div>
+      <table>
+        <thead><tr><th>항목</th><th>값</th></tr></thead>
+        <tbody>
+          <tr><td>가장 긴 가로</td><td>160</td></tr>
+          <tr><td>가장 긴 세로</td><td>50</td></tr>
+          <tr><td>큰 직사각형 넓이</td><td>160 × 50 = 8000</td></tr>
+          <tr><td>작은 가로</td><td>|160과 100의 차이| = 60</td></tr>
+          <tr><td>작은 세로</td><td>|50과 30의 차이| = 20</td></tr>
+          <tr><td>작은 직사각형 넓이</td><td>60 × 20 = 1200</td></tr>
+          <tr><td>참외밭 넓이</td><td>8000 − 1200 = 6800</td></tr>
+          <tr><td>정답</td><td>6800 × 7 = 47600</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="complexity">
+      <h2>6. 시간복잡도</h2>
+      <p>변은 항상 6개이므로 반복 횟수는 입력 크기에 따라 커지지 않습니다.</p>
+      <table>
+        <thead><tr><th>항목</th><th>복잡도</th></tr></thead>
+        <tbody>
+          <tr><td>시간복잡도</td><td>O(1)</td></tr>
+          <tr><td>메모리복잡도</td><td>O(1)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="summary">
+      <h2>7. 핵심 정리</h2>
+      <ol class="summary-list">
+        <li>참외밭은 큰 직사각형에서 작은 직사각형을 뺀 모양입니다.</li>
+        <li>방향 1, 2는 가로이고 방향 3, 4는 세로입니다.</li>
+        <li>가장 긴 가로와 가장 긴 세로가 큰 직사각형의 크기입니다.</li>
+        <li>가장 긴 가로의 양옆 길이 차이가 작은 세로입니다.</li>
+        <li>가장 긴 세로의 양옆 길이 차이가 작은 가로입니다.</li>
+        <li>이전과 다음 인덱스는 % 6으로 원형 처리합니다.</li>
+        <li>정답은 (큰 넓이 − 작은 넓이) × K입니다.</li>
+      </ol>
+    </section>
+
+    <section id="code">
+      <h2>8. 정답 C 코드</h2>
+      <pre><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    int K;
+    int dir[6];
+    int len[6];
+
+    scanf("%d", &K);
+
+    for (int i = 0; i &lt; 6; i++) {
+        scanf("%d %d", &dir[i], &len[i]);
+    }
+
+    int maxWidth = 0;
+    int maxHeight = 0;
+    int maxWidthIndex = 0;
+    int maxHeightIndex = 0;
+
+    for (int i = 0; i &lt; 6; i++) {
+        if (dir[i] == 1 || dir[i] == 2) {
+            if (len[i] &gt; maxWidth) {
+                maxWidth = len[i];
+                maxWidthIndex = i;
+            }
+        } else {
+            if (len[i] &gt; maxHeight) {
+                maxHeight = len[i];
+                maxHeightIndex = i;
+            }
+        }
+    }
+
+    int smallHeight = abs(len[(maxWidthIndex + 5) % 6] - len[(maxWidthIndex + 1) % 6]);
+    int smallWidth = abs(len[(maxHeightIndex + 5) % 6] - len[(maxHeightIndex + 1) % 6]);
+
+    int bigArea = maxWidth * maxHeight;
+    int smallArea = smallWidth * smallHeight;
+
+    printf("%d\n", (bigArea - smallArea) * K);
+
+    return 0;
+}</code></pre>
+    </section>
+  </main>
+
+  <footer>정올 2259번 참외밭 · 인터렉티브 C언어 해설 자료</footer>
+
+  <script>
+    const kInput = document.getElementById("kInput");
+    const edgeInput = document.getElementById("edgeInput");
+    const edgeTable = document.getElementById("edgeTable");
+    const logBox = document.getElementById("logBox");
+    const fieldSvg = document.getElementById("fieldSvg");
+
+    const maxWidthState = document.getElementById("maxWidthState");
+    const maxHeightState = document.getElementById("maxHeightState");
+    const smallWidthState = document.getElementById("smallWidthState");
+    const smallHeightState = document.getElementById("smallHeightState");
+    const areaState = document.getElementById("areaState");
+    const answerState = document.getElementById("answerState");
+
+    function addLog(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      logBox.appendChild(div);
+      logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function dirName(d) {
+      if (d === 1) return "동쪽";
+      if (d === 2) return "서쪽";
+      if (d === 3) return "남쪽";
+      if (d === 4) return "북쪽";
+      return "?";
+    }
+
+    function parseEdges() {
+      const lines = edgeInput.value.trim().split(/\n+/).map(v => v.trim()).filter(Boolean);
+      return lines.map(line => {
+        const parts = line.split(/\s+/).map(Number);
+        return { dir: parts[0], len: parts[1] };
+      }).filter(e => Number.isInteger(e.dir) && Number.isFinite(e.len));
+    }
+
+    function calculateField() {
+      const K = Number(kInput.value);
+      const edges = parseEdges();
+      logBox.innerHTML = "";
+
+      if (!Number.isFinite(K) || K <= 0) {
+        addLog("K는 1 이상의 숫자로 입력하세요.");
+        return;
+      }
+      if (edges.length !== 6) {
+        addLog(`변은 반드시 6개여야 합니다. 현재 ${edges.length}개입니다.`);
+        return;
+      }
+      for (let i = 0; i < 6; i++) {
+        if (![1, 2, 3, 4].includes(edges[i].dir) || edges[i].len <= 0) {
+          addLog(`${i}번 줄 입력 오류: 방향은 1~4, 길이는 양수여야 합니다.`);
+          return;
+        }
+      }
+
+      let maxWidth = 0, maxHeight = 0;
+      let maxWidthIndex = 0, maxHeightIndex = 0;
+
+      edges.forEach((e, i) => {
+        if (e.dir === 1 || e.dir === 2) {
+          if (e.len > maxWidth) {
+            maxWidth = e.len;
+            maxWidthIndex = i;
+          }
+        } else {
+          if (e.len > maxHeight) {
+            maxHeight = e.len;
+            maxHeightIndex = i;
+          }
+        }
+      });
+
+      const prevW = (maxWidthIndex + 5) % 6;
+      const nextW = (maxWidthIndex + 1) % 6;
+      const prevH = (maxHeightIndex + 5) % 6;
+      const nextH = (maxHeightIndex + 1) % 6;
+
+      const smallHeight = Math.abs(edges[prevW].len - edges[nextW].len);
+      const smallWidth = Math.abs(edges[prevH].len - edges[nextH].len);
+      const bigArea = maxWidth * maxHeight;
+      const smallArea = smallWidth * smallHeight;
+      const fieldArea = bigArea - smallArea;
+      const answer = fieldArea * K;
+
+      maxWidthState.textContent = `${maxWidth} (index ${maxWidthIndex})`;
+      maxHeightState.textContent = `${maxHeight} (index ${maxHeightIndex})`;
+      smallWidthState.textContent = smallWidth;
+      smallHeightState.textContent = smallHeight;
+      areaState.textContent = `${bigArea} - ${smallArea} = ${fieldArea}`;
+      answerState.textContent = answer;
+
+      renderTable(edges, maxWidthIndex, maxHeightIndex, [prevW, nextW, prevH, nextH]);
+      renderSvg(maxWidth, maxHeight, smallWidth, smallHeight, fieldArea, bigArea, smallArea);
+
+      addLog(`가장 긴 가로: index ${maxWidthIndex}, 길이 ${maxWidth}`);
+      addLog(`가장 긴 세로: index ${maxHeightIndex}, 길이 ${maxHeight}`);
+      addLog(`작은 세로 = |${edges[prevW].len} - ${edges[nextW].len}| = ${smallHeight}`);
+      addLog(`작은 가로 = |${edges[prevH].len} - ${edges[nextH].len}| = ${smallWidth}`);
+      addLog(`큰 넓이 = ${maxWidth} × ${maxHeight} = ${bigArea}`);
+      addLog(`작은 넓이 = ${smallWidth} × ${smallHeight} = ${smallArea}`);
+      addLog(`정답 = (${bigArea} - ${smallArea}) × ${K} = ${answer}`);
+    }
+
+    function renderTable(edges, maxW, maxH, smallIdxs) {
+      let html = `<thead><tr><th>index</th><th>방향</th><th>길이</th><th>설명</th></tr></thead><tbody>`;
+      edges.forEach((e, i) => {
+        let desc = "";
+        if (i === maxW) desc = "큰 가로";
+        else if (i === maxH) desc = "큰 세로";
+        else if (smallIdxs.includes(i)) desc = "작은 직사각형 계산에 사용";
+        html += `<tr><td>${i}</td><td>${e.dir} (${dirName(e.dir)})</td><td>${e.len}</td><td>${desc}</td></tr>`;
+      });
+      html += `</tbody>`;
+      edgeTable.innerHTML = html;
+    }
+
+    function renderSvg(maxW, maxH, smallW, smallH, fieldArea, bigArea, smallArea) {
+      const outerX = 90, outerY = 40, outerW = 520, outerH = 260;
+      const cutW = Math.max(80, Math.min(230, outerW * (smallW / Math.max(maxW, 1))));
+      const cutH = Math.max(70, Math.min(180, outerH * (smallH / Math.max(maxH, 1))));
+      const cutX = outerX + outerW - cutW;
+      const cutY = outerY + outerH - cutH;
+
+      fieldSvg.innerHTML = `
+        <defs>
+          <pattern id="melonPattern" width="28" height="28" patternUnits="userSpaceOnUse">
+            <circle cx="14" cy="14" r="4" fill="#facc15" opacity="0.8"></circle>
+          </pattern>
+        </defs>
+        <rect x="${outerX}" y="${outerY}" width="${outerW}" height="${outerH}" rx="18" fill="url(#melonPattern)" opacity="0.55"></rect>
+        <rect x="${outerX}" y="${outerY}" width="${outerW}" height="${outerH}" rx="18" fill="rgba(34,197,94,0.25)" stroke="#22c55e" stroke-width="5"></rect>
+        <rect x="${cutX}" y="${cutY}" width="${cutW}" height="${cutH}" rx="14" fill="rgba(239,68,68,0.55)" stroke="#ef4444" stroke-width="5" stroke-dasharray="10 8"></rect>
+        <text x="${outerX + outerW / 2}" y="${outerY + 30}" text-anchor="middle" class="svg-big">큰 직사각형 ${maxW} × ${maxH} = ${bigArea}</text>
+        <text x="${cutX + cutW / 2}" y="${cutY + cutH / 2 - 8}" text-anchor="middle" class="svg-small">빠진 부분</text>
+        <text x="${cutX + cutW / 2}" y="${cutY + cutH / 2 + 14}" text-anchor="middle" class="svg-small">${smallW} × ${smallH} = ${smallArea}</text>
+        <text x="${outerX + outerW / 2}" y="330" text-anchor="middle" class="svg-text">참외밭 넓이 = ${fieldArea}</text>
+        <text x="${outerX + outerW / 2}" y="28" text-anchor="middle" class="svg-text">큰 가로 ${maxW}</text>
+        <text x="35" y="${outerY + outerH / 2}" text-anchor="middle" class="svg-text" transform="rotate(-90 35 ${outerY + outerH / 2})">큰 세로 ${maxH}</text>
+      `;
+    }
+
+    function fillExample() {
+      kInput.value = 7;
+      edgeInput.value = `4 50\n2 160\n3 30\n1 60\n3 20\n1 100`;
+      calculateField();
+    }
+
+    function clearLog() {
+      logBox.innerHTML = "";
+    }
+
+    calculateField();
+  </script>
+</body>
+</html>
