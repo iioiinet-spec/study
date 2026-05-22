@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 1658 최대공약수와 최소공배수</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
+      background: linear-gradient(135deg, #eef7ff 0%, #f7f3ff 45%, #fff8e8 100%);
+      color: #222;
+      line-height: 1.7;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 18px 60px;
+    }
+
+    .hero {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 36px;
+      box-shadow: 0 20px 50px rgba(40, 70, 120, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "1658";
+      position: absolute;
+      right: 30px;
+      top: 10px;
+      font-size: 110px;
+      font-weight: 900;
+      color: rgba(80, 120, 255, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(30px, 5vw, 56px);
+      color: #18315f;
+      letter-spacing: -1.5px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #20477f;
+      font-size: 28px;
+    }
+
+    h3 {
+      color: #2d518f;
+      margin-bottom: 10px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #1849b8;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: #4d5e76;
+      max-width: 780px;
+      margin: 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+      margin-top: 24px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 24px;
+      padding: 26px;
+      box-shadow: 0 12px 34px rgba(50, 70, 110, 0.1);
+      border: 1px solid rgba(80, 120, 200, 0.12);
+    }
+
+    .wide {
+      grid-column: 1 / -1;
+    }
+
+    .problem-box {
+      background: #f7fbff;
+      border: 2px solid #d8e9ff;
+      border-radius: 20px;
+      padding: 20px;
+    }
+
+    .io-box {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    pre {
+      margin: 0;
+      background: #101827;
+      color: #e8f0ff;
+      padding: 18px;
+      border-radius: 16px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+      tab-size: 4;
+    }
+
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+    }
+
+    .formula {
+      background: linear-gradient(135deg, #fff7d6, #ffeec2);
+      border: 2px solid #ffd36a;
+      padding: 18px;
+      border-radius: 18px;
+      font-size: 22px;
+      font-weight: 800;
+      color: #654000;
+      text-align: center;
+      margin: 14px 0;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin: 18px 0;
+    }
+
+    label {
+      font-weight: 800;
+      color: #243f68;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 2px solid #c9daf7;
+      font-size: 20px;
+      font-weight: 800;
+      color: #1c3154;
+      background: white;
+    }
+
+    button {
+      border: none;
+      border-radius: 15px;
+      padding: 14px 18px;
+      font-size: 17px;
+      font-weight: 900;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(135deg, #276ef1, #7c4dff);
+      box-shadow: 0 10px 20px rgba(39, 110, 241, 0.25);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 24px rgba(39, 110, 241, 0.32);
+    }
+
+    .quick-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .quick-buttons button {
+      padding: 10px 13px;
+      font-size: 14px;
+      background: #344767;
+      box-shadow: none;
+    }
+
+    .result {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 18px;
+    }
+
+    .result-card {
+      background: #f2f7ff;
+      border-radius: 20px;
+      border: 2px solid #cfe3ff;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .result-card strong {
+      display: block;
+      color: #31517f;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .result-card span {
+      font-size: 44px;
+      font-weight: 900;
+      color: #1849b8;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 16px;
+      background: white;
+      margin-top: 16px;
+      color: #111;
+    }
+
+    th, td {
+      padding: 13px 12px;
+      border-bottom: 1px solid #dce6f6;
+      text-align: center;
+      color: #111;
+    }
+
+    th {
+      background: #1e4fae;
+      color: white;
+      font-weight: 900;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .step-card {
+      background: #ffffff;
+      border-left: 8px solid #276ef1;
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin: 12px 0;
+      box-shadow: 0 8px 18px rgba(60, 90, 140, 0.08);
+    }
+
+    .step-card b {
+      color: #1849b8;
+    }
+
+    .note {
+      background: #f0fff6;
+      border: 2px solid #9ee6be;
+      border-radius: 18px;
+      padding: 18px;
+      color: #174b2b;
+      font-weight: 700;
+    }
+
+    .warning {
+      background: #fff4f4;
+      border: 2px solid #ffc4c4;
+      border-radius: 18px;
+      padding: 18px;
+      color: #743232;
+      font-weight: 700;
+      margin-top: 14px;
+    }
+
+    .explain-list {
+      counter-reset: item;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    .explain-list li {
+      counter-increment: item;
+      background: #f8fbff;
+      margin: 10px 0;
+      padding: 14px 16px 14px 58px;
+      border-radius: 16px;
+      border: 1px solid #dbe9ff;
+      position: relative;
+    }
+
+    .explain-list li::before {
+      content: counter(item);
+      position: absolute;
+      left: 16px;
+      top: 13px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #276ef1;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    .quiz {
+      background: #fffdf6;
+      border: 2px solid #ffe29a;
+      border-radius: 18px;
+      padding: 18px;
+      margin-top: 14px;
+    }
+
+    .quiz-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .quiz-options button {
+      background: #ffffff;
+      color: #243f68;
+      border: 2px solid #cfe0ff;
+      box-shadow: none;
+    }
+
+    .quiz-options button.correct {
+      background: #dcffe8;
+      border-color: #38c172;
+    }
+
+    .quiz-options button.wrong {
+      background: #ffe0e0;
+      border-color: #ff7777;
+    }
+
+    #quizMsg {
+      margin-top: 12px;
+      font-weight: 900;
+      color: #1849b8;
+    }
+
+    .copy-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 10px;
+    }
+
+    .copy-row button {
+      background: #1f2937;
+      box-shadow: none;
+      font-size: 14px;
+      padding: 10px 14px;
+    }
+
+    @media (max-width: 780px) {
+      .grid, .io-box, .controls, .result, .quiz-options {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <span class="badge">JUNGOL 1658</span>
+      <h1>최대공약수와 최소공배수</h1>
+      <p class="subtitle">
+        두 자연수를 입력받아 최대공약수와 최소공배수를 구하는 문제입니다.
+        핵심은 <b>유클리드 호제법</b>과 <b>두 수의 곱 공식</b>입니다.
+      </p>
+    </section>
+
+    <div class="grid">
+      <section class="card wide">
+        <h2>1. 문제 요약</h2>
+        <div class="problem-box">
+          <p><b>두 개의 자연수 A, B를 입력받아 최대공약수와 최소공배수를 출력합니다.</b></p>
+          <div class="io-box">
+            <div>
+              <h3>입력</h3>
+              <pre><code>24 18</code></pre>
+            </div>
+            <div>
+              <h3>출력</h3>
+              <pre><code>6
+72</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>2. 최대공약수</h2>
+        <p>
+          최대공약수는 두 수를 모두 나누어떨어지게 하는 수 중에서 가장 큰 수입니다.
+        </p>
+        <div class="note">
+          예: 24와 18의 공통 약수는 1, 2, 3, 6이고, 가장 큰 수는 6입니다.
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3. 최소공배수</h2>
+        <p>
+          최소공배수는 두 수의 공통 배수 중에서 가장 작은 수입니다.
+        </p>
+        <div class="note">
+          예: 24의 배수와 18의 배수 중 처음으로 같은 수는 72입니다.
+        </div>
+      </section>
+
+      <section class="card wide">
+        <h2>4. 핵심 공식</h2>
+        <div class="formula">최소공배수 = A × B ÷ 최대공약수</div>
+        <p>
+          예를 들어 A = 24, B = 18, 최대공약수 = 6이면
+        </p>
+        <pre><code>최소공배수 = 24 × 18 ÷ 6 = 72</code></pre>
+      </section>
+
+      <section class="card wide">
+        <h2>5. 인터랙티브 계산기</h2>
+        <p>숫자를 바꾸면 최대공약수, 최소공배수, 유클리드 호제법 과정이 자동으로 계산됩니다.</p>
+
+        <div class="controls">
+          <div>
+            <label for="numA">첫 번째 수 A</label>
+            <input id="numA" type="number" min="1" value="24" />
+          </div>
+          <div>
+            <label for="numB">두 번째 수 B</label>
+            <input id="numB" type="number" min="1" value="18" />
+          </div>
+        </div>
+
+        <button onclick="calculate()">계산하기</button>
+
+        <div class="quick-buttons">
+          <button onclick="setExample(24,18)">24, 18</button>
+          <button onclick="setExample(48,180)">48, 180</button>
+          <button onclick="setExample(1071,462)">1071, 462</button>
+          <button onclick="setExample(10000,2500)">10000, 2500</button>
+        </div>
+
+        <div class="result">
+          <div class="result-card">
+            <strong>최대공약수</strong>
+            <span id="gcdResult">6</span>
+          </div>
+          <div class="result-card">
+            <strong>최소공배수</strong>
+            <span id="lcmResult">72</span>
+          </div>
+        </div>
+
+        <div id="errorBox" class="warning" style="display:none;"></div>
+      </section>
+
+      <section class="card wide">
+        <h2>6. 유클리드 호제법 과정</h2>
+        <p>
+          유클리드 호제법은 <b>큰 수를 작은 수로 나눈 나머지</b>를 계속 이용합니다.
+        </p>
+        <div class="formula">gcd(A, B) = gcd(B, A % B)</div>
+        <div id="steps"></div>
+      </section>
+
+      <section class="card wide">
+        <h2>7. 계산 과정 표</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>단계</th>
+              <th>A</th>
+              <th>B</th>
+              <th>A % B</th>
+              <th>다음 상태</th>
+            </tr>
+          </thead>
+          <tbody id="stepTable"></tbody>
+        </table>
+      </section>
+
+      <section class="card wide">
+        <h2>8. 코드 작성 순서</h2>
+        <ol class="explain-list">
+          <li>두 자연수 <b>a, b</b>를 입력받습니다.</li>
+          <li>유클리드 호제법으로 최대공약수 <b>g</b>를 구합니다.</li>
+          <li><b>a × b ÷ g</b> 공식으로 최소공배수를 구합니다.</li>
+          <li>최대공약수와 최소공배수를 한 줄씩 출력합니다.</li>
+        </ol>
+      </section>
+
+      <section class="card wide">
+        <h2>9. 정답 C 코드</h2>
+        <div class="copy-row">
+          <button onclick="copyCode()">코드 복사</button>
+        </div>
+        <pre><code id="answerCode">#include &lt;stdio.h&gt;
+
+int gcd(int a, int b) {
+    int r;
+
+    while (b != 0) {
+        r = a % b;
+        a = b;
+        b = r;
+    }
+
+    return a;
+}
+
+int main() {
+    int a, b;
+    int g, l;
+
+    scanf("%d %d", &amp;a, &amp;b);
+
+    g = gcd(a, b);
+    l = a * b / g;
+
+    printf("%d\n", g);
+    printf("%d\n", l);
+
+    return 0;
+}</code></pre>
+        <div id="copyMsg" class="note" style="display:none; margin-top:14px;">코드가 복사되었습니다.</div>
+      </section>
+
+      <section class="card wide">
+        <h2>10. 코드 자세한 설명</h2>
+        <h3>1. gcd 함수</h3>
+        <pre><code>int gcd(int a, int b) {
+    int r;
+
+    while (b != 0) {
+        r = a % b;
+        a = b;
+        b = r;
+    }
+
+    return a;
+}</code></pre>
+        <p>
+          b가 0이 될 때까지 나머지를 계속 구합니다. b가 0이 되면 a가 최대공약수입니다.
+        </p>
+
+        <h3>2. 최소공배수 계산</h3>
+        <pre><code>l = a * b / g;</code></pre>
+        <p>
+          두 수의 곱은 최대공약수와 최소공배수의 곱과 같습니다.
+          그래서 두 수의 곱을 최대공약수로 나누면 최소공배수가 됩니다.
+        </p>
+      </section>
+
+      <section class="card wide">
+        <h2>11. 확인 퀴즈</h2>
+        <div class="quiz">
+          <p><b>문제:</b> 36과 60의 최대공약수와 최소공배수는?</p>
+          <div class="quiz-options">
+            <button onclick="checkQuiz(this, false)">최대공약수 6, 최소공배수 180</button>
+            <button onclick="checkQuiz(this, true)">최대공약수 12, 최소공배수 180</button>
+            <button onclick="checkQuiz(this, false)">최대공약수 12, 최소공배수 360</button>
+            <button onclick="checkQuiz(this, false)">최대공약수 18, 최소공배수 120</button>
+          </div>
+          <div id="quizMsg"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    function gcdWithSteps(a, b) {
+      let steps = [];
+      let x = a;
+      let y = b;
+      let count = 1;
+
+      while (y !== 0) {
+        let r = x % y;
+        steps.push({
+          count: count,
+          a: x,
+          b: y,
+          r: r,
+          nextA: y,
+          nextB: r
+        });
+        x = y;
+        y = r;
+        count++;
+      }
+
+      return { gcd: x, steps: steps };
+    }
+
+    function calculate() {
+      const aInput = document.getElementById("numA");
+      const bInput = document.getElementById("numB");
+      const errorBox = document.getElementById("errorBox");
+
+      let a = Number(aInput.value);
+      let b = Number(bInput.value);
+
+      if (!Number.isInteger(a) || !Number.isInteger(b) || a <= 0 || b <= 0) {
+        errorBox.style.display = "block";
+        errorBox.textContent = "1 이상의 자연수를 입력해야 합니다.";
+        return;
+      }
+
+      errorBox.style.display = "none";
+
+      const originalA = a;
+      const originalB = b;
+      const data = gcdWithSteps(a, b);
+      const g = data.gcd;
+      const l = originalA * originalB / g;
+
+      document.getElementById("gcdResult").textContent = g;
+      document.getElementById("lcmResult").textContent = l;
+
+      renderSteps(data.steps, g, originalA, originalB, l);
+      renderTable(data.steps);
+    }
+
+    function renderSteps(steps, gcd, originalA, originalB, lcm) {
+      const box = document.getElementById("steps");
+      box.innerHTML = "";
+
+      steps.forEach(step => {
+        const div = document.createElement("div");
+        div.className = "step-card";
+        div.innerHTML = `
+          <b>${step.count}단계</b><br>
+          gcd(${step.a}, ${step.b}) = gcd(${step.b}, ${step.a} % ${step.b})<br>
+          ${step.a} % ${step.b} = <b>${step.r}</b><br>
+          따라서 다음은 gcd(${step.nextA}, ${step.nextB}) 입니다.
+        `;
+        box.appendChild(div);
+      });
+
+      const final = document.createElement("div");
+      final.className = "step-card";
+      final.style.borderLeftColor = "#22a06b";
+      final.innerHTML = `
+        <b>종료</b><br>
+        나머지가 0이 되었으므로 최대공약수는 <b>${gcd}</b>입니다.<br>
+        최소공배수 = ${originalA} × ${originalB} ÷ ${gcd} = <b>${lcm}</b>
+      `;
+      box.appendChild(final);
+    }
+
+    function renderTable(steps) {
+      const tbody = document.getElementById("stepTable");
+      tbody.innerHTML = "";
+
+      steps.forEach(step => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${step.count}</td>
+          <td>${step.a}</td>
+          <td>${step.b}</td>
+          <td>${step.r}</td>
+          <td>(${step.nextA}, ${step.nextB})</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function setExample(a, b) {
+      document.getElementById("numA").value = a;
+      document.getElementById("numB").value = b;
+      calculate();
+    }
+
+    function copyCode() {
+      const code = document.getElementById("answerCode").innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const msg = document.getElementById("copyMsg");
+        msg.style.display = "block";
+        setTimeout(() => {
+          msg.style.display = "none";
+        }, 1500);
+      });
+    }
+
+    function checkQuiz(button, isCorrect) {
+      const buttons = document.querySelectorAll(".quiz-options button");
+      buttons.forEach(btn => {
+        btn.classList.remove("correct", "wrong");
+      });
+
+      const msg = document.getElementById("quizMsg");
+
+      if (isCorrect) {
+        button.classList.add("correct");
+        msg.textContent = "정답입니다! gcd(36, 60) = 12, lcm = 36 × 60 ÷ 12 = 180 입니다.";
+      } else {
+        button.classList.add("wrong");
+        msg.textContent = "다시 생각해 보세요. 먼저 36과 60의 최대공약수를 구해야 합니다.";
+      }
+    }
+
+    document.getElementById("numA").addEventListener("input", calculate);
+    document.getElementById("numB").addEventListener("input", calculate);
+
+    calculate();
+  </script>
+</body>
+</html>
