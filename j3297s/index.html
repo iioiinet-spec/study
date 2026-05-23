@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #3297 구간의 합(PURQ) 1 - 세그먼트 트리</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Pretendard','Noto Sans KR',Arial,sans-serif; background: linear-gradient(135deg,#eff6ff,#fff7ed); color: #172554; line-height: 1.7; }
+    header { padding: 50px 18px 36px; text-align: center; color: white; background: linear-gradient(135deg,#2563eb,#7c3aed); border-bottom-left-radius: 36px; border-bottom-right-radius: 36px; box-shadow: 0 14px 32px rgba(37,99,235,.25); }
+    header h1 { margin: 0; font-size: clamp(30px,5vw,54px); letter-spacing: -1px; }
+    header p { max-width: 940px; margin: 14px auto 0; font-size: clamp(16px,2vw,20px); opacity: .96; }
+    main { max-width: 1220px; margin: 0 auto; padding: 26px 18px 60px; }
+    .card { background: rgba(255,255,255,.94); border: 1px solid rgba(148,163,184,.3); border-radius: 28px; padding: 26px; margin: 22px 0; box-shadow: 0 14px 34px rgba(15,23,42,.08); backdrop-filter: blur(10px); }
+    h2 { margin-top: 0; color: #1d4ed8; font-size: 28px; }
+    h3 { color: #4338ca; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 16px; }
+    .mini { padding: 18px; border-radius: 22px; background: #f8fafc; border: 1px solid #e2e8f0; }
+    .note { padding: 16px 18px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 18px; }
+    .playground { display: grid; grid-template-columns: minmax(360px,1fr) 370px; gap: 20px; align-items: start; }
+    .visual { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; overflow-x: auto; }
+    .panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; }
+    label { display: block; font-weight: 800; color: #334155; margin-top: 10px; }
+    input, textarea { width: 100%; margin-top: 6px; padding: 12px 13px; border: 2px solid #cbd5e1; border-radius: 16px; font-size: 16px; outline: none; background: white; }
+    textarea { min-height: 135px; resize: vertical; font-family: Consolas,monospace; font-size: 14px; }
+    input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.12); }
+    button { border: none; border-radius: 16px; padding: 12px 14px; margin: 6px 4px 0 0; background: #2563eb; color: white; font-weight: 900; cursor: pointer; transition: transform .2s ease, background .2s ease; box-shadow: 0 8px 16px rgba(37,99,235,.2); }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    .ghost { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; box-shadow: none; }
+    .danger { background: #dc2626; }
+    .danger:hover { background: #b91c1c; }
+    .array-row { display: flex; gap: 8px; margin: 14px 0 22px; min-width: max-content; }
+    .cell { width: 64px; min-height: 64px; border-radius: 16px; background: white; border: 2px solid #cbd5e1; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 14px rgba(15,23,42,.08); transition: .2s; }
+    .cell .idx { font-size: 12px; color: #64748b; font-weight: 900; }
+    .cell .val { font-size: 20px; color: #172554; font-weight: 900; }
+    .cell.query { background: #dbeafe; border-color: #2563eb; }
+    .cell.active { background: #ffedd5; border-color: #f97316; transform: translateY(-4px) scale(1.04); }
+    canvas { width: 100%; height: auto; background: white; border: 2px solid #cbd5e1; border-radius: 24px; box-shadow: inset 0 0 0 1px rgba(148,163,184,.25); }
+    .result-box { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 16px; margin-top: 18px; }
+    .score { border-radius: 24px; padding: 18px; background: white; border: 2px solid #e5e7eb; text-align: center; }
+    .score strong { display: block; font-size: 34px; color: #7c3aed; margin-top: 6px; word-break: break-word; }
+    .answer { background: linear-gradient(135deg,#ecfdf5,#f0fdf4); border: 2px solid #86efac; }
+    .path { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; align-items: center; }
+    .pill, .arrow { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; height: 42px; padding: 0 12px; border-radius: 999px; font-weight: 900; }
+    .pill { background: #dbeafe; color: #1d4ed8; border: 2px solid #93c5fd; }
+    .query-pill { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    .update-pill { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+    .arrow { color: #64748b; min-width: 20px; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 18px; overflow: hidden; }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+    th { background: #eff6ff; color: #1d4ed8; }
+    tr.active-row { background: #fff7ed; outline: 3px solid #fb923c; font-weight: 900; }
+    .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+    .step-list li { counter-increment: step; position: relative; margin: 14px 0; padding: 16px 18px 16px 58px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; }
+    .step-list li::before { content: counter(step); position: absolute; left: 18px; top: 16px; width: 28px; height: 28px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+    pre { white-space: pre-wrap; word-break: break-word; background: #0f172a; color: #e2e8f0; padding: 22px; border-radius: 22px; overflow-x: auto; font-size: 15px; line-height: 1.6; }
+    .code-inline { background: #e2e8f0; padding: 2px 7px; border-radius: 8px; font-weight: 900; color: #1e293b; }
+    .highlight { color: #dc2626; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    footer { text-align: center; padding: 26px; color: #64748b; }
+    @media (max-width: 920px) { .playground { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .card { padding: 20px; } .cell { width: 54px; min-height: 58px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #3297 구간의 합(PURQ) 1</h1>
+    <p>세그먼트 트리로 한 위치 값 변경과 구간 합 질의를 빠르게 처리하는 과정을 시각적으로 배웁니다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 세그먼트 트리란?</h2>
+      <div class="grid">
+        <div class="mini"><h3>구간을 반으로 나눔</h3><p>전체 구간을 계속 반으로 나누어 각 구간의 합을 저장합니다.</p><pre>[1~8]
+→ [1~4], [5~8]</pre></div>
+        <div class="mini"><h3>Point Update</h3><p>한 위치 값이 바뀌면 그 위치를 포함하는 구간 합만 다시 계산합니다.</p><pre>1 a b</pre></div>
+        <div class="mini"><h3>Range Query</h3><p>질의 구간에 완전히 포함되는 노드만 골라 더합니다.</p><pre>2 left right</pre></div>
+      </div>
+      <p class="note">초등학생 버전: 숫자 카드를 큰 상자, 중간 상자, 작은 상자로 나누어 각 상자의 합을 미리 적어 둡니다. 필요한 구간이 나오면 맞는 상자만 골라 더합니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 직접 실행하기</h2>
+      <div class="playground">
+        <div class="visual">
+          <h3>원래 배열 arr</h3>
+          <div id="arrRow" class="array-row"></div>
+          <h3>세그먼트 트리</h3>
+          <canvas id="treeCanvas" width="820" height="520"></canvas>
+          <h3>방문 노드 경로</h3>
+          <div id="pathView" class="path"></div>
+          <p id="stepExplain" class="note">전체 실행을 누르면 init, update, query의 방문 과정이 표시됩니다.</p>
+        </div>
+        <div class="panel">
+          <label>초기 배열</label>
+          <input id="arrayInput" value="1 2 3 4 5 6 7 8" />
+          <label>명령 목록</label>
+          <textarea id="commandInput">2 1 5
+1 7 -5
+2 7 8
+2 1 8</textarea>
+          <button onclick="loadData()">데이터 적용</button>
+          <button onclick="runAll()">전체 실행</button>
+          <button class="ghost" onclick="prevStep()">이전 단계</button>
+          <button class="ghost" onclick="nextStep()">다음 단계</button>
+          <button class="danger" onclick="resetData()">초기화</button>
+          <p class="small">명령 1 a b: a번째 값을 b로 변경<br>명령 2 a b: a~b 구간 합 출력</p>
+        </div>
+      </div>
+
+      <div class="result-box">
+        <div class="score answer"><h3>마지막 질의 결과</h3><strong id="lastResult">-</strong></div>
+        <div class="score"><h3>현재 명령</h3><strong id="currentCommand">-</strong></div>
+        <div class="score"><h3>현재 단계</h3><strong id="statusText">준비</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>3. 단계별 실행 표</h2>
+      <table>
+        <thead><tr><th>단계</th><th>명령</th><th>작업</th><th>노드</th><th>구간</th><th>설명</th></tr></thead>
+        <tbody id="stepTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>4. 세그먼트 트리 함수 이해</h2>
+      <ol class="step-list">
+        <li><b>init(node, start, end)</b>는 node가 담당하는 start~end 구간의 합을 만듭니다.</li>
+        <li>start == end이면 실제 배열 한 칸이므로 tree[node] = arr[start]입니다.</li>
+        <li>아니면 왼쪽 자식과 오른쪽 자식의 합을 더해서 현재 노드에 저장합니다.</li>
+        <li><b>update</b>는 바꾸려는 idx가 포함된 쪽으로만 내려갑니다.</li>
+        <li>리프 노드에서 값을 바꾼 뒤, 돌아오면서 부모 구간 합을 다시 계산합니다.</li>
+        <li><b>query</b>는 구간이 겹치지 않으면 0을 반환합니다.</li>
+        <li>구간이 완전히 포함되면 tree[node]를 바로 반환합니다.</li>
+        <li>일부만 겹치면 왼쪽과 오른쪽으로 나누어 다시 확인합니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>5. 핵심 조건 3가지</h2>
+      <div class="grid">
+        <div class="mini"><h3>겹치지 않음</h3><pre>right < start || end < left</pre><p>질의 구간과 현재 노드 구간이 안 겹치면 0을 반환합니다.</p></div>
+        <div class="mini"><h3>완전히 포함</h3><pre>left <= start && end <= right</pre><p>현재 노드 구간이 질의 구간 안에 전부 들어오면 tree[node]를 바로 씁니다.</p></div>
+        <div class="mini"><h3>일부 겹침</h3><pre>왼쪽 query + 오른쪽 query</pre><p>반으로 나누어 두 자식을 확인합니다.</p></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>6. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+#define MAX 1000001
+
+int N, M;
+long long arr[MAX];
+long long tree[MAX * 4];
+
+long long init(int node, int start, int end) {
+    if (start == end) {
+        tree[node] = arr[start];
+        return tree[node];
+    }
+
+    int mid = (start + end) / 2;
+
+    tree[node] = init(node * 2, start, mid)
+               + init(node * 2 + 1, mid + 1, end);
+
+    return tree[node];
+}
+
+void update(int node, int start, int end, int idx, long long value) {
+    if (idx &lt; start || idx &gt; end) {
+        return;
+    }
+
+    if (start == end) {
+        arr[idx] = value;
+        tree[node] = value;
+        return;
+    }
+
+    int mid = (start + end) / 2;
+
+    update(node * 2, start, mid, idx, value);
+    update(node * 2 + 1, mid + 1, end, idx, value);
+
+    tree[node] = tree[node * 2] + tree[node * 2 + 1];
+}
+
+long long query(int node, int start, int end, int left, int right) {
+    if (right &lt; start || end &lt; left) {
+        return 0;
+    }
+
+    if (left &lt;= start &amp;&amp; end &lt;= right) {
+        return tree[node];
+    }
+
+    int mid = (start + end) / 2;
+
+    return query(node * 2, start, mid, left, right)
+         + query(node * 2 + 1, mid + 1, end, left, right);
+}
+
+int main() {
+    int i;
+    int cmd, a;
+    long long b;
+
+    scanf("%d", &amp;N);
+
+    for (i = 1; i &lt;= N; i++) {
+        scanf("%lld", &amp;arr[i]);
+    }
+
+    init(1, 1, N);
+
+    scanf("%d", &amp;M);
+
+    for (i = 0; i &lt; M; i++) {
+        scanf("%d %d %lld", &amp;cmd, &amp;a, &amp;b);
+
+        if (cmd == 1) {
+            update(1, 1, N, a, b);
+        } else {
+            printf("%lld\n", query(1, 1, N, a, (int)b));
+        }
+    }
+
+    return 0;
+}</pre>
+    </section>
+  </main>
+
+  <footer>정올 #3297 구간의 합(PURQ) 1 - 세그먼트 트리 인터랙티브 학습</footer>
+
+  <script>
+    let N = 8;
+    let originalArr = [];
+    let arr = [];
+    let tree = [];
+    let nodes = [];
+    let commands = [];
+    let steps = [];
+    let stepIndex = -1;
+    let activeNodes = new Set();
+    let queryCells = new Set();
+    let lastResult = '-';
+
+    function parseCommands(){
+      return document.getElementById('commandInput').value.trim().split(/\n+/).map(x=>x.trim()).filter(Boolean).map(line=>line.split(/\s+/).map(Number)).filter(x=>x.length>=3);
+    }
+    function loadData(){
+      const nums = document.getElementById('arrayInput').value.trim().split(/\s+/).map(Number).filter(v=>!Number.isNaN(v));
+      N = nums.length;
+      originalArr = [0, ...nums];
+      arr = [...originalArr];
+      tree = Array(N*4+5).fill(0);
+      nodes = [];
+      build(1,1,N,0,410,60,220);
+      commands = parseCommands();
+      steps = []; stepIndex=-1; lastResult='-';
+      document.getElementById('lastResult').textContent='-';
+      document.getElementById('currentCommand').textContent='-';
+      document.getElementById('statusText').textContent='준비';
+      renderAll();
+    }
+    function resetData(){ loadData(); }
+    function build(node,start,end,depth,x,spread){
+      if(start===end){ tree[node]=arr[start]; }
+      else{
+        const mid=Math.floor((start+end)/2);
+        build(node*2,start,mid,depth+1,x-spread,spread/2);
+        build(node*2+1,mid+1,end,depth+1,x+spread,spread/2);
+        tree[node]=tree[node*2]+tree[node*2+1];
+      }
+      nodes[node]={node,start,end,x,y:45+depth*82,value:tree[node]};
+      return tree[node];
+    }
+    function rebuildNodes(){
+      tree = Array(N*4+5).fill(0); nodes=[]; build(1,1,N,0,410,Math.max(220,N*22));
+    }
+    function addStep(s){
+      steps.push({arrSnapshot:[...arr], treeSnapshot:[...tree], nodeSnapshot:JSON.parse(JSON.stringify(nodes)), activeNodes:[], queryCells:[], result:lastResult, ...s});
+    }
+    function runAll(){
+      arr=[...originalArr]; rebuildNodes(); steps=[]; lastResult='-'; commands=parseCommands();
+      addStep({command:'init', type:'트리 생성', node:1, range:`1~${N}`, desc:'전체 배열을 반씩 나누어 각 구간 합을 저장합니다.', path:[1]});
+      for(const cmd of commands){
+        const [type,a,b]=cmd; const text=cmd.join(' ');
+        if(type===1){
+          updateLog(1,1,N,a,b,text,[]);
+        }else{
+          const cells=[]; for(let i=a;i<=b;i++) cells.push(i);
+          const res=queryLog(1,1,N,a,b,text,[],cells);
+          lastResult=res;
+          addStep({command:text,type:'query 결과',node:'-',range:`${a}~${b}`,desc:`구간 합 결과는 ${res}입니다.`,path:[],queryCells:cells,result:lastResult});
+        }
+      }
+      stepIndex=steps.length?0:-1; renderAll();
+    }
+    function updateLog(node,start,end,idx,value,text,path){
+      path=[...path,node];
+      if(idx<start||idx>end){
+        addStep({command:text,type:'update 제외',node,range:`${start}~${end}`,desc:`idx=${idx}가 현재 구간 ${start}~${end}에 없으므로 방문하지 않습니다.`,path,activeNodes:[node]});
+        return;
+      }
+      addStep({command:text,type:'update 방문',node,range:`${start}~${end}`,desc:`idx=${idx}가 현재 구간 ${start}~${end} 안에 있으므로 내려갑니다.`,path,activeNodes:[node],queryCells:[idx]});
+      if(start===end){
+        arr[idx]=value; tree[node]=value; nodes[node].value=value;
+        addStep({command:text,type:'값 변경',node,range:`${start}~${end}`,desc:`리프 노드입니다. arr[${idx}]와 tree[${node}]를 ${value}로 바꿉니다.`,path,activeNodes:[node],queryCells:[idx]});
+        return;
+      }
+      const mid=Math.floor((start+end)/2);
+      updateLog(node*2,start,mid,idx,value,text,path);
+      updateLog(node*2+1,mid+1,end,idx,value,text,path);
+      tree[node]=tree[node*2]+tree[node*2+1]; nodes[node].value=tree[node];
+      addStep({command:text,type:'부모 재계산',node,range:`${start}~${end}`,desc:`자식 합을 다시 더해 tree[${node}] = ${tree[node*2]} + ${tree[node*2+1]} = ${tree[node]}로 갱신합니다.`,path,activeNodes:[node],queryCells:[idx]});
+    }
+    function queryLog(node,start,end,left,right,text,path,cells){
+      path=[...path,node];
+      if(right<start||end<left){
+        addStep({command:text,type:'query 제외',node,range:`${start}~${end}`,desc:`질의 구간 ${left}~${right}와 현재 구간 ${start}~${end}가 겹치지 않아 0을 반환합니다.`,path,activeNodes:[node],queryCells:cells});
+        return 0;
+      }
+      if(left<=start&&end<=right){
+        addStep({command:text,type:'query 사용',node,range:`${start}~${end}`,desc:`현재 구간 ${start}~${end}가 질의 구간 안에 완전히 포함되어 tree[${node}]=${tree[node]}를 사용합니다.`,path,activeNodes:[node],queryCells:cells});
+        return tree[node];
+      }
+      addStep({command:text,type:'query 분할',node,range:`${start}~${end}`,desc:`일부만 겹치므로 왼쪽/오른쪽 자식으로 나누어 확인합니다.`,path,activeNodes:[node],queryCells:cells});
+      const mid=Math.floor((start+end)/2);
+      return queryLog(node*2,start,mid,left,right,text,path,cells)+queryLog(node*2+1,mid+1,end,left,right,text,path,cells);
+    }
+    function renderArray(){
+      const row=document.getElementById('arrRow'); row.innerHTML='';
+      const snap=stepIndex>=0&&steps[stepIndex]?steps[stepIndex].arrSnapshot:arr;
+      for(let i=1;i<=N;i++){
+        const div=document.createElement('div'); div.className='cell';
+        if(queryCells.has(i)) div.classList.add('query');
+        div.innerHTML=`<span class="idx">arr[${i}]</span><span class="val">${snap[i]}</span>`;
+        row.appendChild(div);
+      }
+    }
+    function drawTree(){
+      const canvas=document.getElementById('treeCanvas'); const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height);
+      const snap=stepIndex>=0&&steps[stepIndex]?steps[stepIndex].nodeSnapshot:nodes;
+      activeNodes = new Set(stepIndex>=0&&steps[stepIndex]?(steps[stepIndex].activeNodes||[]):[]);
+      // edges
+      for(let i=1;i<snap.length;i++){
+        if(!snap[i]) continue;
+        const l=snap[i*2], r=snap[i*2+1];
+        for(const child of [l,r]) if(child){
+          ctx.strokeStyle='#cbd5e1'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(snap[i].x,snap[i].y+24); ctx.lineTo(child.x,child.y-24); ctx.stroke();
+        }
+      }
+      for(let i=1;i<snap.length;i++){
+        const nd=snap[i]; if(!nd) continue;
+        const active=activeNodes.has(i);
+        ctx.beginPath(); ctx.arc(nd.x,nd.y,28,0,Math.PI*2); ctx.fillStyle=active?'#ffedd5':'#eff6ff'; ctx.fill(); ctx.strokeStyle=active?'#f97316':'#2563eb'; ctx.lineWidth=4; ctx.stroke();
+        ctx.fillStyle='#172554'; ctx.font='bold 13px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(`n${i}`,nd.x,nd.y-9); ctx.fillText(`${nd.start}~${nd.end}`,nd.x,nd.y+6); ctx.fillStyle='#7c3aed'; ctx.fillText(nd.value,nd.x,nd.y+21);
+      }
+    }
+    function renderPath(path,type){
+      const div=document.getElementById('pathView'); div.innerHTML='';
+      if(!path||!path.length){ const s=document.createElement('span'); s.className='pill'; s.textContent='방문 없음'; div.appendChild(s); return; }
+      path.forEach((v,idx)=>{ const s=document.createElement('span'); s.className='pill '+(type&&type.includes('update')?'update-pill':'query-pill'); s.textContent=`node ${v}`; div.appendChild(s); if(idx<path.length-1){ const a=document.createElement('span'); a.className='arrow'; a.textContent='→'; div.appendChild(a);} });
+    }
+    function renderTable(){
+      const tbody=document.getElementById('stepTable'); tbody.innerHTML='';
+      steps.forEach((s,idx)=>{ const tr=document.createElement('tr'); if(idx===stepIndex) tr.className='active-row'; tr.innerHTML=`<td>${idx+1}</td><td>${s.command}</td><td>${s.type}</td><td>${s.node}</td><td>${s.range}</td><td>${s.desc}</td>`; tbody.appendChild(tr); });
+    }
+    function renderAll(){
+      queryCells=new Set(stepIndex>=0&&steps[stepIndex]?(steps[stepIndex].queryCells||[]):[]);
+      const s=stepIndex>=0&&steps[stepIndex]?steps[stepIndex]:null;
+      if(s){ document.getElementById('lastResult').textContent=s.result; document.getElementById('currentCommand').textContent=s.command; document.getElementById('statusText').textContent=`${stepIndex+1}/${steps.length}`; document.getElementById('stepExplain').innerHTML=`<b>${stepIndex+1}단계</b>: ${s.desc}<br><span class="code-inline">${s.type} / node ${s.node} / 구간 ${s.range}</span>`; renderPath(s.path,s.type); }
+      else{ document.getElementById('stepExplain').textContent='전체 실행을 누르면 init, update, query의 방문 과정이 표시됩니다.'; renderPath([], ''); }
+      renderArray(); drawTree(); renderTable();
+    }
+    function nextStep(){ if(!steps.length) runAll(); if(stepIndex<steps.length-1){ stepIndex++; renderAll(); } }
+    function prevStep(){ if(stepIndex>0){ stepIndex--; renderAll(); } }
+    loadData();
+  </script>
+</body>
+</html>
