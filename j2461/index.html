@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #2461 공주님의 정원 인터랙티브 학습</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Pretendard','Noto Sans KR',Arial,sans-serif; background: linear-gradient(135deg,#eff6ff,#fff7ed); color: #172554; line-height: 1.75; }
+    header { padding: 50px 18px 36px; text-align: center; color: white; background: linear-gradient(135deg,#2563eb,#7c3aed); border-bottom-left-radius: 36px; border-bottom-right-radius: 36px; box-shadow: 0 14px 32px rgba(37,99,235,.25); }
+    header h1 { margin: 0; font-size: clamp(30px,5vw,54px); letter-spacing: -1px; }
+    header p { max-width: 940px; margin: 14px auto 0; font-size: clamp(16px,2vw,20px); opacity: .96; }
+    main { max-width: 1220px; margin: 0 auto; padding: 26px 18px 60px; }
+    .card { background: rgba(255,255,255,.95); border: 1px solid rgba(148,163,184,.3); border-radius: 28px; padding: 26px; margin: 22px 0; box-shadow: 0 14px 34px rgba(15,23,42,.08); }
+    h2 { margin-top: 0; color: #1d4ed8; font-size: 28px; }
+    h3 { color: #4338ca; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 16px; }
+    .mini { padding: 18px; border-radius: 22px; background: #f8fafc; border: 1px solid #e2e8f0; }
+    .note { padding: 16px 18px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 18px; }
+    .playground { display: grid; grid-template-columns: minmax(360px,1fr) 370px; gap: 20px; align-items: start; }
+    .visual { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; overflow-x: auto; }
+    .panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; }
+    label { display: block; font-weight: 800; color: #334155; margin-top: 10px; }
+    textarea { width: 100%; min-height: 170px; resize: vertical; margin-top: 8px; padding: 13px 14px; border: 2px solid #cbd5e1; border-radius: 16px; font-size: 14px; outline: none; font-family: Consolas,monospace; background: white; }
+    textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.12); }
+    button { border: none; border-radius: 16px; padding: 12px 14px; margin: 6px 4px 0 0; background: #2563eb; color: white; font-weight: 900; cursor: pointer; transition: transform .2s ease, background .2s ease; box-shadow: 0 8px 16px rgba(37,99,235,.2); }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    .ghost { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; box-shadow: none; }
+    .danger { background: #dc2626; }
+    .danger:hover { background: #b91c1c; }
+    .timeline { position: relative; min-width: 780px; height: 82px; margin: 20px 0; background: #e2e8f0; border-radius: 999px; overflow: visible; }
+    .season { position: absolute; top: 0; bottom: 0; background: linear-gradient(90deg,#bbf7d0,#86efac); border-radius: 999px; border: 3px solid #16a34a; }
+    .target-line, .finish-line { position: absolute; top: -10px; bottom: -10px; width: 4px; border-radius: 999px; }
+    .target-line { background: #f97316; box-shadow: 0 0 0 5px rgba(249,115,22,.18); }
+    .finish-line { background: #7c3aed; box-shadow: 0 0 0 5px rgba(124,58,237,.18); }
+    .label-line { position: absolute; top: -38px; transform: translateX(-50%); color: white; padding: 4px 9px; border-radius: 999px; font-size: 12px; font-weight: 900; white-space: nowrap; }
+    .target-label { background: #f97316; }
+    .finish-label { background: #7c3aed; }
+    .tick { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(100,116,139,.35); }
+    .tick span { position: absolute; top: 55px; transform: translateX(-50%); font-size: 12px; color: #475569; font-weight: 800; white-space: nowrap; }
+    .flower-row { min-width: 780px; position: relative; height: 46px; margin: 10px 0; border-radius: 16px; background: white; border: 1px solid #e2e8f0; }
+    .flower-bar { position: absolute; top: 9px; height: 28px; border-radius: 999px; background: linear-gradient(90deg,#93c5fd,#c4b5fd); border: 2px solid #2563eb; color: #172554; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap; }
+    .flower-bar.candidate { background: linear-gradient(90deg,#fde68a,#fdba74); border-color: #f97316; }
+    .flower-bar.chosen { background: linear-gradient(90deg,#bbf7d0,#86efac); border-color: #16a34a; }
+    .flower-bar.unavailable { opacity: .35; filter: grayscale(.3); }
+    .result-box { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 16px; margin-top: 18px; }
+    .score { border-radius: 24px; padding: 18px; background: white; border: 2px solid #e5e7eb; text-align: center; }
+    .score strong { display: block; font-size: 34px; color: #7c3aed; margin-top: 6px; word-break: break-word; }
+    .answer { background: linear-gradient(135deg,#ecfdf5,#f0fdf4); border: 2px solid #86efac; }
+    .path { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; align-items: center; }
+    .pill, .arrow { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; height: 42px; padding: 0 12px; border-radius: 999px; font-weight: 900; }
+    .pill { background: #dbeafe; color: #1d4ed8; border: 2px solid #93c5fd; }
+    .chosen-pill { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    .target-pill { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+    .arrow { color: #64748b; min-width: 20px; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 18px; overflow: hidden; }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+    th { background: #eff6ff; color: #1d4ed8; }
+    tr.active-row { background: #fff7ed; outline: 3px solid #fb923c; font-weight: 900; }
+    .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+    .step-list li { counter-increment: step; position: relative; margin: 14px 0; padding: 16px 18px 16px 58px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; }
+    .step-list li::before { content: counter(step); position: absolute; left: 18px; top: 16px; width: 28px; height: 28px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+    pre { white-space: pre-wrap; word-break: break-word; background: #0f172a; color: #e2e8f0; padding: 22px; border-radius: 22px; overflow-x: auto; font-size: 15px; line-height: 1.6; }
+    .code-inline { background: #e2e8f0; padding: 2px 7px; border-radius: 8px; font-weight: 900; color: #1e293b; }
+    .highlight { color: #dc2626; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    footer { text-align: center; padding: 26px; color: #64748b; }
+    @media (max-width: 920px) { .playground { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .card { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #2461 공주님의 정원</h1>
+    <p>3월 1일부터 11월 30일까지 꽃이 끊기지 않도록 최소 개수의 꽃을 고르는 그리디 문제입니다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 문제를 자세히 이해하기</h2>
+      <div class="grid">
+        <div class="mini"><h3>목표 기간</h3><p>정원에는 <b>3월 1일부터 11월 30일까지</b> 매일 꽃이 피어 있어야 합니다.</p></div>
+        <div class="mini"><h3>꽃 정보</h3><p>각 꽃은 피는 날짜와 지는 날짜가 있습니다.</p><pre>피는 월 피는 일 지는 월 지는 일</pre></div>
+        <div class="mini"><h3>정답</h3><p>조건을 만족하도록 고를 수 있는 꽃의 <b>최소 개수</b>를 출력합니다. 불가능하면 0입니다.</p></div>
+      </div>
+      <p class="note">중요: 꽃이 지는 날은 꽃이 피어 있지 않습니다. 따라서 11월 30일까지 피어 있으려면 마지막 꽃의 지는 날짜가 적어도 12월 1일이어야 합니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 날짜를 숫자로 바꾸는 방법</h2>
+      <p>월과 일을 따로 비교하면 복잡하므로 날짜를 하나의 숫자로 바꿉니다.</p>
+      <pre>3월 1일  → 301
+5월 10일 → 510
+11월 30일 → 1130
+12월 1일 → 1201</pre>
+      <p>코드에서는 다음 함수를 사용합니다.</p>
+      <pre>int toDate(int month, int day) {
+    return month * 100 + day;
+}</pre>
+      <p class="note">이렇게 바꾸면 301보다 401이 더 크고, 1130보다 1201이 더 크므로 날짜 비교가 쉬워집니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>3. 그리디 핵심 생각</h2>
+      <ol class="step-list">
+        <li>현재 꽃이 이어져야 하는 날짜를 <b>target</b>이라고 합니다.</li>
+        <li>처음 target은 3월 1일, 즉 301입니다.</li>
+        <li>target 날짜 이전 또는 target 날짜에 피기 시작한 꽃만 선택할 수 있습니다.</li>
+        <li>그중에서 가장 늦게 지는 꽃을 고릅니다.</li>
+        <li>고른 꽃의 지는 날짜로 target을 늘립니다.</li>
+        <li>target이 1201 이상이 되면 11월 30일까지 덮은 것이므로 성공입니다.</li>
+        <li>만약 target을 더 늘릴 수 없다면 중간에 꽃이 끊긴 것이므로 실패입니다.</li>
+      </ol>
+      <p class="note">초등학생 버전: 꽃 릴레이입니다. 지금 날짜까지 이어졌다면, 그 날짜 전에 이미 피어 있는 꽃 중에서 가장 오래 버티는 꽃을 골라 다음 꽃에게 바통을 넘깁니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>4. 인터랙티브로 과정 보기</h2>
+      <div class="playground">
+        <div class="visual">
+          <h3>날짜 타임라인</h3>
+          <div id="timeline" class="timeline"></div>
+          <h3>꽃 기간</h3>
+          <div id="flowerRows"></div>
+          <h3>선택된 꽃 릴레이</h3>
+          <div id="chosenPath" class="path"></div>
+          <p id="stepExplain" class="note">그리디 실행을 누르면 target 날짜가 어떻게 늘어나는지 볼 수 있습니다.</p>
+        </div>
+        <div class="panel">
+          <label>입력 데이터</label>
+          <textarea id="inputData">4
+1 1 5 31
+1 1 6 30
+5 15 8 31
+6 10 12 10</textarea>
+          <button onclick="loadInput()">입력 적용</button>
+          <button onclick="runGreedy(true)">그리디 실행</button>
+          <button class="ghost" onclick="prevStep()">이전 단계</button>
+          <button class="ghost" onclick="nextStep()">다음 단계</button>
+          <button class="ghost" onclick="setExample1()">예제 1</button>
+          <button class="ghost" onclick="setExample2()">실패 예제</button>
+          <p class="small">첫 줄 N, 이후 N줄에 꽃의 시작 월/일, 종료 월/일을 입력합니다.</p>
+        </div>
+      </div>
+      <div class="result-box">
+        <div class="score answer"><h3>최소 꽃 개수</h3><strong id="answerText">2</strong></div>
+        <div class="score"><h3>현재 target</h3><strong id="targetText">301</strong></div>
+        <div class="score"><h3>현재 단계</h3><strong id="statusText">준비</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>5. 단계별 선택 과정</h2>
+      <table>
+        <thead><tr><th>단계</th><th>현재 target</th><th>선택 가능한 꽃</th><th>가장 멀리 가는 날짜</th><th>선택 결과</th><th>설명</th></tr></thead>
+        <tbody id="stepTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>6. 소스 작성 방법</h2>
+      <ol class="step-list">
+        <li><b>Flower 구조체</b>를 만듭니다. 시작 날짜 start와 종료 날짜 end를 저장합니다.</li>
+        <li><b>toDate()</b> 함수로 월/일을 숫자 날짜로 바꿉니다.</li>
+        <li>꽃들을 <b>시작 날짜 오름차순</b>으로 정렬합니다. 시작 날짜가 같으면 종료 날짜가 늦은 꽃을 앞에 둡니다.</li>
+        <li><b>target = 301</b>, <b>finish = 1201</b>로 시작합니다.</li>
+        <li>현재 target까지 피기 시작한 꽃들을 모두 확인합니다.</li>
+        <li>그 꽃들 중 가장 늦게 지는 날짜 maxEnd를 찾습니다.</li>
+        <li>maxEnd가 target과 같으면 더 이상 이어갈 수 없으므로 0을 출력합니다.</li>
+        <li>이어갈 수 있다면 꽃 하나를 선택한 것이므로 answer를 1 증가시키고 target = maxEnd로 바꿉니다.</li>
+        <li>target이 1201 이상이 될 때까지 반복합니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>7. 왜 이 방법이 맞을까?</h2>
+      <p>현재 target 날짜가 비어 있으면 안 됩니다. 따라서 다음 꽃은 반드시 target 날짜 이전 또는 target 날짜에 이미 피어 있어야 합니다.</p>
+      <p>그중 가장 늦게 지는 꽃을 고르면, 같은 꽃 1개를 쓰면서 가장 멀리까지 기간을 늘릴 수 있습니다.</p>
+      <p class="note">즉, 지금 고를 수 있는 꽃 중에서 가장 멀리 보내 주는 꽃을 고르는 것이 항상 이득입니다. 그래서 그리디로 풀 수 있습니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>8. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#define MAXN 100001
+
+typedef struct {
+    int start;
+    int end;
+} Flower;
+
+Flower flower[MAXN];
+
+int compare(const void *a, const void *b) {
+    Flower *x = (Flower *)a;
+    Flower *y = (Flower *)b;
+
+    if (x-&gt;start != y-&gt;start) {
+        return x-&gt;start - y-&gt;start;
+    }
+
+    return y-&gt;end - x-&gt;end;
+}
+
+int toDate(int month, int day) {
+    return month * 100 + day;
+}
+
+int main() {
+    int N;
+    int sm, sd, em, ed;
+    int i;
+
+    scanf("%d", &amp;N);
+
+    for (i = 0; i &lt; N; i++) {
+        scanf("%d %d %d %d", &amp;sm, &amp;sd, &amp;em, &amp;ed);
+
+        flower[i].start = toDate(sm, sd);
+        flower[i].end = toDate(em, ed);
+    }
+
+    qsort(flower, N, sizeof(Flower), compare);
+
+    int target = 301;
+    int finish = 1201;
+    int answer = 0;
+    int idx = 0;
+
+    while (target &lt; finish) {
+        int maxEnd = target;
+
+        while (idx &lt; N &amp;&amp; flower[idx].start &lt;= target) {
+            if (flower[idx].end &gt; maxEnd) {
+                maxEnd = flower[idx].end;
+            }
+            idx++;
+        }
+
+        if (maxEnd == target) {
+            printf("0\n");
+            return 0;
+        }
+
+        answer++;
+        target = maxEnd;
+    }
+
+    printf("%d\n", answer);
+
+    return 0;
+}</pre>
+    </section>
+  </main>
+
+  <footer>정올 #2461 공주님의 정원 인터랙티브 학습 자료</footer>
+
+  <script>
+    let flowers = [];
+    let sorted = [];
+    let steps = [];
+    let stepIndex = -1;
+    let answer = 0;
+    const START = 301;
+    const FINISH = 1201;
+
+    function toDate(m,d){ return m*100+d; }
+    function dateText(v){ return Math.floor(v/100)+'/'+(v%100); }
+    function setExample1(){ document.getElementById('inputData').value = `4\n1 1 5 31\n1 1 6 30\n5 15 8 31\n6 10 12 10`; loadInput(); }
+    function setExample2(){ document.getElementById('inputData').value = `3\n1 1 3 1\n4 1 6 1\n6 1 12 1`; loadInput(); }
+    function loadInput(){
+      const nums = document.getElementById('inputData').value.trim().split(/\s+/).map(Number).filter(v=>!Number.isNaN(v));
+      const n = nums[0] || 0;
+      flowers = [];
+      let p=1;
+      for(let i=0;i<n;i++){
+        const sm=nums[p++], sd=nums[p++], em=nums[p++], ed=nums[p++];
+        flowers.push({start:toDate(sm,sd), end:toDate(em,ed), raw:`${sm}/${sd}~${em}/${ed}`, id:i+1});
+      }
+      sorted = [...flowers].sort((a,b)=>a.start!==b.start?a.start-b.start:b.end-a.end);
+      runGreedy(false);
+    }
+    function runGreedy(show){
+      sorted = [...flowers].sort((a,b)=>a.start!==b.start?a.start-b.start:b.end-a.end);
+      steps=[];
+      let target=START, idx=0, count=0;
+      const chosen=[];
+      while(target<FINISH){
+        let maxEnd=target;
+        let chosenFlower=null;
+        const candidates=[];
+        while(idx<sorted.length && sorted[idx].start<=target){
+          candidates.push(sorted[idx]);
+          if(sorted[idx].end>maxEnd){ maxEnd=sorted[idx].end; chosenFlower=sorted[idx]; }
+          idx++;
+        }
+        if(maxEnd===target){
+          steps.push({target, maxEnd, candidates, chosen:[...chosen], chosenFlower:null, count, fail:true, desc:`${dateText(target)}까지 이어야 하지만, 이 날짜까지 피기 시작한 꽃 중 더 멀리 이어 주는 꽃이 없습니다.`});
+          answer=0; break;
+        }
+        count++;
+        if(chosenFlower) chosen.push(chosenFlower);
+        steps.push({target, maxEnd, candidates, chosen:[...chosen], chosenFlower, count, fail:false, desc:`${dateText(target)}까지 피어 있어야 하므로 시작일이 ${dateText(target)} 이하인 꽃 중 가장 늦게 지는 꽃을 고릅니다.`});
+        target=maxEnd;
+        answer=count;
+      }
+      if(target>=FINISH) answer=count;
+      stepIndex=show&&steps.length?0:-1;
+      document.getElementById('answerText').textContent = answer;
+      renderAll();
+    }
+    function pos(date){ return ((date-101)/(1231-101))*100; }
+    function renderTimeline(){
+      const tl=document.getElementById('timeline'); tl.innerHTML='';
+      const season=document.createElement('div'); season.className='season'; season.style.left=pos(START)+'%'; season.style.width=(pos(FINISH)-pos(START))+'%'; tl.appendChild(season);
+      [301,401,501,601,701,801,901,1001,1101,1201].forEach(t=>{ const tick=document.createElement('div'); tick.className='tick'; tick.style.left=pos(t)+'%'; tick.innerHTML=`<span>${dateText(t)}</span>`; tl.appendChild(tick); });
+      const target = stepIndex>=0&&steps[stepIndex]?steps[stepIndex].target:START;
+      const targetLine=document.createElement('div'); targetLine.className='target-line'; targetLine.style.left=pos(target)+'%'; tl.appendChild(targetLine);
+      const targetLab=document.createElement('div'); targetLab.className='label-line target-label'; targetLab.style.left=pos(target)+'%'; targetLab.textContent='target '+dateText(target); tl.appendChild(targetLab);
+      const finishLine=document.createElement('div'); finishLine.className='finish-line'; finishLine.style.left=pos(FINISH)+'%'; tl.appendChild(finishLine);
+      const finishLab=document.createElement('div'); finishLab.className='label-line finish-label'; finishLab.style.left=pos(FINISH)+'%'; finishLab.textContent='finish 12/1'; tl.appendChild(finishLab);
+    }
+    function renderFlowers(){
+      const wrap=document.getElementById('flowerRows'); wrap.innerHTML='';
+      const step=stepIndex>=0?steps[stepIndex]:null;
+      const candidateIds=new Set(step?step.candidates.map(f=>f.id):[]);
+      const chosenIds=new Set(step?step.chosen.map(f=>f.id):[]);
+      sorted.forEach((f,i)=>{
+        const row=document.createElement('div'); row.className='flower-row';
+        const bar=document.createElement('div'); bar.className='flower-bar';
+        if(candidateIds.has(f.id)) bar.classList.add('candidate');
+        if(chosenIds.has(f.id)) bar.classList.add('chosen');
+        if(step && f.start>step.target) bar.classList.add('unavailable');
+        bar.style.left=pos(f.start)+'%'; bar.style.width=Math.max(2,pos(f.end)-pos(f.start))+'%';
+        bar.textContent=`${f.id}. ${f.raw}`;
+        row.appendChild(bar); wrap.appendChild(row);
+      });
+    }
+    function renderChosen(){
+      const div=document.getElementById('chosenPath'); div.innerHTML='';
+      const step=stepIndex>=0?steps[stepIndex]:null;
+      const chosen=step?step.chosen:[];
+      if(!chosen.length){ const s=document.createElement('span'); s.className='pill target-pill'; s.textContent='아직 선택 없음'; div.appendChild(s); return; }
+      chosen.forEach((f,i)=>{ const s=document.createElement('span'); s.className='pill chosen-pill'; s.textContent=`${f.id}번 ${dateText(f.start)}~${dateText(f.end)}`; div.appendChild(s); if(i<chosen.length-1){ const a=document.createElement('span'); a.className='arrow'; a.textContent='→'; div.appendChild(a); } });
+    }
+    function renderTable(){
+      const tbody=document.getElementById('stepTable'); tbody.innerHTML='';
+      steps.forEach((s,i)=>{
+        const tr=document.createElement('tr'); if(i===stepIndex) tr.className='active-row';
+        const cand=s.candidates.length?s.candidates.map(f=>`${f.id}번(${dateText(f.start)}~${dateText(f.end)})`).join(', '):'-';
+        const choice=s.chosenFlower?`${s.chosenFlower.id}번 꽃 선택`:(s.fail?'실패':'-');
+        tr.innerHTML=`<td>${i+1}</td><td>${dateText(s.target)}</td><td>${cand}</td><td>${dateText(s.maxEnd)}</td><td>${choice}</td><td>${s.desc}</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    function renderAll(){
+      const step=stepIndex>=0?steps[stepIndex]:null;
+      document.getElementById('targetText').textContent=step?dateText(step.target):dateText(START);
+      document.getElementById('statusText').textContent=step?`${stepIndex+1}/${steps.length}`:'준비';
+      document.getElementById('stepExplain').innerHTML=step?`<b>${stepIndex+1}단계</b>: ${step.desc}<br><span class="code-inline">target=${dateText(step.target)}, maxEnd=${dateText(step.maxEnd)}</span>`:'그리디 실행을 누르면 target 날짜가 어떻게 늘어나는지 볼 수 있습니다.';
+      renderTimeline(); renderFlowers(); renderChosen(); renderTable();
+    }
+    function nextStep(){ if(!steps.length) runGreedy(true); if(stepIndex<steps.length-1){ stepIndex++; renderAll(); } }
+    function prevStep(){ if(stepIndex>0){ stepIndex--; renderAll(); } }
+    loadInput();
+  </script>
+</body>
+</html>
