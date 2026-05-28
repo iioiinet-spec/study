@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #1092 제곱수 출력 인터랙티브 학습</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Pretendard','Noto Sans KR',Arial,sans-serif; background: linear-gradient(135deg,#eff6ff,#fff7ed); color: #172554; line-height: 1.75; }
+    header { padding: 50px 18px 36px; text-align: center; color: white; background: linear-gradient(135deg,#2563eb,#7c3aed); border-bottom-left-radius: 36px; border-bottom-right-radius: 36px; box-shadow: 0 14px 32px rgba(37,99,235,.25); }
+    header h1 { margin: 0; font-size: clamp(30px,5vw,54px); letter-spacing: -1px; }
+    header p { max-width: 940px; margin: 14px auto 0; font-size: clamp(16px,2vw,20px); opacity: .96; }
+    main { max-width: 1220px; margin: 0 auto; padding: 26px 18px 60px; }
+    .card { background: rgba(255,255,255,.95); border: 1px solid rgba(148,163,184,.3); border-radius: 28px; padding: 26px; margin: 22px 0; box-shadow: 0 14px 34px rgba(15,23,42,.08); }
+    h2 { margin-top: 0; color: #1d4ed8; font-size: 28px; }
+    h3 { color: #4338ca; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 16px; }
+    .mini { padding: 18px; border-radius: 22px; background: #f8fafc; border: 1px solid #e2e8f0; }
+    .note { padding: 16px 18px; background: #fffbeb; border: 1px solid #fde68a; border-radius: 18px; }
+    .playground { display: grid; grid-template-columns: minmax(360px,1fr) 370px; gap: 20px; align-items: start; }
+    .visual { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; overflow-x: auto; }
+    .panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 24px; padding: 18px; }
+    label { display: block; font-weight: 800; color: #334155; margin-top: 10px; }
+    input { width: 100%; margin-top: 6px; padding: 12px 13px; border: 2px solid #cbd5e1; border-radius: 16px; font-size: 16px; outline: none; background: white; }
+    input:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.12); }
+    button { border: none; border-radius: 16px; padding: 12px 14px; margin: 6px 4px 0 0; background: #2563eb; color: white; font-weight: 900; cursor: pointer; transition: transform .2s ease, background .2s ease; box-shadow: 0 8px 16px rgba(37,99,235,.2); }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    .ghost { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; box-shadow: none; }
+    .danger { background: #dc2626; }
+    .danger:hover { background: #b91c1c; }
+    .formula { font-size: clamp(24px,4vw,44px); font-weight: 900; text-align: center; padding: 22px; border-radius: 24px; background: linear-gradient(135deg,#dbeafe,#ede9fe); border: 2px solid #bfdbfe; color: #1e3a8a; margin: 16px 0; }
+    .step-flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0; }
+    .pill, .arrow { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; min-height: 42px; padding: 8px 12px; border-radius: 999px; font-weight: 900; }
+    .pill { background: #dbeafe; color: #1d4ed8; border: 2px solid #93c5fd; }
+    .odd-pill { background: #ffedd5; color: #c2410c; border-color: #fdba74; }
+    .even-pill { background: #dcfce7; color: #15803d; border-color: #86efac; }
+    .result-pill { background: #ede9fe; color: #6d28d9; border-color: #c4b5fd; }
+    .arrow { color: #64748b; min-width: 20px; padding: 0; }
+    .result-box { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 16px; margin-top: 18px; }
+    .score { border-radius: 24px; padding: 18px; background: white; border: 2px solid #e5e7eb; text-align: center; }
+    .score strong { display: block; font-size: 32px; color: #7c3aed; margin-top: 6px; word-break: break-word; }
+    .answer { background: linear-gradient(135deg,#ecfdf5,#f0fdf4); border: 2px solid #86efac; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 18px; overflow: hidden; }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+    th { background: #eff6ff; color: #1d4ed8; }
+    tr.active-row { background: #fff7ed; outline: 3px solid #fb923c; font-weight: 900; }
+    .step-list { counter-reset: step; padding-left: 0; list-style: none; }
+    .step-list li { counter-increment: step; position: relative; margin: 14px 0; padding: 16px 18px 16px 58px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; }
+    .step-list li::before { content: counter(step); position: absolute; left: 18px; top: 16px; width: 28px; height: 28px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+    pre { white-space: pre-wrap; word-break: break-word; background: #0f172a; color: #e2e8f0; padding: 22px; border-radius: 22px; overflow-x: auto; font-size: 15px; line-height: 1.6; }
+    .code-inline { background: #e2e8f0; padding: 2px 7px; border-radius: 8px; font-weight: 900; color: #1e293b; }
+    .highlight { color: #dc2626; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    footer { text-align: center; padding: 26px; color: #64748b; }
+    @media (max-width: 920px) { .playground { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .card { padding: 20px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>정올 #1092 제곱수 출력</h1>
+    <p>X의 Y제곱을 20,091,024로 나눈 나머지를 빠른 제곱으로 구하는 문제입니다.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>1. 문제를 자세히 이해하기</h2>
+      <div class="formula">정답 = X<sup>Y</sup> % 20091024</div>
+      <div class="grid">
+        <div class="mini"><h3>입력</h3><p>두 정수 X, Y가 주어집니다.</p><pre>X Y</pre></div>
+        <div class="mini"><h3>출력</h3><p>X를 Y번 곱한 값을 20091024로 나눈 나머지를 출력합니다.</p><pre>X^Y % 20091024</pre></div>
+        <div class="mini"><h3>주의</h3><p>X<sup>Y</sup>를 직접 계산하면 숫자가 너무 커져서 일반 변수에 저장할 수 없습니다.</p></div>
+      </div>
+      <p class="note">핵심은 큰 수를 직접 만들지 않고, 곱할 때마다 나머지를 구하면서 값을 작게 유지하는 것입니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>2. 왜 그냥 곱하면 안 될까?</h2>
+      <p>예를 들어 2<sup>100</sup>만 해도 아주 큰 수입니다. Y가 더 커지면 C언어의 정수형 변수에 담을 수 없습니다.</p>
+      <pre>2^10 = 1024
+2^30 = 1073741824
+2^100 = 아주 큰 수</pre>
+      <p>하지만 문제는 전체 값이 아니라 <b>나머지</b>만 원합니다.</p>
+      <pre>(a * b) % MOD = ((a % MOD) * (b % MOD)) % MOD</pre>
+      <p class="note">그래서 매번 곱한 뒤 바로 % 20091024를 해주면 숫자가 너무 커지는 것을 막을 수 있습니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>3. 빠른 제곱 원리</h2>
+      <p>Y번을 하나씩 곱하면 시간이 오래 걸립니다. 그래서 지수를 반씩 줄입니다.</p>
+      <pre>2^10 = (2^5)^2
+2^5 = 2 × (2^2)^2
+
+지수 변화: 10 → 5 → 2 → 1 → 0</pre>
+      <ol class="step-list">
+        <li>result를 1로 시작합니다.</li>
+        <li>x는 MOD로 나눈 값으로 시작합니다.</li>
+        <li>y가 홀수이면 result에 x를 곱합니다.</li>
+        <li>x는 매번 제곱합니다.</li>
+        <li>y는 매번 2로 나눕니다.</li>
+        <li>모든 곱셈 뒤에는 MOD로 나머지를 구합니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>4. 인터랙티브 계산 과정</h2>
+      <div class="playground">
+        <div class="visual">
+          <h3>현재 계산 상태</h3>
+          <div id="stateFormula" class="formula">result = 1, x = 2, y = 10</div>
+          <h3>지수 y가 줄어드는 흐름</h3>
+          <div id="flowView" class="step-flow"></div>
+          <p id="stepExplain" class="note">실행을 누르면 빠른 제곱 과정이 한 단계씩 표시됩니다.</p>
+        </div>
+        <div class="panel">
+          <label>X</label>
+          <input id="xInput" type="number" value="2" />
+          <label>Y</label>
+          <input id="yInput" type="number" value="10" />
+          <button onclick="loadInput()">입력 적용</button>
+          <button onclick="runPower(true)">빠른 제곱 실행</button>
+          <button class="ghost" onclick="prevStep()">이전 단계</button>
+          <button class="ghost" onclick="nextStep()">다음 단계</button>
+          <button class="ghost" onclick="setExample(3,13)">예제 3 13</button>
+          <button class="ghost" onclick="setExample(10,20)">예제 10 20</button>
+          <p class="small">MOD는 20091024로 고정입니다.</p>
+        </div>
+      </div>
+      <div class="result-box">
+        <div class="score answer"><h3>정답</h3><strong id="answerText">1024</strong></div>
+        <div class="score"><h3>현재 result</h3><strong id="resultText">1</strong></div>
+        <div class="score"><h3>현재 x</h3><strong id="xText">2</strong></div>
+        <div class="score"><h3>현재 y</h3><strong id="yText">10</strong></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>5. 단계별 계산 표</h2>
+      <table>
+        <thead><tr><th>단계</th><th>y 상태</th><th>result</th><th>x</th><th>계산</th><th>설명</th></tr></thead>
+        <tbody id="stepTable"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>6. 코드 구현 방법</h2>
+      <ol class="step-list">
+        <li>MOD 값을 상수로 만듭니다.</li>
+        <li>곱셈 중 값이 커질 수 있으므로 long long을 사용합니다.</li>
+        <li>power(x, y) 함수를 만듭니다.</li>
+        <li>result를 1로 초기화합니다.</li>
+        <li>x를 먼저 x % MOD로 줄입니다.</li>
+        <li>while(y > 0) 반복문을 사용합니다.</li>
+        <li>y가 홀수이면 result = result * x % MOD를 합니다.</li>
+        <li>x = x * x % MOD로 밑을 제곱합니다.</li>
+        <li>y = y / 2로 지수를 절반으로 줄입니다.</li>
+        <li>반복이 끝나면 result를 출력합니다.</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>7. 초등학생도 이해하는 설명</h2>
+      <p class="note">같은 숫자를 아주 많이 곱해야 하는데, 하나씩 곱하면 오래 걸립니다. 그래서 “두 번 곱한 것”, “네 번 곱한 것”, “여덟 번 곱한 것”처럼 묶어서 빠르게 계산합니다.</p>
+      <pre>2^13 = 2^8 × 2^4 × 2^1
+
+13의 이진수는 1101
+즉, 필요한 묶음은 8, 4, 1입니다.</pre>
+      <p>빠른 제곱은 바로 이 묶음을 자동으로 찾아서 곱하는 방법입니다.</p>
+    </section>
+
+    <section class="card">
+      <h2>8. 정답 C 코드</h2>
+      <pre>#include &lt;stdio.h&gt;
+
+#define MOD 20091024
+
+long long power(long long x, long long y) {
+    long long result = 1;
+
+    x = x % MOD;
+
+    while (y &gt; 0) {
+        if (y % 2 == 1) {
+            result = (result * x) % MOD;
+        }
+
+        x = (x * x) % MOD;
+        y = y / 2;
+    }
+
+    return result;
+}
+
+int main() {
+    long long x, y;
+
+    scanf("%lld %lld", &amp;x, &amp;y);
+
+    printf("%lld\n", power(x, y));
+
+    return 0;
+}</pre>
+    </section>
+  </main>
+
+  <footer>정올 #1092 제곱수 출력 인터랙티브 학습 자료</footer>
+
+  <script>
+    const MOD = 20091024n;
+    let X = 2n, Y = 10n;
+    let steps = [];
+    let stepIndex = -1;
+    let answer = 1024n;
+
+    function setExample(x,y){ document.getElementById('xInput').value=x; document.getElementById('yInput').value=y; loadInput(); }
+    function loadInput(){
+      X = BigInt(document.getElementById('xInput').value || '0');
+      Y = BigInt(document.getElementById('yInput').value || '0');
+      runPower(false);
+    }
+    function runPower(show){
+      steps=[];
+      let x = ((X % MOD) + MOD) % MOD;
+      let y = Y;
+      let result = 1n;
+      steps.push({type:'초기화', y, x, result, calc:`x = ${X} % 20091024 = ${x}`, desc:'result는 1로 시작하고, x는 MOD로 나눈 값으로 줄입니다.'});
+      while(y > 0n){
+        if(y % 2n === 1n){
+          const before = result;
+          result = (result * x) % MOD;
+          steps.push({type:'홀수 y 처리', y, x, result, calc:`result = (${before} × ${x}) % 20091024 = ${result}`, desc:'y가 홀수이므로 현재 x 묶음을 정답에 곱합니다.'});
+        }else{
+          steps.push({type:'짝수 y', y, x, result, calc:'result 변화 없음', desc:'y가 짝수이므로 이번에는 result에 곱하지 않습니다.'});
+        }
+        const oldX = x;
+        const oldY = y;
+        x = (x * x) % MOD;
+        y = y / 2n;
+        steps.push({type:'x 제곱, y 절반', y, x, result, calc:`x = (${oldX} × ${oldX}) % 20091024 = ${x}, y = ${oldY} / 2 = ${y}`, desc:'다음 묶음을 만들기 위해 x를 제곱하고, 지수 y를 절반으로 줄입니다.'});
+      }
+      answer = result;
+      steps.push({type:'완료', y, x, result, calc:`정답 = ${result}`, desc:'y가 0이 되었으므로 계산을 끝냅니다.'});
+      document.getElementById('answerText').textContent = answer.toString();
+      stepIndex = show ? 0 : -1;
+      renderAll();
+    }
+    function renderFlow(){
+      const div=document.getElementById('flowView'); div.innerHTML='';
+      const ys=[]; let y=Y; ys.push(y); while(y>0n){ y=y/2n; ys.push(y); }
+      ys.forEach((v,i)=>{ const s=document.createElement('span'); s.className='pill '+(v%2n===1n?'odd-pill':'even-pill'); s.textContent='y='+v; div.appendChild(s); if(i<ys.length-1){ const a=document.createElement('span'); a.className='arrow'; a.textContent='→'; div.appendChild(a); } });
+    }
+    function renderTable(){
+      const tbody=document.getElementById('stepTable'); tbody.innerHTML='';
+      steps.forEach((s,i)=>{ const tr=document.createElement('tr'); if(i===stepIndex) tr.className='active-row'; tr.innerHTML=`<td>${i+1}</td><td>${s.type}</td><td>${s.result}</td><td>${s.x}</td><td>${s.calc}</td><td>${s.desc}</td>`; tbody.appendChild(tr); });
+    }
+    function renderAll(){
+      const s=stepIndex>=0?steps[stepIndex]:steps[0];
+      if(s){
+        document.getElementById('stateFormula').innerHTML = `result = ${s.result}, x = ${s.x}, y = ${s.y}`;
+        document.getElementById('resultText').textContent = s.result.toString();
+        document.getElementById('xText').textContent = s.x.toString();
+        document.getElementById('yText').textContent = s.y.toString();
+        document.getElementById('stepExplain').innerHTML = stepIndex>=0 ? `<b>${stepIndex+1}단계</b>: ${s.desc}<br><span class="code-inline">${s.calc}</span>` : '실행을 누르면 빠른 제곱 과정이 한 단계씩 표시됩니다.';
+      }
+      renderFlow(); renderTable();
+    }
+    function nextStep(){ if(!steps.length) runPower(true); if(stepIndex<steps.length-1){ stepIndex++; renderAll(); } }
+    function prevStep(){ if(stepIndex>0){ stepIndex--; renderAll(); } }
+    loadInput();
+  </script>
+</body>
+</html>

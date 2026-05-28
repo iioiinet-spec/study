@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #1516 단어 세기 인터랙티브 학습</title>
+  <style>
+    *{box-sizing:border-box} body{margin:0;font-family:'Pretendard','Noto Sans KR',Arial,sans-serif;background:linear-gradient(135deg,#eff6ff,#fff7ed);color:#172554;line-height:1.75} header{padding:50px 18px 36px;text-align:center;color:white;background:linear-gradient(135deg,#2563eb,#7c3aed);border-bottom-left-radius:36px;border-bottom-right-radius:36px;box-shadow:0 14px 32px rgba(37,99,235,.25)} header h1{margin:0;font-size:clamp(30px,5vw,54px);letter-spacing:-1px} header p{max-width:940px;margin:14px auto 0;font-size:clamp(16px,2vw,20px);opacity:.96} main{max-width:1220px;margin:0 auto;padding:26px 18px 60px}.card{background:rgba(255,255,255,.95);border:1px solid rgba(148,163,184,.3);border-radius:28px;padding:26px;margin:22px 0;box-shadow:0 14px 34px rgba(15,23,42,.08)} h2{margin-top:0;color:#1d4ed8;font-size:28px} h3{color:#4338ca}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}.mini{padding:18px;border-radius:22px;background:#f8fafc;border:1px solid #e2e8f0}.note{padding:16px 18px;background:#fffbeb;border:1px solid #fde68a;border-radius:18px}.playground{display:grid;grid-template-columns:minmax(360px,1fr) 370px;gap:20px;align-items:start}.visual{background:#f8fafc;border:1px solid #e2e8f0;border-radius:24px;padding:18px;overflow-x:auto}.panel{background:#f8fafc;border:1px solid #e2e8f0;border-radius:24px;padding:18px}label{display:block;font-weight:800;color:#334155;margin-top:10px}textarea{width:100%;min-height:140px;resize:vertical;margin-top:8px;padding:13px 14px;border:2px solid #cbd5e1;border-radius:16px;font-size:15px;outline:none;font-family:Consolas,monospace;background:white}textarea:focus{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.12)}button{border:none;border-radius:16px;padding:12px 14px;margin:6px 4px 0 0;background:#2563eb;color:white;font-weight:900;cursor:pointer;transition:transform .2s ease,background .2s ease;box-shadow:0 8px 16px rgba(37,99,235,.2)}button:hover{transform:translateY(-2px);background:#1d4ed8}.ghost{background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;box-shadow:none}.danger{background:#dc2626}.danger:hover{background:#b91c1c}.step-box{background:white;border:2px solid #e2e8f0;border-radius:22px;padding:16px;margin:12px 0}.path{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;align-items:center}.pill,.arrow{display:inline-flex;align-items:center;justify-content:center;min-width:42px;min-height:42px;padding:8px 12px;border-radius:999px;font-weight:900}.pill{background:#dbeafe;color:#1d4ed8;border:2px solid #93c5fd}.word-pill{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd}.sorted-pill{background:#dcfce7;color:#15803d;border-color:#86efac}.count-pill{background:#ffedd5;color:#c2410c;border-color:#fdba74}.end-pill{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.arrow{color:#64748b;min-width:20px;padding:0}.result-box{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-top:18px}.score{border-radius:24px;padding:18px;background:white;border:2px solid #e5e7eb;text-align:center}.score strong{display:block;font-size:32px;color:#7c3aed;margin-top:6px;word-break:break-word}.answer{background:linear-gradient(135deg,#ecfdf5,#f0fdf4);border:2px solid #86efac}table{width:100%;border-collapse:collapse;margin-top:16px;background:white;border-radius:18px;overflow:hidden}th,td{border:1px solid #e2e8f0;padding:10px;text-align:center}th{background:#eff6ff;color:#1d4ed8}tr.active-row{background:#fff7ed;outline:3px solid #fb923c;font-weight:900}.step-list{counter-reset:step;padding-left:0;list-style:none}.step-list li{counter-increment:step;position:relative;margin:14px 0;padding:16px 18px 16px 58px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px}.step-list li::before{content:counter(step);position:absolute;left:18px;top:16px;width:28px;height:28px;border-radius:50%;background:#2563eb;color:white;display:flex;align-items:center;justify-content:center;font-weight:900}pre{white-space:pre-wrap;word-break:break-word;background:#0f172a;color:#e2e8f0;padding:22px;border-radius:22px;overflow-x:auto;font-size:15px;line-height:1.6}.code-inline{background:#e2e8f0;padding:2px 7px;border-radius:8px;font-weight:900;color:#1e293b}.highlight{color:#dc2626;font-weight:900}.small{color:#64748b;font-size:14px}footer{text-align:center;padding:26px;color:#64748b}@media(max-width:920px){.playground{grid-template-columns:1fr}}@media(max-width:640px){.card{padding:20px}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>정올 #1516 단어 세기</h1>
+  <p>문장을 입력받아 공백으로 단어를 나누고, 같은 단어가 몇 번 나왔는지 세는 방법을 배웁니다.</p>
+</header>
+<main>
+  <section class="card">
+    <h2>1. 문제를 자세히 이해하기</h2>
+    <div class="grid">
+      <div class="mini"><h3>입력</h3><p>여러 줄의 문장이 들어옵니다.</p></div>
+      <div class="mini"><h3>종료 조건</h3><p>한 줄이 <b>END</b>이면 입력을 끝냅니다.</p></div>
+      <div class="mini"><h3>해야 할 일</h3><p>각 줄마다 단어를 나누고, 같은 단어가 몇 번 나왔는지 출력합니다.</p></div>
+    </div>
+    <p class="note">단어는 공백으로 구분합니다. 예를 들어 <b>apple banana apple</b>은 apple 2개, banana 1개입니다.</p>
+  </section>
+
+  <section class="card">
+    <h2>2. 풀이 핵심</h2>
+    <ol class="step-list">
+      <li>한 줄을 <b>fgets()</b>로 입력받습니다.</li>
+      <li>줄 끝의 개행 문자 <b>\n</b>을 제거합니다.</li>
+      <li>입력 줄이 <b>END</b>인지 확인합니다.</li>
+      <li><b>strtok(line, " ")</b>으로 공백 기준 단어를 나눕니다.</li>
+      <li>단어들을 배열에 저장합니다.</li>
+      <li><b>qsort()</b>로 단어를 사전순 정렬합니다.</li>
+      <li>정렬하면 같은 단어가 붙어 있으므로 앞에서부터 개수를 셉니다.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>3. 인터랙티브로 단어 세기 보기</h2>
+    <div class="playground">
+      <div class="visual">
+        <h3>1단계: 입력 줄</h3>
+        <div id="lineView" class="step-box"></div>
+        <h3>2단계: 단어 분리</h3>
+        <div id="tokenView" class="path"></div>
+        <h3>3단계: 정렬된 단어</h3>
+        <div id="sortedView" class="path"></div>
+        <h3>4단계: 단어별 개수</h3>
+        <div id="countView" class="path"></div>
+        <p id="stepExplain" class="note">실행을 누르면 단어가 나뉘고 정렬된 뒤 개수가 계산됩니다.</p>
+      </div>
+      <div class="panel">
+        <label>입력 데이터</label>
+        <textarea id="inputData">apple banana apple orange banana
+cat dog cat
+END</textarea>
+        <button onclick="loadInput()">입력 적용</button>
+        <button onclick="runProcess(true)">단어 세기 실행</button>
+        <button class="ghost" onclick="prevStep()">이전 단계</button>
+        <button class="ghost" onclick="nextStep()">다음 단계</button>
+        <button class="ghost" onclick="setExample1()">예제 1</button>
+        <button class="ghost" onclick="setExample2()">예제 2</button>
+        <p class="small">END가 나오면 그 줄부터는 처리하지 않습니다.</p>
+      </div>
+    </div>
+    <div class="result-box">
+      <div class="score answer"><h3>처리한 문장 수</h3><strong id="lineCountText">2</strong></div>
+      <div class="score"><h3>현재 줄</h3><strong id="currentLineText">1</strong></div>
+      <div class="score"><h3>현재 단계</h3><strong id="statusText">준비</strong></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>4. 출력 결과</h2>
+    <pre id="outputView">apple : 2
+banana : 2
+orange : 1
+cat : 2
+dog : 1</pre>
+  </section>
+
+  <section class="card">
+    <h2>5. 단계별 처리 표</h2>
+    <table>
+      <thead><tr><th>단계</th><th>문장 번호</th><th>작업</th><th>내용</th><th>설명</th></tr></thead>
+      <tbody id="logTable"></tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>6. 코드 작성 방법</h2>
+    <ol class="step-list">
+      <li><b>line</b> 배열을 만들어 한 줄 전체를 저장합니다.</li>
+      <li><b>words</b> 2차원 배열에 단어들을 저장합니다.</li>
+      <li><b>fgets()</b>를 이용해 한 줄씩 읽습니다.</li>
+      <li><b>line[strcspn(line, "\n")] = '\0';</b>으로 줄바꿈을 없앱니다.</li>
+      <li><b>strcmp(line, "END") == 0</b>이면 반복문을 종료합니다.</li>
+      <li><b>strtok()</b>으로 단어를 하나씩 꺼냅니다.</li>
+      <li>단어를 <b>strcpy()</b>로 words 배열에 복사합니다.</li>
+      <li><b>qsort()</b>로 단어를 정렬합니다.</li>
+      <li>정렬된 단어를 앞에서부터 보면서 같은 단어가 몇 개인지 셉니다.</li>
+      <li>단어와 개수를 출력합니다.</li>
+    </ol>
+  </section>
+
+  <section class="card">
+    <h2>7. 초등학생도 이해하는 설명</h2>
+    <p class="note">문장을 단어 카드로 자릅니다. 그런 다음 같은 단어 카드를 서로 붙도록 정렬합니다. 그러면 같은 단어들이 한 줄로 모이기 때문에 몇 장인지 쉽게 셀 수 있습니다.</p>
+    <pre>apple banana apple orange banana
+
+단어 카드:
+apple / banana / apple / orange / banana
+
+정렬 후:
+apple / apple / banana / banana / orange
+
+개수:
+apple 2개
+banana 2개
+orange 1개</pre>
+  </section>
+
+  <section class="card">
+    <h2>8. 정답 C 코드</h2>
+    <pre>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+#include &lt;stdlib.h&gt;
+
+char line[10001];
+char words[1000][101];
+
+int compare(const void *a, const void *b) {
+    return strcmp((char *)a, (char *)b);
+}
+
+int main() {
+    while (1) {
+        fgets(line, sizeof(line), stdin);
+
+        line[strcspn(line, "\n")] = '\0';
+
+        if (strcmp(line, "END") == 0) {
+            break;
+        }
+
+        int n = 0;
+
+        char *token = strtok(line, " ");
+
+        while (token != NULL) {
+            strcpy(words[n], token);
+            n++;
+            token = strtok(NULL, " ");
+        }
+
+        qsort(words, n, sizeof(words[0]), compare);
+
+        for (int i = 0; i &lt; n; i++) {
+            int cnt = 1;
+
+            while (i + 1 &lt; n &amp;&amp; strcmp(words[i], words[i + 1]) == 0) {
+                cnt++;
+                i++;
+            }
+
+            printf("%s : %d\n", words[i], cnt);
+        }
+    }
+
+    return 0;
+}</pre>
+  </section>
+</main>
+<footer>정올 #1516 단어 세기 인터랙티브 학습 자료</footer>
+<script>
+let lines=[], logs=[], stepIndex=-1, outputs=[];
+function setExample1(){document.getElementById('inputData').value=`apple banana apple orange banana\ncat dog cat\nEND`;loadInput();}
+function setExample2(){document.getElementById('inputData').value=`red blue red green blue red\nhello hello world\nEND`;loadInput();}
+function splitWords(line){return line.trim().length?line.trim().split(/\s+/):[];}
+function countWords(words){const sorted=[...words].sort();const counts=[];for(let i=0;i<sorted.length;i++){let cnt=1;while(i+1<sorted.length&&sorted[i]===sorted[i+1]){cnt++;i++;}counts.push({word:sorted[i],cnt});}return {sorted,counts};}
+function loadInput(){runProcess(false);}
+function runProcess(show){const raw=document.getElementById('inputData').value.split(/\n/);lines=[];logs=[];outputs=[];for(const line of raw){const clean=line.replace(/\r/g,'');if(clean==='END')break;lines.push(clean);}lines.forEach((line,idx)=>{const words=splitWords(line);const res=countWords(words);logs.push({lineNo:idx+1,type:'입력 줄 확인',line,words:[],sorted:[],counts:[],desc:`${idx+1}번째 문장을 읽었습니다.`});logs.push({lineNo:idx+1,type:'단어 분리',line,words,sorted:[],counts:[],desc:'공백을 기준으로 단어를 나눕니다.'});logs.push({lineNo:idx+1,type:'정렬',line,words,sorted:res.sorted,counts:[],desc:'같은 단어가 붙어 있도록 사전순으로 정렬합니다.'});logs.push({lineNo:idx+1,type:'개수 세기',line,words,sorted:res.sorted,counts:res.counts,desc:'정렬된 단어를 보면서 같은 단어 개수를 셉니다.'});res.counts.forEach(x=>outputs.push(`${x.word} : ${x.cnt}`));});document.getElementById('lineCountText').textContent=lines.length;document.getElementById('outputView').textContent=outputs.join('\n')||'(출력 없음)';stepIndex=show&&logs.length?0:-1;renderAll();}
+function pill(parent,text,cls){const s=document.createElement('span');s.className='pill '+(cls||'');s.textContent=text;parent.appendChild(s);}
+function renderPills(id,arr,cls){const div=document.getElementById(id);div.innerHTML='';if(!arr||!arr.length){pill(div,'없음');return;}arr.forEach((x,i)=>{pill(div,x,cls);if(i<arr.length-1){const a=document.createElement('span');a.className='arrow';a.textContent='→';div.appendChild(a);}});}
+function renderCounts(counts){const div=document.getElementById('countView');div.innerHTML='';if(!counts||!counts.length){pill(div,'없음');return;}counts.forEach(x=>pill(div,`${x.word} : ${x.cnt}`,'count-pill'));}
+function renderTable(){const tbody=document.getElementById('logTable');tbody.innerHTML='';logs.forEach((l,i)=>{const tr=document.createElement('tr');if(i===stepIndex)tr.className='active-row';let content=l.line;if(l.type==='단어 분리')content=l.words.join(', ');if(l.type==='정렬')content=l.sorted.join(', ');if(l.type==='개수 세기')content=l.counts.map(x=>`${x.word}:${x.cnt}`).join(', ');tr.innerHTML=`<td>${i+1}</td><td>${l.lineNo}</td><td>${l.type}</td><td>${content||'-'}</td><td>${l.desc}</td>`;tbody.appendChild(tr);});}
+function renderAll(){const s=stepIndex>=0?logs[stepIndex]:logs[0];document.getElementById('currentLineText').textContent=s?s.lineNo:'-';document.getElementById('statusText').textContent=stepIndex>=0?`${stepIndex+1}/${logs.length}`:'준비';document.getElementById('lineView').textContent=s?s.line:'실행 전';renderPills('tokenView',s?s.words:[],'word-pill');renderPills('sortedView',s?s.sorted:[],'sorted-pill');renderCounts(s?s.counts:[]);document.getElementById('stepExplain').innerHTML=stepIndex>=0?`<b>${stepIndex+1}단계</b>: ${s.desc}<br><span class="code-inline">${s.type}</span>`:'실행을 누르면 단어가 나뉘고 정렬된 뒤 개수가 계산됩니다.';renderTable();}
+function nextStep(){if(!logs.length)runProcess(true);if(stepIndex<logs.length-1){stepIndex++;renderAll();}}
+function prevStep(){if(stepIndex>0){stepIndex--;renderAll();}}
+runProcess(false);
+</script>
+</body>
+</html>

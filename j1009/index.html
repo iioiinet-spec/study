@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 #1009 각 자리수의 역과 합</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #eef2ff, #f8fafc 45%, #fff7ed);
+      color: #1f2937;
+      line-height: 1.7;
+    }
+    .wrap {
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 34px 18px 80px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+      color: white;
+      border-radius: 30px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 45px rgba(79, 70, 229, 0.25);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -80px;
+      top: -90px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.16);
+    }
+    .hero h1 {
+      margin: 0 0 12px;
+      font-size: 36px;
+      letter-spacing: -1px;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 18px;
+      opacity: 0.95;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+      backdrop-filter: blur(8px);
+    }
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      color: #111827;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .problem-box {
+      background: #f8fafc;
+      border: 2px dashed #93c5fd;
+      border-radius: 18px;
+      padding: 18px;
+      font-size: 18px;
+    }
+    .point {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 16px;
+      padding: 14px 16px;
+      margin-top: 12px;
+    }
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      resize: vertical;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 14px;
+      font-size: 17px;
+      font-family: 'Consolas', 'D2Coding', monospace;
+      outline: none;
+      background: white;
+    }
+    textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.12);
+    }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 18px;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      box-shadow: 0 10px 20px rgba(37,99,235,0.25);
+      transition: 0.18s;
+      margin: 8px 8px 0 0;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      background: #1d4ed8;
+    }
+    button.secondary {
+      background: #0f172a;
+      box-shadow: 0 10px 20px rgba(15,23,42,0.18);
+    }
+    .output {
+      background: #ecfeff;
+      border: 1px solid #67e8f9;
+      border-radius: 18px;
+      padding: 18px;
+      min-height: 90px;
+      white-space: pre-wrap;
+      font-size: 18px;
+      font-family: 'Consolas', 'D2Coding', monospace;
+    }
+    .step-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: 120px 1fr 120px 110px;
+      gap: 10px;
+      align-items: center;
+      padding: 13px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .step b { color: #1e40af; }
+    .pill {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-weight: 900;
+      text-align: center;
+    }
+    .sum-pill {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .reverse-pill {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    pre {
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      border-radius: 18px;
+      padding: 20px;
+      overflow-x: auto;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    code { font-family: 'Consolas', 'D2Coding', monospace; }
+    .code-line {
+      display: block;
+      padding: 2px 8px;
+      border-radius: 8px;
+    }
+    .code-line.active {
+      background: rgba(250, 204, 21, 0.22);
+      color: #fef9c3;
+    }
+    ol li { margin-bottom: 8px; }
+    .quiz-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      margin: 8px 0;
+      background: #f1f5f9;
+      color: #1e293b;
+      box-shadow: none;
+    }
+    .quiz-option:hover { background: #dbeafe; }
+    .quiz-feedback {
+      min-height: 30px;
+      margin-top: 12px;
+      font-weight: 900;
+    }
+    .small {
+      color: #64748b;
+      font-size: 14px;
+    }
+    .formula {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid #e2e8f0;
+      font-family: 'Consolas', 'D2Coding', monospace;
+      font-size: 17px;
+    }
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 28px; }
+      .step { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>정올 #1009 각 자리수의 역과 합</h1>
+      <p>수를 뒤집는 방법과 각 자리 숫자의 합을 구하는 방법을 직접 실험하면서 이해해 봅시다.</p>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">1</span>문제 핵심</h2>
+      <div class="problem-box">
+        양의 정수를 입력받아 <b>역으로 뒤집은 수</b>와 <b>각 자리 숫자의 합</b>을 출력합니다.<br>
+        여러 개의 수가 입력될 수 있으며, <b>0이 입력되면 종료</b>합니다.<br>
+        0은 유효한 데이터가 아니므로 출력하지 않습니다.
+      </div>
+      <div class="point">
+        <b>중요 포인트</b><br>
+        453 → 뒤집은 수 354, 자릿수 합 4 + 5 + 3 = 12<br>
+        35603200 → 뒤집으면 00230653이지만, 정수로 출력하면 앞의 0이 사라져서 230653이 됩니다.
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2><span class="badge">2</span>인터렉티브 입력</h2>
+        <p>여러 줄에 숫자를 입력해 보세요. 마지막에 0을 넣으면 그 전까지만 처리합니다.</p>
+        <textarea id="inputArea">453
+123456
+35603200
+0</textarea>
+        <button onclick="runProgram()">실행하기</button>
+        <button class="secondary" onclick="resetExample()">예제로 초기화</button>
+      </div>
+
+      <div class="card">
+        <h2><span class="badge">3</span>출력 결과</h2>
+        <div id="outputBox" class="output">실행하기 버튼을 누르면 결과가 표시됩니다.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">4</span>첫 번째 수 처리 과정</h2>
+      <p>입력된 첫 번째 양의 정수를 기준으로, 일의 자리부터 하나씩 꺼내는 과정을 보여줍니다.</p>
+      <div class="formula">
+        digit = n % 10<br>
+        reverse = reverse * 10 + digit<br>
+        sum = sum + digit<br>
+        n = n / 10
+      </div>
+      <div id="stepList" class="step-list"></div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2><span class="badge">5</span>코드 작성 방법</h2>
+        <ol>
+          <li><b>while문</b>으로 계속 입력을 받습니다.</li>
+          <li>입력값이 <b>0</b>이면 break로 반복을 끝냅니다.</li>
+          <li>각 숫자마다 reverse와 sum을 0으로 초기화합니다.</li>
+          <li><b>n % 10</b>으로 가장 오른쪽 숫자를 꺼냅니다.</li>
+          <li>뒤집은 수는 <b>reverse = reverse * 10 + digit</b>으로 만듭니다.</li>
+          <li>자릿수 합은 <b>sum += digit</b>으로 누적합니다.</li>
+          <li><b>n /= 10</b>으로 이미 사용한 일의 자리를 제거합니다.</li>
+          <li>n이 0이 되면 reverse와 sum을 출력합니다.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2><span class="badge">6</span>초등학생도 이해하는 설명</h2>
+        <div class="point">
+          숫자 453을 뒤에서부터 읽으면 3, 5, 4입니다.<br>
+          이 숫자들을 차례대로 붙이면 354가 됩니다.<br><br>
+          그리고 각 자리 숫자를 모두 더하면<br>
+          4 + 5 + 3 = 12입니다.<br><br>
+          그래서 453의 출력은 <b>354 12</b>입니다.
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">7</span>정답 C 코드</h2>
+      <pre><code id="codeBlock"><span class="code-line" data-line="1">#include &lt;stdio.h&gt;</span>
+<span class="code-line" data-line="2"></span>
+<span class="code-line" data-line="3">int main() {</span>
+<span class="code-line" data-line="4">    int n;</span>
+<span class="code-line" data-line="5"></span>
+<span class="code-line" data-line="6">    while (1) {</span>
+<span class="code-line" data-line="7">        scanf("%d", &amp;n);</span>
+<span class="code-line" data-line="8"></span>
+<span class="code-line" data-line="9">        if (n == 0) {</span>
+<span class="code-line" data-line="10">            break;</span>
+<span class="code-line" data-line="11">        }</span>
+<span class="code-line" data-line="12"></span>
+<span class="code-line" data-line="13">        int reverse = 0;</span>
+<span class="code-line" data-line="14">        int sum = 0;</span>
+<span class="code-line" data-line="15"></span>
+<span class="code-line" data-line="16">        while (n &gt; 0) {</span>
+<span class="code-line" data-line="17">            int digit = n % 10;</span>
+<span class="code-line" data-line="18">            reverse = reverse * 10 + digit;</span>
+<span class="code-line" data-line="19">            sum += digit;</span>
+<span class="code-line" data-line="20">            n /= 10;</span>
+<span class="code-line" data-line="21">        }</span>
+<span class="code-line" data-line="22"></span>
+<span class="code-line" data-line="23">        printf("%d %d\n", reverse, sum);</span>
+<span class="code-line" data-line="24">    }</span>
+<span class="code-line" data-line="25"></span>
+<span class="code-line" data-line="26">    return 0;</span>
+<span class="code-line" data-line="27">}</span></code></pre>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">8</span>확인 퀴즈</h2>
+      <p><b>2504</b>를 입력하면 출력은 무엇일까요?</p>
+      <button class="quiz-option" onclick="checkQuiz('425 11')">425 11</button>
+      <button class="quiz-option" onclick="checkQuiz('4052 11')">4052 11</button>
+      <button class="quiz-option" onclick="checkQuiz('4052 12')">4052 12</button>
+      <button class="quiz-option" onclick="checkQuiz('2504 11')">2504 11</button>
+      <div id="quizFeedback" class="quiz-feedback"></div>
+    </section>
+  </div>
+
+  <script>
+    function clearActiveCode() {
+      document.querySelectorAll('.code-line').forEach(line => line.classList.remove('active'));
+    }
+
+    function activeLines(lines) {
+      clearActiveCode();
+      lines.forEach(num => {
+        const line = document.querySelector(`.code-line[data-line="${num}"]`);
+        if (line) line.classList.add('active');
+      });
+    }
+
+    function processNumber(original) {
+      let n = original;
+      let reverse = 0;
+      let sum = 0;
+      const steps = [];
+
+      while (n > 0) {
+        const digit = n % 10;
+        const beforeReverse = reverse;
+        reverse = reverse * 10 + digit;
+        sum += digit;
+        const nextN = Math.floor(n / 10);
+
+        steps.push({
+          n,
+          digit,
+          beforeReverse,
+          reverse,
+          sum,
+          nextN
+        });
+
+        n = nextN;
+      }
+
+      return { original, reverse, sum, steps };
+    }
+
+    function runProgram() {
+      const inputText = document.getElementById('inputArea').value.trim();
+      const outputBox = document.getElementById('outputBox');
+      const stepList = document.getElementById('stepList');
+
+      if (!inputText) {
+        outputBox.textContent = '입력값이 없습니다.';
+        stepList.innerHTML = '';
+        return;
+      }
+
+      const nums = inputText.split(/\s+/).map(Number);
+      const outputs = [];
+      let firstPositive = null;
+
+      activeLines([6, 7, 9, 10, 13, 14, 16, 17, 18, 19, 20, 23]);
+
+      for (const num of nums) {
+        if (!Number.isInteger(num) || num < 0) continue;
+        if (num === 0) break;
+        const result = processNumber(num);
+        outputs.push(`${result.reverse} ${result.sum}`);
+        if (firstPositive === null) firstPositive = result;
+      }
+
+      outputBox.textContent = outputs.length ? outputs.join('\n') : '0이 먼저 입력되어 출력할 값이 없습니다.';
+
+      if (firstPositive) {
+        renderSteps(firstPositive);
+      } else {
+        stepList.innerHTML = '';
+      }
+    }
+
+    function renderSteps(result) {
+      const stepList = document.getElementById('stepList');
+      let html = '';
+
+      result.steps.forEach((s, idx) => {
+        html += `<div class="step">
+          <div><b>${idx + 1}단계</b><br><span class="small">현재 n = ${s.n}</span></div>
+          <div>digit = ${s.n} % 10 = <b>${s.digit}</b></div>
+          <div><span class="pill reverse-pill">reverse: ${s.beforeReverse} → ${s.reverse}</span></div>
+          <div><span class="pill sum-pill">sum: ${s.sum}</span></div>
+        </div>`;
+      });
+
+      html += `<div class="point"><b>최종 결과</b><br>${result.original}의 역은 <b>${result.reverse}</b>, 각 자리 숫자의 합은 <b>${result.sum}</b>입니다.</div>`;
+      stepList.innerHTML = html;
+    }
+
+    function resetExample() {
+      document.getElementById('inputArea').value = '453\n123456\n35603200\n0';
+      runProgram();
+    }
+
+    function checkQuiz(answer) {
+      const feedback = document.getElementById('quizFeedback');
+      if (answer === '4052 11') {
+        feedback.style.color = '#166534';
+        feedback.textContent = '정답입니다! 2504를 뒤집으면 4052이고, 합은 2 + 5 + 0 + 4 = 11입니다.';
+      } else {
+        feedback.style.color = '#b91c1c';
+        feedback.textContent = '다시 생각해 보세요. 뒤에서부터 4, 0, 5, 2를 붙이면 4052입니다.';
+      }
+    }
+
+    runProgram();
+  </script>
+</body>
+</html>
