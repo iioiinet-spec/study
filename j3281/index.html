@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정올 3281 불쾌한 날2 인터렉티브 강의자료</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+      background: linear-gradient(135deg, #f0f9ff, #f8fafc 42%, #fff7ed);
+      color: #1f2937;
+      line-height: 1.75;
+    }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 34px 18px 80px; }
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+      color: white;
+      border-radius: 30px;
+      padding: 36px 32px;
+      box-shadow: 0 20px 48px rgba(29,78,216,.25);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+    .hero:after {
+      content: '';
+      position: absolute;
+      width: 310px;
+      height: 310px;
+      right: -90px;
+      top: -110px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.15);
+    }
+    .hero h1 { margin: 0 0 12px; font-size: 38px; letter-spacing: -1.2px; }
+    .hero p { margin: 0; font-size: 18px; opacity: .96; max-width: 850px; }
+    .card {
+      background: rgba(255,255,255,.91);
+      border: 1px solid rgba(148,163,184,.25);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 18px;
+      box-shadow: 0 14px 34px rgba(15,23,42,.08);
+      backdrop-filter: blur(8px);
+    }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      color: #111827;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .problem-box {
+      background: #f8fafc;
+      border: 2px dashed #93c5fd;
+      border-radius: 18px;
+      padding: 18px;
+      font-size: 18px;
+    }
+    .point {
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 18px;
+      padding: 16px 18px;
+      margin-top: 12px;
+    }
+    .formula {
+      background: #0f172a;
+      color: #e5e7eb;
+      border-radius: 18px;
+      padding: 18px;
+      font-family: Consolas, 'D2Coding', monospace;
+      overflow-x: auto;
+      margin-top: 10px;
+    }
+    textarea, input {
+      width: 100%;
+      border: 2px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 13px 14px;
+      font-size: 17px;
+      outline: none;
+      background: white;
+    }
+    textarea { min-height: 96px; resize: vertical; font-family: Consolas, 'D2Coding', monospace; }
+    input:focus, textarea:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,.12); }
+    label { font-weight: 900; color: #334155; display: block; margin: 8px 0 6px; }
+    button {
+      border: 0;
+      border-radius: 14px;
+      padding: 13px 18px;
+      margin: 10px 8px 0 0;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+      box-shadow: 0 10px 20px rgba(37,99,235,.25);
+      transition: .18s;
+    }
+    button:hover { transform: translateY(-2px); background: #1d4ed8; }
+    button.secondary { background: #0f172a; box-shadow: 0 10px 20px rgba(15,23,42,.18); }
+    .result {
+      background: #ecfeff;
+      border: 1px solid #67e8f9;
+      border-radius: 18px;
+      padding: 18px;
+      min-height: 96px;
+      font-size: 17px;
+    }
+    .cow-line {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: end;
+      margin: 16px 0;
+      min-height: 98px;
+    }
+    .cow {
+      width: 58px;
+      text-align: center;
+      transition: .25s;
+    }
+    .cow .bar {
+      width: 100%;
+      border-radius: 12px 12px 6px 6px;
+      background: linear-gradient(180deg, #60a5fa, #2563eb);
+      color: white;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      box-shadow: 0 9px 18px rgba(37,99,235,.2);
+    }
+    .cow.selected .bar { background: linear-gradient(180deg, #f59e0b, #ea580c); }
+    .cow .idx { font-size: 13px; color: #64748b; margin-top: 4px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; background: white; border-radius: 16px; overflow: hidden; }
+    th, td { border: 1px solid #e2e8f0; padding: 10px; text-align: center; }
+    th { background: #eff6ff; color: #1e40af; }
+    .good { background: #dcfce7; color: #166534; font-weight: 900; }
+    .bad { background: #fee2e2; color: #991b1b; font-weight: 900; }
+    .small { color: #64748b; font-size: 14px; }
+    pre {
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+      border-radius: 18px;
+      padding: 20px;
+      overflow-x: auto;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    code { font-family: Consolas, 'D2Coding', monospace; }
+    .step-list { display: grid; gap: 12px; margin-top: 14px; }
+    .step {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .tag {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e0e7ff;
+      color: #3730a3;
+      font-weight: 900;
+      margin: 2px;
+    }
+    .quiz-option {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: #f1f5f9;
+      color: #1e293b;
+      box-shadow: none;
+      margin: 8px 0;
+    }
+    .quiz-option:hover { background: #dbeafe; }
+    .quiz-feedback { min-height: 30px; margin-top: 12px; font-weight: 900; }
+    @media (max-width: 880px) {
+      .grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 29px; }
+      .cow { width: 48px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>정올 3281 불쾌한 날2</h1>
+      <p>한 구간을 딱 한 번 뒤집어서, 소들이 볼 수 있는 머리 모양 수의 총합을 최소로 만드는 문제입니다.</p>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">1</span>문제 핵심</h2>
+      <div class="problem-box">
+        소들은 모두 오른쪽, 즉 동쪽을 봅니다.<br>
+        어떤 소는 자기보다 키가 작은 소들을 볼 수 있지만, <b>자기보다 크거나 같은 소</b>가 나오면 그 뒤는 볼 수 없습니다.<br><br>
+        이 문제에서는 임의의 한 구간 <b>s ~ e</b>를 한 번 뒤집습니다.<br>
+        뒤집은 뒤 전체 소들이 볼 수 있는 머리 모양 수의 합이 최소가 되도록 해야 합니다.
+      </div>
+      <div class="point">
+        <b>주의</b> : 정올 1141 불쾌한 날은 현재 배열의 총합만 구하지만, 3281 불쾌한 날2는 <b>구간을 뒤집은 뒤의 최솟값</b>을 구합니다.
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2><span class="badge">2</span>직접 뒤집어 보기</h2>
+        <label>소들의 키</label>
+        <textarea id="heightInput">5 2 4 2 6 1</textarea>
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <label>시작 s</label>
+            <input id="sInput" type="number" value="1" min="1" />
+          </div>
+          <div>
+            <label>끝 e</label>
+            <input id="eInput" type="number" value="4" min="1" />
+          </div>
+        </div>
+        <button onclick="runReverseDemo()">구간 뒤집기 실행</button>
+        <button class="secondary" onclick="findBestSlow()">작은 예제 최솟값 찾기</button>
+        <p class="small">수업용 실험은 이해를 위해 직접 뒤집어 계산합니다. 정답 코드는 더 빠른 O(N²) 아이디어를 사용합니다.</p>
+      </div>
+
+      <div class="card">
+        <h2><span class="badge">3</span>실행 결과</h2>
+        <div id="demoResult" class="result">버튼을 누르면 결과가 표시됩니다.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">4</span>소 키 시각화</h2>
+      <div id="cowLine" class="cow-line"></div>
+      <div id="afterCowLine" class="cow-line"></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">5</span>각 소가 볼 수 있는 수</h2>
+      <div id="countTable" class="table-wrap"></div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2><span class="badge">6</span>왜 단순 풀이는 느릴까?</h2>
+        <p>가장 쉬운 방법은 모든 구간을 뒤집어 보고, 매번 전체 불쾌한 정도를 다시 계산하는 것입니다.</p>
+        <div class="formula">모든 구간 선택 : O(N²)<br>각 구간마다 다시 계산 : O(N)<br>전체 시간 : O(N³)</div>
+        <div class="point">N = 1000이면 약 10억 번 가까운 계산이 될 수 있어 1초 제한에서 위험합니다.</div>
+      </div>
+      <div class="card">
+        <h2><span class="badge">7</span>빠른 풀이 핵심</h2>
+        <p>정답 코드는 배열을 매번 실제로 뒤집지 않습니다.</p>
+        <div class="formula">최종값 = 원래 불쾌한 정도 + 뒤집었을 때의 변화량</div>
+        <p>원래 보이던 쌍이 사라지면 <span class="tag">-1</span>, 새로 보이는 쌍이 생기면 <span class="tag">+1</span>을 더합니다.</p>
+        <p>많은 구간에 같은 값을 빠르게 더하기 위해 <b>2차원 차이 배열 diff</b>를 사용합니다.</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">8</span>코드 작성 단계</h2>
+      <div class="step-list">
+        <div class="step"><b>1단계</b><br>소의 키를 배열 <code>h[]</code>에 저장합니다.</div>
+        <div class="step"><b>2단계</b><br>원래 상태에서 보이는 쌍을 계산하고, 원래 불쾌한 정도 <code>original</code>을 구합니다.</div>
+        <div class="step"><b>3단계</b><br>구간을 뒤집었을 때 사라지는 관계는 <code>-1</code>, 새로 생기는 관계는 <code>+1</code>로 변화량을 저장합니다.</div>
+        <div class="step"><b>4단계</b><br><code>add_rect()</code> 함수로 여러 구간에 같은 변화량을 한 번에 더합니다.</div>
+        <div class="step"><b>5단계</b><br>2차원 누적합으로 <code>diff[s][e]</code>를 완성합니다.</div>
+        <div class="step"><b>6단계</b><br><code>original + diff[s][e]</code> 중 최솟값을 출력합니다.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">9</span>핵심 함수 add_rect</h2>
+      <p>이 함수는 구간 <code>s ~ e</code>의 후보들을 직사각형 범위로 보고, 그 범위 전체에 변화량을 더합니다.</p>
+      <pre><code>void add_rect(int r1, int r2, int c1, int c2, long long v) {
+    if (r1 > r2 || c1 > c2) return;
+
+    if (r1 < 0) r1 = 0;
+    if (c1 < 0) c1 = 0;
+    if (r2 >= N) r2 = N - 1;
+    if (c2 >= N) c2 = N - 1;
+
+    if (r1 > r2 || c1 > c2) return;
+
+    diff[r1][c1] += v;
+    diff[r2 + 1][c1] -= v;
+    diff[r1][c2 + 1] -= v;
+    diff[r2 + 1][c2 + 1] += v;
+}</code></pre>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">10</span>정답 C 코드</h2>
+      <pre><code>#include &lt;stdio.h&gt;
+
+#define MAXN 1005
+
+int N;
+long long h[MAXN];
+long long diff[MAXN + 2][MAXN + 2];
+int visible[MAXN][MAXN];
+
+void add_rect(int r1, int r2, int c1, int c2, long long v) {
+    if (r1 > r2 || c1 > c2) return;
+
+    if (r1 < 0) r1 = 0;
+    if (c1 < 0) c1 = 0;
+    if (r2 >= N) r2 = N - 1;
+    if (c2 >= N) c2 = N - 1;
+
+    if (r1 > r2 || c1 > c2) return;
+
+    diff[r1][c1] += v;
+    diff[r2 + 1][c1] -= v;
+    diff[r1][c2 + 1] -= v;
+    diff[r2 + 1][c2 + 1] += v;
+}
+
+int main() {
+    scanf("%d", &N);
+
+    for (int i = 0; i < N; i++) {
+        scanf("%lld", &h[i]);
+    }
+
+    long long original = 0;
+
+    for (int i = 0; i < N; i++) {
+        long long mx = -1;
+
+        for (int j = i + 1; j < N; j++) {
+            if (h[i] > h[j] && h[i] > mx) {
+                visible[i][j] = 1;
+                original++;
+            }
+
+            if (h[j] > mx) {
+                mx = h[j];
+            }
+        }
+    }
+
+    for (int i = 0; i < N; i++) {
+        for (int j = i + 1; j < N; j++) {
+            if (visible[i][j]) {
+                add_rect(0, i, i, N - 1, -1);
+                add_rect(0, j, j, N - 1, -1);
+                add_rect(0, i, j, N - 1, 1);
+            }
+        }
+    }
+
+    for (int right = 0; right < N; right++) {
+        long long mx = -1;
+
+        for (int left = right - 1; left >= 0; left--) {
+            if (h[left] > mx) {
+                mx = h[left];
+            }
+
+            if (h[right] > mx) {
+                add_rect(0, left, right, N - 1, 1);
+            }
+        }
+    }
+
+    for (int a = 0; a < N; a++) {
+        int firstBlock = N;
+
+        for (int x = a + 1; x < N; x++) {
+            if (h[x] >= h[a]) {
+                firstBlock = x;
+                break;
+            }
+        }
+
+        int nextBlock = N;
+
+        for (int i = N - 1; i > a; i--) {
+            if (h[i] >= h[a]) {
+                nextBlock = i;
+            }
+
+            int s1 = a + 1;
+            int s2 = i;
+
+            if (firstBlock < s2) {
+                s2 = firstBlock;
+            }
+
+            int e1 = i;
+            int e2 = nextBlock - 1;
+
+            add_rect(s1, s2, e1, e2, 1);
+        }
+    }
+
+    for (int i = 0; i < N; i++) {
+        int prevBlock = -1;
+
+        for (int x = i - 1; x >= 0; x--) {
+            if (h[x] >= h[i]) {
+                prevBlock = x;
+                break;
+            }
+        }
+
+        int lastBlock = -1;
+
+        for (int b = i + 1; b < N; b++) {
+            if (h[b] >= h[i]) {
+                lastBlock = b;
+            }
+
+            int s1 = prevBlock + 1;
+            int s2 = i;
+            int e1 = i;
+
+            if (lastBlock > e1) {
+                e1 = lastBlock;
+            }
+
+            int e2 = b - 1;
+
+            add_rect(s1, s2, e1, e2, 1);
+        }
+    }
+
+    long long answer = 4000000000000000000LL;
+
+    for (int s = 0; s < N; s++) {
+        long long rowSum = 0;
+
+        for (int e = 0; e < N; e++) {
+            rowSum += diff[s][e];
+
+            if (s > 0) {
+                diff[s][e] = diff[s - 1][e] + rowSum;
+            } else {
+                diff[s][e] = rowSum;
+            }
+
+            if (s < e) {
+                long long now = original + diff[s][e];
+
+                if (now < answer) {
+                    answer = now;
+                }
+            }
+        }
+    }
+
+    printf("%lld\n", answer);
+
+    return 0;
+}</code></pre>
+    </section>
+
+    <section class="card">
+      <h2><span class="badge">11</span>확인 퀴즈</h2>
+      <p>정올 3281 불쾌한 날2에서 단순히 1141처럼 현재 배열의 불쾌한 정도만 출력하면 왜 틀릴까요?</p>
+      <button class="quiz-option" onclick="checkQuiz(1)">입력이 여러 줄이라서</button>
+      <button class="quiz-option" onclick="checkQuiz(2)">한 구간을 뒤집은 뒤의 최솟값을 구해야 하기 때문에</button>
+      <button class="quiz-option" onclick="checkQuiz(3)">소들이 왼쪽을 보기 때문에</button>
+      <button class="quiz-option" onclick="checkQuiz(4)">키가 항상 오름차순이기 때문에</button>
+      <div id="quizFeedback" class="quiz-feedback"></div>
+    </section>
+  </div>
+
+  <script>
+    function parseHeights() {
+      return document.getElementById('heightInput').value.trim().split(/\s+/).map(Number).filter(x => Number.isFinite(x));
+    }
+
+    function countBad(arr) {
+      const n = arr.length;
+      const counts = Array(n).fill(0);
+      let total = 0;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          if (arr[i] > arr[j]) {
+            counts[i]++;
+            total++;
+          } else {
+            break;
+          }
+        }
+      }
+      return { total, counts };
+    }
+
+    function reverseRange(arr, s, e) {
+      const copy = arr.slice();
+      s--; e--;
+      while (s < e) {
+        const t = copy[s];
+        copy[s] = copy[e];
+        copy[e] = t;
+        s++; e--;
+      }
+      return copy;
+    }
+
+    function renderCows(id, arr, s, e, title) {
+      const box = document.getElementById(id);
+      const maxH = Math.max(...arr, 1);
+      let html = `<div style="width:100%;font-weight:900;color:#1e40af;">${title}</div>`;
+      arr.forEach((h, idx) => {
+        const height = 28 + Math.round((h / maxH) * 60);
+        const selected = idx + 1 >= s && idx + 1 <= e ? 'selected' : '';
+        html += `<div class="cow ${selected}">
+          <div class="bar" style="height:${height}px">${h}</div>
+          <div class="idx">${idx + 1}번</div>
+        </div>`;
+      });
+      box.innerHTML = html;
+    }
+
+    function renderTable(before, after, s, e) {
+      const b = countBad(before);
+      const a = countBad(after);
+      let html = '<table><thead><tr><th>소 번호</th><th>뒤집기 전 Ci</th><th>뒤집기 후 Ci</th><th>변화</th></tr></thead><tbody>';
+      for (let i = 0; i < before.length; i++) {
+        const delta = a.counts[i] - b.counts[i];
+        html += `<tr>
+          <td>${i + 1}</td>
+          <td>${b.counts[i]}</td>
+          <td>${a.counts[i]}</td>
+          <td class="${delta <= 0 ? 'good' : 'bad'}">${delta >= 0 ? '+' : ''}${delta}</td>
+        </tr>`;
+      }
+      html += `</tbody></table><div class="point"><b>뒤집은 구간</b> : ${s} ~ ${e}<br><b>뒤집기 전 총합</b> : ${b.total}<br><b>뒤집기 후 총합</b> : ${a.total}</div>`;
+      document.getElementById('countTable').innerHTML = html;
+    }
+
+    function runReverseDemo() {
+      const arr = parseHeights();
+      const n = arr.length;
+      let s = Number(document.getElementById('sInput').value);
+      let e = Number(document.getElementById('eInput').value);
+      const result = document.getElementById('demoResult');
+      if (n < 2) {
+        result.innerHTML = '<b>소의 키를 2개 이상 입력해 주세요.</b>';
+        return;
+      }
+      if (s < 1 || e < 1 || s > n || e > n || s >= e) {
+        result.innerHTML = `<b>구간은 1 ≤ s < e ≤ ${n} 이어야 합니다.</b>`;
+        return;
+      }
+      const after = reverseRange(arr, s, e);
+      const beforeCount = countBad(arr);
+      const afterCount = countBad(after);
+      renderCows('cowLine', arr, s, e, '뒤집기 전');
+      renderCows('afterCowLine', after, s, e, '뒤집기 후');
+      renderTable(arr, after, s, e);
+      result.innerHTML = `<b>원래 배열</b> : ${arr.join(' ')}<br><b>${s} ~ ${e} 뒤집기</b> : ${after.join(' ')}<br><br><b>뒤집기 전 총합</b> : ${beforeCount.total}<br><b>뒤집기 후 총합</b> : ${afterCount.total}`;
+    }
+
+    function findBestSlow() {
+      const arr = parseHeights();
+      const n = arr.length;
+      const result = document.getElementById('demoResult');
+      if (n > 10) {
+        result.innerHTML = '<b>수업용 최솟값 찾기는 계산량 때문에 소 10마리 이하에서만 실행됩니다.</b>';
+        return;
+      }
+      let best = Infinity;
+      let bestS = 1, bestE = 2, bestArr = arr.slice();
+      for (let s = 1; s <= n; s++) {
+        for (let e = s + 1; e <= n; e++) {
+          const after = reverseRange(arr, s, e);
+          const val = countBad(after).total;
+          if (val < best) {
+            best = val;
+            bestS = s;
+            bestE = e;
+            bestArr = after;
+          }
+        }
+      }
+      document.getElementById('sInput').value = bestS;
+      document.getElementById('eInput').value = bestE;
+      renderCows('cowLine', arr, bestS, bestE, '뒤집기 전');
+      renderCows('afterCowLine', bestArr, bestS, bestE, '최적 구간 뒤집기 후');
+      renderTable(arr, bestArr, bestS, bestE);
+      result.innerHTML = `<b>최적 구간</b> : ${bestS} ~ ${bestE}<br><b>최소 불쾌한 정도</b> : ${best}<br><b>결과 배열</b> : ${bestArr.join(' ')}`;
+    }
+
+    function checkQuiz(choice) {
+      const feedback = document.getElementById('quizFeedback');
+      if (choice === 2) {
+        feedback.style.color = '#166534';
+        feedback.textContent = '정답입니다! 3281은 한 구간을 뒤집은 뒤의 최솟값을 구해야 합니다.';
+      } else {
+        feedback.style.color = '#b91c1c';
+        feedback.textContent = '다시 생각해 보세요. 이 문제의 핵심은 구간을 한 번 뒤집는 것입니다.';
+      }
+    }
+
+    runReverseDemo();
+  </script>
+</body>
+</html>
