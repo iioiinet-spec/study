@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>정올 암호풀기 인터렉티브 해설</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,'Noto Sans KR',sans-serif;background:linear-gradient(135deg,#f8fafc,#fef2f2);color:#1f2937;line-height:1.75}
+header{background:linear-gradient(135deg,#7f1d1d,#4338ca);color:white;text-align:center;padding:40px 20px}
+header h1{margin:0;font-size:34px}
+main{max-width:1150px;margin:30px auto;padding:0 20px 60px}
+section{background:white;border-radius:22px;padding:28px;margin-bottom:24px;box-shadow:0 12px 30px rgba(67,56,202,.12)}
+h2{color:#4338ca;border-left:8px solid #6366f1;padding-left:12px;margin-top:0}
+h3{color:#b91c1c}
+.box{background:#eef2ff;border:2px solid #c7d2fe;border-radius:16px;padding:18px;margin:16px 0}
+.warn{background:#fff7ed;border-left:8px solid #f97316;border-radius:14px;padding:16px;margin:16px 0}
+.good{background:#f0fdf4;border:2px solid #bbf7d0;border-radius:16px;padding:18px;margin:16px 0}
+pre{background:#111827;color:#f9fafb;padding:22px;border-radius:16px;overflow-x:auto;font-size:15px;line-height:1.6}
+code{font-family:Consolas,Monaco,monospace}
+input,textarea{width:100%;padding:13px;border-radius:14px;border:2px solid #c7d2fe;font-size:16px;line-height:1.6}
+textarea{min-height:90px}
+button{border:0;border-radius:12px;padding:12px 18px;background:#4338ca;color:white;font-weight:800;cursor:pointer;font-size:15px;margin:8px 4px 8px 0}
+button:hover{background:#312e81}
+.result{font-size:22px;font-weight:900;color:#dc2626;background:#fef2f2;border-radius:16px;padding:18px;margin-top:18px;text-align:center}
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:15px}
+th,td{border:1px solid #d1d5db;padding:10px;text-align:center}
+th{background:#e0e7ff;color:#312e81}
+tr:nth-child(even){background:#f9fafb}
+.map-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(70px,1fr));gap:8px;margin-top:16px}
+.map-cell{padding:10px;border-radius:12px;background:#f8fafc;border:2px solid #e5e7eb;text-align:center;font-family:Consolas,monospace;font-weight:900}
+.char-box{display:inline-block;margin:5px;padding:8px 12px;border-radius:12px;background:#dbeafe;border:2px solid #93c5fd;font-family:Consolas,monospace;font-weight:900}
+.upper{background:#fef3c7;border-color:#f59e0b;color:#92400e}
+.lower{background:#dcfce7;border-color:#22c55e;color:#14532d}
+.space{background:#e5e7eb;border-color:#9ca3af;color:#374151}
+.quiz{background:#ecfdf5;border:2px solid #bbf7d0;border-radius:16px;padding:18px;margin:14px 0}
+.answer{display:none;background:#dcfce7;border-radius:12px;padding:12px;margin-top:10px}
+.small{color:#6b7280;font-size:14px}
+</style>
+</head>
+<body>
+<header>
+<h1>정올 암호풀기</h1>
+<p>치환 암호 · 대소문자 유지 · 공백 유지 · fgets 입력 처리</p>
+</header>
+
+<main>
+
+<section>
+<h2>1. 문제 핵심</h2>
+<p>복호화 키 26글자가 주어지고, 암호문 한 줄을 원문으로 바꾸는 문제입니다.</p>
+<div class="box">
+<p>1. 복호화 키는 26개의 소문자입니다.</p>
+<p>2. a는 key[0], b는 key[1], ..., z는 key[25]로 바뀝니다.</p>
+<p>3. 소문자는 소문자로 출력합니다.</p>
+<p>4. 대문자는 같은 규칙을 적용하되 대문자로 출력합니다.</p>
+<p>5. 공백은 그대로 출력합니다.</p>
+</div>
+</section>
+
+<section>
+<h2>2. 인터렉티브 암호풀기</h2>
+<p>복호화 키와 암호문을 입력하면 치환 과정을 보여줍니다.</p>
+
+<h3>복호화 키</h3>
+<input id="keyInput" value="eydbkmiqugjxlvtzpnwohracsf">
+
+<h3>암호문</h3>
+<textarea id="sentenceInput">Kifq oua zarxa suar bti yaagrj fa xtfgrj</textarea>
+
+<button onclick="decode()">복호화하기</button>
+<button onclick="loadExample()">예제 불러오기</button>
+
+<div id="message"></div>
+<div id="resultArea"></div>
+
+<h3>문자별 변환 결과</h3>
+<div id="charArea"></div>
+
+<h3>상세 변환표</h3>
+<div id="detailTable"></div>
+</section>
+
+<section>
+<h2>3. 복호화 키 이해하기</h2>
+<p>예를 들어 키가 다음과 같다고 합시다.</p>
+<pre><code>eydbkmiqugjxlvtzpnwohracsf</code></pre>
+
+<p>그러면 알파벳은 다음처럼 바뀝니다.</p>
+<div id="mapArea" class="map-grid"></div>
+
+<div class="warn">
+<p>key[0]은 a가 바뀔 문자, key[1]은 b가 바뀔 문자입니다.</p>
+</div>
+</section>
+
+<section>
+<h2>4. 소문자 처리 방법</h2>
+<p>문자가 소문자라면 <b>ch - 'a'</b>로 인덱스를 구합니다.</p>
+<pre><code>if (ch >= 'a' && ch <= 'z') {
+    result = key[ch - 'a'];
+}</code></pre>
+
+<p>예를 들어 ch가 'f'라면:</p>
+<pre><code>'f' - 'a' = 5
+result = key[5]</code></pre>
+</section>
+
+<section>
+<h2>5. 대문자 처리 방법</h2>
+<p>대문자는 같은 규칙으로 치환하지만, 출력도 대문자로 해야 합니다.</p>
+<pre><code>else if (ch >= 'A' && ch <= 'Z') {
+    result = key[ch - 'A'] - 'a' + 'A';
+}</code></pre>
+
+<div class="box">
+<p>1. ch - 'A'로 알파벳 순서를 구합니다.</p>
+<p>2. key[index]로 소문자 결과를 찾습니다.</p>
+<p>3. - 'a' + 'A'를 해서 대문자로 바꿉니다.</p>
+</div>
+</section>
+
+<section>
+<h2>6. 공백 처리 방법</h2>
+<p>공백은 암호 규칙을 적용하지 않고 그대로 출력합니다.</p>
+<pre><code>else {
+    result = ch;
+}</code></pre>
+</section>
+
+<section>
+<h2>7. 입력 처리 주의점</h2>
+<p>키는 공백이 없는 문자열이므로 scanf로 받을 수 있습니다.</p>
+<pre><code>scanf("%s", key);</code></pre>
+
+<p>하지만 암호문에는 공백이 들어갈 수 있으므로 fgets로 받아야 합니다.</p>
+<pre><code>getchar();
+fgets(sentence, sizeof(sentence), stdin);</code></pre>
+
+<div class="warn">
+<p>scanf 다음에 fgets를 바로 쓰면 남은 엔터를 읽을 수 있으므로 getchar()로 엔터를 제거합니다.</p>
+</div>
+</section>
+
+<section>
+<h2>8. 자주 하는 실수</h2>
+
+<div class="quiz">
+<h3>실수 1. 암호문을 scanf("%s")로 받는 경우</h3>
+<p>공백 뒤 문장이 잘립니다.</p>
+<button onclick="toggleAnswer('q1')">설명 보기</button>
+<div id="q1" class="answer">암호문은 공백을 포함할 수 있으므로 fgets(sentence, sizeof(sentence), stdin)을 사용해야 합니다.</div>
+</div>
+
+<div class="quiz">
+<h3>실수 2. 대문자를 소문자로 출력하는 경우</h3>
+<p>대문자는 대문자로 유지해야 합니다.</p>
+<button onclick="toggleAnswer('q2')">설명 보기</button>
+<div id="q2" class="answer">key는 소문자이므로 대문자 입력은 key[index] - 'a' + 'A'로 바꿔 출력해야 합니다.</div>
+</div>
+
+<div class="quiz">
+<h3>실수 3. 공백을 없애는 경우</h3>
+<p>공백은 그대로 출력해야 합니다.</p>
+<button onclick="toggleAnswer('q3')">설명 보기</button>
+<div id="q3" class="answer">문장 구조를 유지해야 하므로 공백 문자는 치환하지 않고 그대로 둡니다.</div>
+</div>
+</section>
+
+<section>
+<h2>9. 정답 C 코드</h2>
+<pre><code>#include &lt;stdio.h&gt;
+
+int main() {
+    char key[30];
+    char sentence[100];
+
+    scanf("%s", key);
+    getchar();
+
+    fgets(sentence, sizeof(sentence), stdin);
+
+    for (int i = 0; sentence[i] != '\0'; i++) {
+        if (sentence[i] >= 'a' && sentence[i] <= 'z') {
+            sentence[i] = key[sentence[i] - 'a'];
+        } else if (sentence[i] >= 'A' && sentence[i] <= 'Z') {
+            sentence[i] = key[sentence[i] - 'A'] - 'a' + 'A';
+        }
+    }
+
+    printf("%s", sentence);
+
+    return 0;
+}</code></pre>
+</section>
+
+<section>
+<h2>10. 핵심 정리</h2>
+<p>1. 소문자는 key[ch - 'a']로 바꿉니다.</p>
+<p>2. 대문자는 key[ch - 'A']를 찾은 뒤 대문자로 바꿉니다.</p>
+<p>3. 공백은 그대로 둡니다.</p>
+<p>4. 암호문은 공백이 있으므로 fgets를 사용합니다.</p>
+<p>5. scanf 뒤 fgets 전에는 getchar()를 사용합니다.</p>
+</section>
+
+</main>
+
+<script>
+function escapeHtml(s){
+    return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
+function isLower(ch){return ch>='a' && ch<='z';}
+function isUpper(ch){return ch>='A' && ch<='Z';}
+function upper(ch){return String.fromCharCode(ch.charCodeAt(0)-'a'.charCodeAt(0)+'A'.charCodeAt(0));}
+
+function renderMap(){
+    const key=document.getElementById("keyInput").value.trim();
+    let html="";
+    for(let i=0;i<26;i++){
+        const from=String.fromCharCode('a'.charCodeAt(0)+i);
+        const to=key[i] || "?";
+        html += "<div class='map-cell'>"+from+" → "+to+"</div>";
+    }
+    document.getElementById("mapArea").innerHTML=html;
+}
+
+function decode(){
+    const key=document.getElementById("keyInput").value.trim();
+    const sentence=document.getElementById("sentenceInput").value;
+    const message=document.getElementById("message");
+    const resultArea=document.getElementById("resultArea");
+    const charArea=document.getElementById("charArea");
+    const detailTable=document.getElementById("detailTable");
+
+    if(!/^[a-z]{26}$/.test(key)){
+        message.innerHTML="<div class='warn'>복호화 키는 소문자 26개여야 합니다.</div>";
+        resultArea.innerHTML="";
+        charArea.innerHTML="";
+        detailTable.innerHTML="";
+        return;
+    }
+
+    message.innerHTML="";
+    renderMap();
+
+    let decoded="";
+    let charHtml="";
+    let rows="";
+
+    for(let i=0;i<sentence.length;i++){
+        const ch=sentence[i];
+        let out=ch;
+        let type="공백/기타";
+        let formula="그대로 출력";
+        let cls="char-box space";
+
+        if(isLower(ch)){
+            const idx=ch.charCodeAt(0)-'a'.charCodeAt(0);
+            out=key[idx];
+            type="소문자";
+            formula=ch+" - 'a' = "+idx+", key["+idx+"] = "+out;
+            cls="char-box lower";
+        }else if(isUpper(ch)){
+            const idx=ch.charCodeAt(0)-'A'.charCodeAt(0);
+            out=upper(key[idx]);
+            type="대문자";
+            formula=ch+" - 'A' = "+idx+", key["+idx+"] = "+key[idx]+" → "+out;
+            cls="char-box upper";
+        }
+
+        decoded += out;
+
+        const showCh = ch===" " ? "space" : escapeHtml(ch);
+        const showOut = out===" " ? "space" : escapeHtml(out);
+
+        charHtml += "<span class='"+cls+"'>"+showCh+" → "+showOut+"</span>";
+        rows += "<tr><td>"+(i+1)+"</td><td>"+showCh+"</td><td>"+type+"</td><td>"+formula+"</td><td>"+showOut+"</td></tr>";
+    }
+
+    resultArea.innerHTML="<div class='result'>복호화 결과:<br>"+escapeHtml(decoded)+"</div>";
+    charArea.innerHTML=charHtml;
+    detailTable.innerHTML="<table><tr><th>순서</th><th>입력 문자</th><th>종류</th><th>계산</th><th>출력 문자</th></tr>"+rows+"</table>";
+}
+
+function loadExample(){
+    document.getElementById("keyInput").value="eydbkmiqugjxlvtzpnwohracsf";
+    document.getElementById("sentenceInput").value="Kifq oua zarxa suar bti yaagrj fa xtfgrj";
+    decode();
+}
+
+function toggleAnswer(id){
+    const el=document.getElementById(id);
+    el.style.display=el.style.display==="block"?"none":"block";
+}
+
+renderMap();
+decode();
+</script>
+</body>
+</html>

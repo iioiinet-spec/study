@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>정올 1535 단어집합2 인터렉티브 해설</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,'Noto Sans KR',sans-serif;background:linear-gradient(135deg,#f0fdf4,#eef2ff);color:#1f2937;line-height:1.75}header{background:linear-gradient(135deg,#16a34a,#4338ca);color:white;text-align:center;padding:40px 20px}header h1{margin:0;font-size:34px}main{max-width:1120px;margin:30px auto;padding:0 20px 60px}section{background:white;border-radius:22px;padding:28px;margin-bottom:24px;box-shadow:0 12px 30px rgba(67,56,202,.12)}h2{color:#4338ca;border-left:8px solid #6366f1;padding-left:12px;margin-top:0}h3{color:#15803d}.box{background:#eef2ff;border:2px solid #c7d2fe;border-radius:16px;padding:18px;margin:16px 0}.warn{background:#fff7ed;border-left:8px solid #f97316;border-radius:14px;padding:16px;margin:16px 0}.good{background:#f0fdf4;border:2px solid #bbf7d0;border-radius:16px;padding:18px;margin:16px 0}pre{background:#111827;color:#f9fafb;padding:22px;border-radius:16px;overflow-x:auto;font-size:15px;line-height:1.6}code{font-family:Consolas,Monaco,monospace}textarea{width:100%;min-height:130px;padding:14px;border-radius:14px;border:2px solid #a5b4fc;font-size:16px;line-height:1.6}button{border:0;border-radius:12px;padding:12px 18px;background:#4338ca;color:white;font-weight:800;cursor:pointer;font-size:15px;margin:6px 4px 6px 0}button:hover{background:#312e81}.word-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding:14px;background:#f8fafc;border-radius:14px;border:1px solid #e5e7eb}.word{padding:8px 12px;border-radius:999px;background:#dbeafe;border:2px solid #93c5fd;font-weight:800;font-family:Consolas,monospace}.new{background:#dcfce7;border-color:#22c55e;color:#14532d}.old{background:#fee2e2;border-color:#ef4444;color:#991b1b}.end{background:#fef3c7;border-color:#f59e0b;color:#92400e}.result{font-size:20px;font-weight:900;color:#dc2626;background:#fef2f2;border-radius:16px;padding:18px;margin-top:18px}table{width:100%;border-collapse:collapse;margin-top:18px;font-size:15px}th,td{border:1px solid #d1d5db;padding:10px;text-align:center}th{background:#e0e7ff;color:#312e81}tr:nth-child(even){background:#f9fafb}.quiz{background:#ecfdf5;border:2px solid #bbf7d0;border-radius:16px;padding:18px;margin:14px 0}.answer{display:none;background:#dcfce7;border-radius:12px;padding:12px;margin-top:10px}.small{color:#6b7280;font-size:14px}
+</style>
+</head>
+<body>
+<header><h1>정올 1535 단어집합2</h1><p>fgets · strtok · strcmp · strcpy를 이용한 단어집합 만들기</p></header>
+<main>
+<section><h2>1. 문제 핵심</h2><p>여러 줄의 문장을 입력받아, 지금까지 나오지 않은 단어만 단어집합에 추가하는 문제입니다.</p><div class="box"><p>1. 처음 단어집합은 비어 있습니다.</p><p>2. 한 줄을 공백 기준으로 단어로 나눕니다.</p><p>3. 단어집합에 없는 단어만 추가합니다.</p><p>4. 한 줄 처리가 끝날 때마다 현재 단어집합을 출력합니다.</p><p>5. 입력이 <b>END</b>이면 출력하지 않고 종료합니다.</p></div></section>
+<section><h2>2. 인터렉티브 실행기</h2><p>여러 줄의 문장을 입력하고 실행하면, 각 줄마다 단어집합이 어떻게 변하는지 확인할 수 있습니다.</p><textarea id="inputText">apple banana apple
+banana grape
+Apple apple
+END</textarea><br><button onclick="runWords()">실행하기</button><button onclick="loadExample(1)">기본 예제</button><button onclick="loadExample(2)">중복 많은 예제</button><button onclick="loadExample(3)">대소문자 예제</button><div id="runResult"></div></section>
+<section><h2>3. 한 줄 처리 과정 직접 보기</h2><p>아래 문장 한 줄을 입력하면 단어 분리와 중복 검사를 확인할 수 있습니다.</p><textarea id="oneLine">apple banana apple banana cherry</textarea><button onclick="runOneLine()">한 줄 분석하기</button><div id="oneLineResult"></div></section>
+<section><h2>4. 코드 작성 방법</h2><h3>1. 문자열 입력은 fgets 사용</h3><p>문장에는 공백이 있으므로 scanf("%s")만 쓰면 한 단어만 입력됩니다.</p><pre><code>fgets(line, sizeof(line), stdin);</code></pre><h3>2. 줄바꿈 제거</h3><pre><code>line[strcspn(line, "\n")] = '\0';</code></pre><h3>3. END 검사</h3><pre><code>if (strcmp(line, "END") == 0) {
+    break;
+}</code></pre><h3>4. strtok로 단어 분리</h3><pre><code>char *token = strtok(line, " ");
+
+while (token != NULL) {
+    ...
+    token = strtok(NULL, " ");
+}</code></pre><h3>5. 이미 있는 단어인지 확인</h3><pre><code>int exists(char word[]) {
+    for (int i = 0; i < wordCount; i++) {
+        if (strcmp(words[i], word) == 0) return 1;
+    }
+    return 0;
+}</code></pre><h3>6. 새 단어 저장</h3><pre><code>if (!exists(token)) {
+    strcpy(words[wordCount], token);
+    wordCount++;
+}</code></pre></section>
+<section><h2>5. 왜 배열을 크게 잡는가?</h2><div class="warn"><p>입력 줄이 길거나 단어 개수가 많으면 작은 배열은 버퍼 범위를 넘을 수 있습니다.</p></div><pre><code>char words[10000][105];
+char line[10005];</code></pre></section>
+<section><h2>6. 자주 하는 실수</h2><div class="quiz"><h3>실수 1. scanf("%s")로 문장을 입력받는 경우</h3><p>공백이 있는 문장을 처리할 수 없습니다.</p><button onclick="toggleAnswer('q1')">설명 보기</button><div id="q1" class="answer">scanf("%s")는 공백 전까지만 읽습니다. 이 문제는 한 줄 전체를 읽어야 하므로 fgets가 적합합니다.</div></div><div class="quiz"><h3>실수 2. END를 출력해버리는 경우</h3><p>END가 나오면 바로 종료해야 합니다.</p><button onclick="toggleAnswer('q2')">설명 보기</button><div id="q2" class="answer">END는 단어집합에 추가하지 않고, 현재 단어집합도 출력하지 않습니다.</div></div><div class="quiz"><h3>실수 3. 단어집합을 매 줄마다 초기화하는 경우</h3><p>단어집합은 프로그램이 끝날 때까지 유지됩니다.</p><button onclick="toggleAnswer('q3')">설명 보기</button><div id="q3" class="answer">첫 번째 줄에서 나온 단어는 두 번째 줄에서도 이미 나온 단어로 판단해야 합니다.</div></div><div class="quiz"><h3>실수 4. 대소문자를 같은 단어로 처리하는 경우</h3><p>strcmp는 대소문자를 구분합니다.</p><button onclick="toggleAnswer('q4')">설명 보기</button><div id="q4" class="answer">Apple과 apple은 서로 다른 단어로 처리됩니다.</div></div></section>
+<section><h2>7. 정답 C 코드</h2><pre><code>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+char words[10000][105];
+int wordCount = 0;
+
+int exists(char word[]) {
+    for (int i = 0; i &lt; wordCount; i++) {
+        if (strcmp(words[i], word) == 0) return 1;
+    }
+    return 0;
+}
+
+void printWords() {
+    for (int i = 0; i &lt; wordCount; i++) {
+        if (i &gt; 0) printf(" ");
+        printf("%s", words[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    char line[10005];
+
+    while (fgets(line, sizeof(line), stdin) != NULL) {
+        line[strcspn(line, "\n")] = '\0';
+
+        if (strcmp(line, "END") == 0) break;
+
+        char *token = strtok(line, " ");
+
+        while (token != NULL) {
+            if (!exists(token)) {
+                strcpy(words[wordCount], token);
+                wordCount++;
+            }
+            token = strtok(NULL, " ");
+        }
+
+        printWords();
+    }
+    return 0;
+}</code></pre></section>
+<section><h2>8. 핵심 정리</h2><p>1. 문장 입력은 fgets를 사용합니다.</p><p>2. 줄바꿈 제거는 strcspn을 사용합니다.</p><p>3. 단어 분리는 strtok를 사용합니다.</p><p>4. 단어 비교는 strcmp를 사용합니다.</p><p>5. 새 단어 저장은 strcpy를 사용합니다.</p><p>6. 단어집합은 계속 유지됩니다.</p><p>7. END가 나오면 출력하지 않고 종료합니다.</p></section>
+</main>
+<script>
+function escapeHtml(s){return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');}
+function renderWordSet(words){if(words.length===0)return "<span class='small'>비어 있음</span>";return words.map(w=>"<span class='word'>"+escapeHtml(w)+"</span>").join('');}
+function runWords(){const text=document.getElementById('inputText').value.replace(/\r/g,'');const lines=text.split('\n');let wordSet=[];let html='';let stopped=false;html+='<table><tr><th>줄 번호</th><th>입력 문장</th><th>새로 추가된 단어</th><th>이미 있던 단어</th><th>현재 단어집합 출력</th></tr>';for(let i=0;i<lines.length;i++){const line=lines[i].trim();if(line==='')continue;if(line==='END'){html+="<tr><td>"+(i+1)+"</td><td><span class='word end'>END</span></td><td colspan='3'>END를 만나 종료합니다. 이 줄은 출력하지 않습니다.</td></tr>";stopped=true;break;}const tokens=line.split(/\s+/).filter(x=>x.length>0);let newWords=[],oldWords=[];for(const token of tokens){if(wordSet.includes(token)){oldWords.push(token);}else{wordSet.push(token);newWords.push(token);}}html+='<tr>';html+='<td>'+(i+1)+'</td>';html+='<td>'+escapeHtml(line)+'</td>';html+='<td>'+(newWords.length?newWords.map(w=>"<span class='word new'>"+escapeHtml(w)+"</span>").join(' '):'-')+'</td>';html+='<td>'+(oldWords.length?oldWords.map(w=>"<span class='word old'>"+escapeHtml(w)+"</span>").join(' '):'-')+'</td>';html+='<td>'+escapeHtml(wordSet.join(' '))+'</td>';html+='</tr>';}html+='</table>';if(!stopped){html+="<div class='warn'>END가 없어서 입력 끝까지 처리했습니다.</div>";}html+='<h3>최종 단어집합</h3><div class="word-list">'+renderWordSet(wordSet)+'</div>';document.getElementById('runResult').innerHTML=html;}
+function runOneLine(){const line=document.getElementById('oneLine').value.trim();const tokens=line.split(/\s+/).filter(x=>x.length>0);let temp=[];let rows='';for(const token of tokens){const exists=temp.includes(token);if(!exists)temp.push(token);rows+='<tr><td>'+escapeHtml(token)+'</td><td>'+(exists?'이미 있음':'새 단어')+'</td><td>'+(exists?'추가 안 함':'추가')+'</td><td>'+escapeHtml(temp.join(' '))+'</td></tr>';}document.getElementById('oneLineResult').innerHTML='<table><tr><th>단어</th><th>검사 결과</th><th>처리</th><th>현재 단어집합</th></tr>'+rows+'</table>';}
+function loadExample(type){if(type===1){document.getElementById('inputText').value='apple banana apple\nbanana grape\nApple apple\nEND';}else if(type===2){document.getElementById('inputText').value='dog cat dog bird\ncat bird fish\nfish dog lion tiger\nEND';}else{document.getElementById('inputText').value='Korea korea KOREA\nHello hello HELLO\nKorea Hello\nEND';}runWords();}
+function toggleAnswer(id){const el=document.getElementById(id);el.style.display=el.style.display==='block'?'none':'block';}
+runWords();runOneLine();
+</script>
+</body>
+</html>

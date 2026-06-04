@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자료구조 1장 — 순차 자료구조와 선형 리스트 | 세영코딩연구소</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════
+   DESIGN SYSTEM — warm industrial grid
+   amber / teal on deep navy-slate
+═══════════════════════════════════ */
+:root {
+  --bg0: #080b12;
+  --bg1: #0d1120;
+  --bg2: #131929;
+  --bg3: #1a2236;
+  --bg4: #222d44;
+  --border: #2a3650;
+  --border2: #334266;
+
+  --amber: #f59e0b;
+  --amber2: #fbbf24;
+  --teal:  #2dd4bf;
+  --teal2: #5eead4;
+  --rose:  #fb7185;
+  --sky:   #38bdf8;
+  --lime:  #a3e635;
+  --violet:#c084fc;
+
+  --text:  #e8edf5;
+  --text2: #7a8eaa;
+  --text3: #3d5070;
+
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'Noto Sans KR', sans-serif;
+
+  --radius: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg0);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* grid texture */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(245,158,11,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,158,11,.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(8,11,18,.93);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+.hdr {
+  max-width: 1120px; margin: 0 auto;
+  padding: 0 24px; height: 54px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.hdr-logo {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
+  color: var(--amber); letter-spacing: .08em;
+}
+.hdr-logo em { color: var(--text3); font-style: normal; }
+.hdr-badge {
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--teal);
+  border: 1px solid rgba(45,212,191,.3);
+  padding: 3px 10px; border-radius: 20px;
+}
+
+/* ── TAB NAV ── */
+.tab-nav {
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+.tab-list {
+  max-width: 1120px; margin: 0 auto;
+  padding: 0 20px; display: flex;
+  list-style: none;
+}
+.tb {
+  background: none; border: none; cursor: pointer;
+  padding: 13px 18px;
+  font-family: var(--sans); font-size: 13px; font-weight: 500;
+  color: var(--text3); white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.tb:hover { color: var(--text2); }
+.tb.active { color: var(--amber); border-bottom-color: var(--amber); }
+
+/* ── MAIN ── */
+main { max-width: 1120px; margin: 0 auto; padding: 32px 24px 88px; position: relative; z-index: 1; }
+
+.panel { display: none; animation: fadeSlide .3s ease; }
+.panel.active { display: block; }
+
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION HEADING ── */
+.sec-head { margin-bottom: 28px; }
+.sec-title {
+  font-size: 28px; font-weight: 900; letter-spacing: -.5px;
+  color: var(--text); margin-bottom: 4px;
+}
+.sec-title span { color: var(--amber); }
+.sec-sub {
+  font-family: var(--mono); font-size: 12px; color: var(--text3);
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  margin-bottom: 18px;
+}
+.card-hd {
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--teal); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-hd .tag {
+  font-size: 10px; color: var(--text3); font-weight: 400;
+  background: var(--bg3); padding: 2px 8px; border-radius: 12px;
+  margin-left: 4px;
+}
+
+/* ── INFO BOX ── */
+.info {
+  background: rgba(245,158,11,.05);
+  border-left: 3px solid var(--amber);
+  border-radius: 0 8px 8px 0;
+  padding: 14px 18px; margin-bottom: 18px;
+  font-size: 13.5px; line-height: 1.8; color: var(--text);
+}
+.info strong { color: var(--amber); }
+.info code {
+  font-family: var(--mono); font-size: 12px;
+  background: var(--bg3); padding: 1px 6px; border-radius: 4px;
+  color: var(--teal2);
+}
+.info-teal {
+  background: rgba(45,212,191,.05);
+  border-left-color: var(--teal);
+}
+.info-rose {
+  background: rgba(251,113,133,.05);
+  border-left-color: var(--rose);
+}
+
+/* ── TWO / THREE COL ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+@media(max-width:720px) {
+  .two-col, .three-col { grid-template-columns: 1fr; }
+}
+
+/* ── CODE BLOCK ── */
+.codeblock {
+  background: var(--bg0); border: 1px solid var(--border);
+  border-radius: 8px; padding: 16px 18px;
+  font-family: var(--mono); font-size: 12.5px; line-height: 1.85;
+  overflow-x: auto; margin: 12px 0;
+}
+.kw  { color: #7dd3fc; }
+.fn  { color: var(--amber2); }
+.cm  { color: #475569; }
+.st  { color: #86efac; }
+.nm  { color: #f9a8d4; }
+.tp  { color: #a5b4fc; }
+.op  { color: var(--teal2); }
+
+/* ── MEM CELL (기본 박스) ── */
+.cell {
+  display: inline-flex; flex-direction: column;
+  align-items: center; flex-shrink: 0;
+}
+.cell-idx {
+  font-family: var(--mono); font-size: 10px; color: var(--text3);
+  margin-bottom: 4px;
+}
+.cell-box {
+  width: 56px; height: 52px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 15px; font-weight: 600;
+  color: var(--teal); transition: all .25s;
+  position: relative;
+}
+.cell-box.empty { color: var(--text3); border-style: dashed; }
+.cell-box.highlight { background: rgba(245,158,11,.12); border-color: var(--amber); color: var(--amber); }
+.cell-box.shifted { background: rgba(56,189,248,.1); border-color: var(--sky); color: var(--sky); animation: shiftAnim .4s ease; }
+.cell-box.inserted { background: rgba(45,212,191,.12); border-color: var(--teal); color: var(--teal); animation: popIn .3s ease; }
+.cell-box.deleted { animation: popOut .3s ease forwards; }
+.cell-addr {
+  font-family: var(--mono); font-size: 9px; color: var(--text3);
+  margin-top: 4px;
+}
+.cell-sep {
+  width: 0; height: 52px;
+  border-left: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+@keyframes popIn {
+  0%   { opacity: 0; transform: scale(.4) translateY(-20px); }
+  60%  { transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes popOut {
+  to { opacity: 0; transform: scale(.3); }
+}
+@keyframes shiftAnim {
+  0%   { transform: translateX(-30px); opacity: .4; }
+  100% { transform: translateX(0);     opacity: 1; }
+}
+
+/* ── SIM AREA ── */
+.sim-wrap {
+  background: var(--bg1); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px 20px 18px;
+  overflow-x: auto; min-height: 110px;
+  display: flex; align-items: flex-start;
+  gap: 0; position: relative;
+  margin-bottom: 14px;
+}
+.sim-wrap.center { justify-content: center; align-items: center; }
+.sim-empty {
+  font-family: var(--mono); font-size: 13px; color: var(--text3);
+  text-align: center; width: 100%;
+}
+
+/* step pointer */
+.step-ptr {
+  position: absolute; bottom: 6px;
+  display: flex; flex-direction: column; align-items: center;
+  pointer-events: none; transition: left .3s ease;
+}
+.step-ptr-arrow {
+  font-size: 13px; color: var(--rose);
+  animation: bounce .8s ease infinite alternate;
+}
+.step-ptr-label {
+  font-family: var(--mono); font-size: 9px; color: var(--rose);
+}
+@keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-4px)} }
+
+/* ── CONTROLS ── */
+.controls {
+  display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+  margin-bottom: 14px;
+}
+.ifield {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 7px; color: var(--text);
+  font-family: var(--mono); font-size: 13px;
+  padding: 9px 12px; width: 90px; outline: none;
+  transition: border-color .2s;
+}
+.ifield:focus { border-color: var(--amber); }
+.ifield::placeholder { color: var(--text3); }
+.ifield.wide { width: 120px; }
+
+.btn {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 7px; cursor: pointer;
+  color: var(--text2); font-family: var(--sans); font-size: 13px; font-weight: 600;
+  padding: 9px 16px; transition: all .18s;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(245,158,11,.07); }
+.btn.pr { background: rgba(245,158,11,.1); border-color: var(--amber); color: var(--amber); }
+.btn.tl { background: rgba(45,212,191,.08); border-color: var(--teal); color: var(--teal); }
+.btn.ro { background: rgba(251,113,133,.08); border-color: var(--rose); color: var(--rose); }
+.btn:disabled { opacity: .3; cursor: not-allowed; pointer-events: none; }
+
+/* ── LOG ── */
+.logbox {
+  background: var(--bg0); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 14px;
+  height: 80px; overflow-y: auto;
+  font-family: var(--mono); font-size: 11.5px;
+  scrollbar-width: thin; scrollbar-color: var(--bg3) transparent;
+}
+.ll { color: var(--text3); margin-bottom: 3px; }
+.ll.ok   { color: var(--teal2); }
+.ll.err  { color: var(--rose); }
+.ll.info { color: var(--amber2); }
+.ll.step { color: var(--sky); }
+
+/* ── STEP-BY-STEP PANEL ── */
+.step-panel {
+  background: var(--bg1); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+  margin-bottom: 18px;
+}
+.step-header {
+  background: var(--bg3); padding: 10px 18px;
+  font-family: var(--mono); font-size: 12px; color: var(--text2);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.step-body { padding: 16px 18px; }
+.step-list { list-style: none; }
+.step-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+  opacity: .35; transition: opacity .3s;
+}
+.step-item:last-child { border-bottom: none; }
+.step-item.active { opacity: 1; }
+.step-item.done   { opacity: .55; }
+.step-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--bg4); border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 10px; font-weight: 700;
+  color: var(--text3); flex-shrink: 0; transition: all .3s;
+}
+.step-item.active .step-num {
+  background: var(--amber); border-color: var(--amber);
+  color: var(--bg0);
+}
+.step-item.done .step-num {
+  background: rgba(45,212,191,.2); border-color: var(--teal);
+  color: var(--teal);
+}
+.step-text { font-size: 13px; color: var(--text2); line-height: 1.6; padding-top: 3px; }
+.step-item.active .step-text { color: var(--text); }
+
+/* ── TABLE ── */
+.ctable { width: 100%; border-collapse: collapse; }
+.ctable th {
+  background: var(--bg3); color: var(--text3);
+  font-family: var(--mono); font-size: 11px; letter-spacing: .08em;
+  text-transform: uppercase; padding: 10px 14px; text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.ctable td {
+  padding: 10px 14px; border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--text);
+}
+.ctable tr:last-child td { border-bottom: none; }
+.ctable tr:hover td { background: rgba(255,255,255,.015); }
+
+/* tc colors */
+.o1  { color: var(--teal2); font-family: var(--mono); }
+.on  { color: var(--amber);  font-family: var(--mono); }
+.on2 { color: var(--rose);   font-family: var(--mono); }
+
+/* ── ADDR CALC ── */
+.addr-formula {
+  background: var(--bg0); border: 1px solid var(--border);
+  border-radius: 10px; padding: 20px 24px; margin: 14px 0;
+  font-family: var(--mono); font-size: 14px;
+  display: flex; flex-direction: column; gap: 8px; align-items: flex-start;
+}
+.af-label { color: var(--text3); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+.af-formula { color: var(--amber2); font-size: 16px; font-weight: 600; }
+.af-result  { color: var(--teal2); font-size: 18px; font-weight: 700; }
+
+/* ── POLYNOMIAL DISPLAY ── */
+.poly-term {
+  display: inline-flex; align-items: baseline;
+  gap: 1px;
+  font-family: var(--mono); font-size: 15px; font-weight: 600;
+  color: var(--teal2); margin: 0 4px;
+  background: var(--bg3); border: 1px solid var(--border2);
+  padding: 6px 12px; border-radius: 6px;
+  transition: all .25s;
+}
+.poly-term .coef { color: var(--amber2); }
+.poly-term .var  { color: var(--teal2); }
+.poly-term .exp  { font-size: 10px; vertical-align: super; color: var(--sky); }
+.poly-term .plus { color: var(--text3); font-size: 13px; margin-left: 8px; }
+.poly-term.highlight { background: rgba(245,158,11,.12); border-color: var(--amber); }
+
+.poly-arr-cell {
+  display: flex; flex-direction: column; align-items: center; flex-shrink: 0;
+}
+.poly-arr-val {
+  width: 52px; height: 48px; border: 1px solid var(--border2);
+  background: var(--bg3); border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--amber2);
+}
+.poly-arr-exp {
+  font-family: var(--mono); font-size: 9px; color: var(--text3);
+  margin-top: 4px;
+}
+.poly-arr-sep { width: 0; height: 48px; border-left: 1px solid var(--border); flex-shrink: 0; }
+
+/* ── MATRIX ── */
+.matrix-wrap {
+  display: flex; gap: 20px; align-items: center; flex-wrap: wrap;
+}
+.matrix {
+  display: inline-grid; gap: 3px;
+  background: var(--bg1); border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px;
+}
+.mx-cell {
+  width: 42px; height: 38px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 13px; font-weight: 600; color: var(--text2);
+  transition: all .2s; cursor: pointer;
+}
+.mx-cell:hover { border-color: var(--amber); color: var(--amber); background: rgba(245,158,11,.07); }
+.mx-cell.hl-row { background: rgba(56,189,248,.1); border-color: var(--sky); color: var(--sky); }
+.mx-cell.hl-col { background: rgba(251,113,133,.1); border-color: var(--rose); color: var(--rose); }
+.mx-cell.hl-sel { background: rgba(45,212,191,.15); border-color: var(--teal); color: var(--teal); z-index:1; }
+.mx-cell.hl-diag { background: rgba(192,132,252,.12); border-color: var(--violet); color: var(--violet); }
+
+/* ── QUIZ ── */
+.qcard {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 22px 24px; margin-bottom: 16px;
+}
+.qcard-q {
+  font-size: 14.5px; font-weight: 600; margin-bottom: 16px;
+  color: var(--text); line-height: 1.65;
+}
+.qno { font-family: var(--mono); color: var(--amber); margin-right: 8px; }
+.qopts { display: flex; flex-direction: column; gap: 8px; }
+.qopt {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 7px; padding: 11px 16px;
+  cursor: pointer; transition: all .18s;
+  font-size: 13px; color: var(--text2);
+  display: flex; align-items: center; gap: 10px;
+}
+.qopt:hover { border-color: var(--amber); color: var(--text); }
+.qopt.correct { border-color: var(--teal); background: rgba(45,212,191,.08); color: var(--teal2); }
+.qopt.wrong   { border-color: var(--rose); background: rgba(251,113,133,.08); color: var(--rose); }
+.qopt.disabled{ cursor: not-allowed; }
+.qmark { font-family: var(--mono); font-size: 11px; color: var(--text3); width: 20px; flex-shrink: 0; }
+.qfb {
+  margin-top: 12px; padding: 10px 14px; border-radius: 7px;
+  font-size: 13px; line-height: 1.7; display: none;
+}
+.qfb.show { display: block; }
+.qfb.ok { background: rgba(45,212,191,.06); color: var(--teal2); border: 1px solid rgba(45,212,191,.2); }
+.qfb.ng { background: rgba(251,113,133,.06); color: var(--rose);  border: 1px solid rgba(251,113,133,.2); }
+
+/* score */
+.sbar {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 22px;
+  display: flex; align-items: center; gap: 16px; margin-bottom: 22px;
+}
+.sval { font-family: var(--mono); font-size: 22px; font-weight: 700; color: var(--amber); }
+.slbl { font-family: var(--mono); font-size: 12px; color: var(--text3); }
+.strk { flex:1; height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+.sfil { height: 100%; background: linear-gradient(90deg, var(--amber), var(--teal)); border-radius: 3px; width:0; transition: width .5s; }
+
+/* ── CONCEPT CARD GRID ── */
+.concept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.concept-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 16px;
+  transition: border-color .2s, transform .2s;
+}
+.concept-card:hover { border-color: var(--amber); transform: translateY(-2px); }
+.cc-icon { font-size: 24px; margin-bottom: 10px; }
+.cc-title { font-size: 13px; font-weight: 700; color: var(--amber2); margin-bottom: 6px; }
+.cc-body { font-size: 12px; color: var(--text2); line-height: 1.7; }
+
+/* ── TAG PILL ── */
+.pill {
+  display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 600;
+  padding: 3px 9px; border-radius: 20px; margin: 2px;
+}
+.pill-amber { background: rgba(245,158,11,.15); color: var(--amber); border: 1px solid rgba(245,158,11,.3); }
+.pill-teal  { background: rgba(45,212,191,.12); color: var(--teal);  border: 1px solid rgba(45,212,191,.3); }
+.pill-rose  { background: rgba(251,113,133,.12); color: var(--rose);  border: 1px solid rgba(251,113,133,.3); }
+.pill-sky   { background: rgba(56,189,248,.12);  color: var(--sky);   border: 1px solid rgba(56,189,248,.3); }
+
+/* ── SPECIAL: memory layout vis ── */
+.mem-strip {
+  display: flex; overflow-x: auto; gap: 0;
+  padding: 10px 0; scrollbar-width: thin;
+}
+.mem-block {
+  display: flex; flex-direction: column; flex-shrink: 0;
+  align-items: center;
+}
+.mem-box {
+  width: 64px; height: 48px; border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 13px; font-weight: 600;
+  color: var(--teal2); background: var(--bg3);
+  transition: all .2s;
+}
+.mem-box.arr   { background: rgba(45,212,191,.08); border-color: rgba(45,212,191,.3); }
+.mem-box.other { background: var(--bg2); color: var(--text3); }
+.mem-box.waste { background: rgba(245,158,11,.05); color: var(--text3); border-style: dashed; }
+.mem-addr { font-family: var(--mono); font-size: 9px; color: var(--text3); margin-top: 4px; text-align: center; }
+.mem-label { font-family: var(--mono); font-size: 9px; color: var(--amber); margin-bottom: 2px; }
+
+/* step buttons */
+.step-btns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.progress-dots {
+  display: flex; gap: 6px; align-items: center; margin-left: auto;
+}
+.pdot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--bg4); border: 1px solid var(--border2);
+  transition: all .2s;
+}
+.pdot.active { background: var(--amber); border-color: var(--amber); }
+.pdot.done   { background: var(--teal);  border-color: var(--teal); }
+
+/* 2D address calculator */
+.addr-calc-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+@media(max-width:640px){ .addr-calc-grid { grid-template-columns: 1fr; } }
+
+.formula-box {
+  background: var(--bg0); border: 1px solid var(--border);
+  border-radius: 8px; padding: 18px 20px; margin-top: 14px;
+}
+.fb-title { font-family: var(--mono); font-size: 10px; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+.fb-eq { font-family: var(--mono); font-size: 14px; color: var(--text2); line-height: 2; }
+.fb-eq .hl { color: var(--amber2); font-weight: 600; }
+.fb-eq .res { color: var(--teal2); font-size: 18px; font-weight: 700; }
+</style>
+
+<style>
+:root{
+--bg0:#fff!important;--bg1:#f8fafc!important;--bg2:#fff!important;
+--bg3:#eef2f7!important;--bg4:#dde6f0!important;
+--text:#111!important;--text2:#222!important;--text3:#555!important;
+--border:#888!important;--border2:#666!important;
+}
+body{background:#fff!important;color:#111!important;font-size:22px!important;line-height:2!important;}
+body::before{display:none!important;}
+.sec-title{font-size:48px!important;}
+.sec-sub,.hdr-logo,.hdr-badge{font-size:18px!important;}
+.card,.info,.qcard,.btn,.ifield,.ctable td,.ctable th,.step-text{font-size:20px!important;}
+.btn,.ifield{padding:12px!important;}
+.codeblock{background:#f7f7f7!important;color:#111!important;border:2px solid #666!important;font-size:18px!important;}
+.cell-box,.mem-box,.mx-cell,.poly-arr-val{font-size:22px!important;font-weight:700!important;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr">
+    <div class="hdr-logo">세영코딩연구소 <em>/ ph.D kim</em></div>
+    <div class="hdr-badge">Data Struct · Ch 01</div>
+  </div>
+</header>
+
+<!-- TAB NAV -->
+<nav class="tab-nav">
+  <ul class="tab-list" id="tabList">
+    <li><button class="tb active" data-tab="concept">📚 개념 소개</button></li>
+    <li><button class="tb" data-tab="memory">🧠 메모리 구조</button></li>
+    <li><button class="tb" data-tab="insert">➕ 삽입 연산</button></li>
+    <li><button class="tb" data-tab="delete">➖ 삭제 연산</button></li>
+    <li><button class="tb" data-tab="search">🔍 탐색 연산</button></li>
+    <li><button class="tb" data-tab="poly">📐 다항식 표현</button></li>
+    <li><button class="tb" data-tab="matrix">🔢 행렬 표현</button></li>
+    <li><button class="tb" data-tab="addr">📍 주소 계산</button></li>
+    <li><button class="tb" data-tab="quiz">🧩 퀴즈</button></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ══════════ 개념 소개 ══════════ -->
+<section class="panel active" id="tab-concept">
+  <div class="sec-head">
+    <div class="sec-title">순차 자료구조와 <span>선형 리스트</span></div>
+    <div class="sec-sub">// Sequential Data Structure & Linear List</div>
+  </div>
+
+  <div class="info">
+    <strong>자료구조(Data Structure)</strong>란 컴퓨터에서 자료를 <strong>효율적으로 저장·관리</strong>하기 위한
+    방법입니다. 어떤 자료구조를 선택하느냐에 따라 프로그램의 속도와 메모리 사용량이 크게 달라집니다.
+  </div>
+
+  <div class="concept-grid" id="conceptGrid"></div>
+
+  <div class="card">
+    <div class="card-hd">📋 선형 리스트(Linear List) 핵심 개념</div>
+    <div class="info info-teal" style="margin-bottom:14px">
+      <strong>선형 리스트</strong>는 원소들 사이에 <strong>1:1 선형 관계</strong>가 있는 자료구조입니다.
+      원소들이 <code>a₀, a₁, a₂, …, aₙ₋₁</code> 순서로 나열되며, 각 원소는
+      바로 앞·뒤 원소와만 연결됩니다.
+    </div>
+    <div id="linearListVis"></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hd">⚡ 순차 자료구조 특징</div>
+      <table class="ctable" id="seqFeatTable"></table>
+    </div>
+    <div class="card">
+      <div class="card-hd">📊 연산별 시간복잡도</div>
+      <table class="ctable" id="seqComplexTable"></table>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 메모리 구조 ══════════ -->
+<section class="panel" id="tab-memory">
+  <div class="sec-head">
+    <div class="sec-title">메모리 <span>저장 구조</span></div>
+    <div class="sec-sub">// 순차 자료구조 = 연속된 메모리 공간에 저장</div>
+  </div>
+
+  <div class="info">
+    순차 자료구조에서 배열은 <strong>연속된 메모리 공간</strong>에 저장됩니다.
+    첫 번째 원소의 주소(<code>base address</code>)와 각 원소의 크기(<code>element size</code>)만 알면
+    어떤 원소든 <strong>O(1)</strong>에 바로 접근할 수 있습니다.
+  </div>
+
+  <div class="card">
+    <div class="card-hd">🗺️ 메모리 레이아웃 시각화 <span class="tag">타입·크기별 비교</span></div>
+    <div class="controls">
+      <select class="ifield wide" id="memTypeSelect" style="width:150px">
+        <option value="char">char (1 byte)</option>
+        <option value="short">short (2 bytes)</option>
+        <option value="int" selected>int (4 bytes)</option>
+        <option value="double">double (8 bytes)</option>
+      </select>
+      <input class="ifield" id="memSizeInput" type="number" value="6" min="2" max="10" placeholder="크기">
+      <button class="btn pr" id="memDrawBtn">▶ 시각화</button>
+    </div>
+    <div id="memLayoutVis"></div>
+    <div class="formula-box" id="memFormula"></div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hd">✅ 순차 구조 장점</div>
+      <ul id="seqPros" style="font-size:13px;color:var(--text2);line-height:2.3;padding-left:18px"></ul>
+    </div>
+    <div class="card">
+      <div class="card-hd">❌ 순차 구조 단점</div>
+      <ul id="seqCons" style="font-size:13px;color:var(--text2);line-height:2.3;padding-left:18px"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 삽입 연산 ══════════ -->
+<section class="panel" id="tab-insert">
+  <div class="sec-head">
+    <div class="sec-title">삽입 연산 <span>Insert</span></div>
+    <div class="sec-sub">// 지정한 위치에 새 원소를 삽입 — O(n)</div>
+  </div>
+
+  <div class="info info-rose">
+    순차 리스트에서 <strong>k번 위치에 삽입</strong>하려면 k번부터 마지막 원소까지
+    <strong>모두 한 칸씩 뒤로 이동</strong>해야 합니다. 최악의 경우 n번 이동 → <strong>O(n)</strong>.
+  </div>
+
+  <div class="card">
+    <div class="card-hd">🎮 삽입 단계별 시뮬레이터</div>
+    <div class="controls">
+      <input class="ifield" id="insVal" type="number" placeholder="삽입값" style="width:80px">
+      <input class="ifield" id="insPos" type="number" placeholder="위치(0~)" style="width:90px">
+      <button class="btn pr" id="insRunBtn">▶ 단계 실행</button>
+      <button class="btn" id="insResetBtn">↺ 초기화</button>
+      <span style="font-size:12px;color:var(--text3);font-family:var(--mono)" id="insStatus"></span>
+    </div>
+    <div class="sim-wrap" id="insSimArea"></div>
+    <div style="margin-bottom:12px" id="insStepPanel"></div>
+    <div class="logbox" id="insLog"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">📝 C 코드 — 삽입 함수</div>
+    <div class="codeblock" id="insCCode"></div>
+  </div>
+</section>
+
+<!-- ══════════ 삭제 연산 ══════════ -->
+<section class="panel" id="tab-delete">
+  <div class="sec-head">
+    <div class="sec-title">삭제 연산 <span>Delete</span></div>
+    <div class="sec-sub">// 지정한 위치의 원소를 삭제 — O(n)</div>
+  </div>
+
+  <div class="info info-rose">
+    순차 리스트에서 <strong>k번 위치 원소를 삭제</strong>하면 k+1번부터 마지막 원소까지
+    <strong>모두 한 칸씩 앞으로 이동</strong>해야 합니다. 최악의 경우 n번 이동 → <strong>O(n)</strong>.
+  </div>
+
+  <div class="card">
+    <div class="card-hd">🎮 삭제 단계별 시뮬레이터</div>
+    <div class="controls">
+      <input class="ifield" id="delPos" type="number" placeholder="삭제 위치" style="width:100px">
+      <button class="btn ro" id="delRunBtn">▶ 단계 실행</button>
+      <button class="btn" id="delResetBtn">↺ 초기화</button>
+      <span style="font-size:12px;color:var(--text3);font-family:var(--mono)" id="delStatus"></span>
+    </div>
+    <div class="sim-wrap" id="delSimArea"></div>
+    <div style="margin-bottom:12px" id="delStepPanel"></div>
+    <div class="logbox" id="delLog"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">📝 C 코드 — 삭제 함수</div>
+    <div class="codeblock" id="delCCode"></div>
+  </div>
+</section>
+
+<!-- ══════════ 탐색 연산 ══════════ -->
+<section class="panel" id="tab-search">
+  <div class="sec-head">
+    <div class="sec-title">탐색 연산 <span>Search</span></div>
+    <div class="sec-sub">// 원하는 값 찾기 — 순차 탐색 O(n) / 이진 탐색 O(log n)</div>
+  </div>
+
+  <div class="two-col">
+    <div class="info" style="margin:0">
+      <strong>순차 탐색(Sequential Search)</strong><br>
+      앞에서부터 하나씩 비교. 정렬 불필요.
+      평균 <code>n/2</code>번, 최악 <code>n</code>번 비교 → <strong>O(n)</strong>
+    </div>
+    <div class="info info-teal" style="margin:0">
+      <strong>이진 탐색(Binary Search)</strong><br>
+      <strong>정렬된 배열</strong>에서만 가능. 범위를 절반씩 축소.
+      최악 <code>log₂n</code>번 비교 → <strong>O(log n)</strong>
+    </div>
+  </div>
+
+  <div style="height:16px"></div>
+
+  <div class="card">
+    <div class="card-hd">🎮 탐색 시뮬레이터 <span class="tag">순차 / 이진 비교</span></div>
+    <div class="controls">
+      <input class="ifield wide" id="srchVal" type="number" placeholder="탐색값">
+      <button class="btn pr" id="seqSrchBtn">📋 순차 탐색</button>
+      <button class="btn tl" id="binSrchBtn">⚡ 이진 탐색</button>
+      <button class="btn" id="srchResetBtn">↺ 초기화</button>
+    </div>
+    <div class="sim-wrap" id="srchSimArea"></div>
+    <div class="two-col" style="margin-top:14px">
+      <div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:6px">순차 탐색 로그</div>
+        <div class="logbox" id="seqLog"></div>
+      </div>
+      <div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:6px">이진 탐색 로그</div>
+        <div class="logbox" id="binLog"></div>
+      </div>
+    </div>
+    <div id="srchResult" style="margin-top:12px;font-family:var(--mono);font-size:13px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">📝 C 코드 — 두 탐색 비교</div>
+    <div class="codeblock" id="srchCCode"></div>
+  </div>
+</section>
+
+<!-- ══════════ 다항식 ══════════ -->
+<section class="panel" id="tab-poly">
+  <div class="sec-head">
+    <div class="sec-title">다항식 <span>배열 표현</span></div>
+    <div class="sec-sub">// 순차 자료구조로 다항식(polynomial) 저장하기</div>
+  </div>
+
+  <div class="info">
+    다항식 <strong>P(x) = aₙxⁿ + aₙ₋₁xⁿ⁻¹ + … + a₁x + a₀</strong> 를 배열로 표현할 때,
+    인덱스 <code>i</code>에 <strong>xⁱ의 계수</strong>를 저장합니다.
+    예: <code>arr[3] = 5</code> → 5x³ 항.
+  </div>
+
+  <div class="card">
+    <div class="card-hd">🧮 다항식 입력 & 배열 변환</div>
+    <div class="controls">
+      <input class="ifield wide" id="polyInput" type="text" placeholder="예: 3x^4+5x^2-2x+1" style="width:200px">
+      <button class="btn pr" id="polyParseBtn">▶ 변환</button>
+      <button class="btn" id="polyDemoBtn">📌 예시 로드</button>
+    </div>
+    <div id="polyExprArea" style="margin-bottom:14px;display:flex;flex-wrap:wrap;align-items:center;gap:4px;min-height:42px"></div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--text3);margin-bottom:8px">배열 표현 (인덱스 = 차수)</div>
+    <div class="sim-wrap" id="polyArrArea" style="min-height:90px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">📊 다항식 덧셈 시뮬레이터</div>
+    <div class="two-col">
+      <div>
+        <div style="font-size:12px;color:var(--text3);font-family:var(--mono);margin-bottom:8px">P(x)</div>
+        <input class="ifield" id="polyA" type="text" placeholder="2x^3+x-5" style="width:100%">
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--text3);font-family:var(--mono);margin-bottom:8px">Q(x)</div>
+        <input class="ifield" id="polyB" type="text" placeholder="x^3+3x^2+2" style="width:100%">
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn pr" id="polyAddBtn">➕ P(x) + Q(x) 계산</button>
+    </div>
+    <div id="polyAddResult" style="margin-top:14px"></div>
+  </div>
+</section>
+
+<!-- ══════════ 행렬 ══════════ -->
+<section class="panel" id="tab-matrix">
+  <div class="sec-head">
+    <div class="sec-title">행렬 <span>2차원 배열 표현</span></div>
+    <div class="sec-sub">// 2D Array — 행(row) × 열(column) 순서로 저장</div>
+  </div>
+
+  <div class="info">
+    2차원 배열 <code>A[m][n]</code>은 <strong>m행 n열</strong> 행렬입니다.
+    C언어는 <strong>행 우선(Row-Major)</strong> 순서로 메모리에 저장합니다.
+    <code>A[i][j]</code>의 주소 = <code>base + (i×n + j) × size</code>.
+  </div>
+
+  <div class="card">
+    <div class="card-hd">🎮 행렬 클릭 & 주소 계산기 <span class="tag">셀을 클릭하세요</span></div>
+    <div class="controls">
+      <label style="font-size:12px;color:var(--text3)">행</label>
+      <input class="ifield" id="mxRowInput" type="number" value="4" min="2" max="6" style="width:60px">
+      <label style="font-size:12px;color:var(--text3)">열</label>
+      <input class="ifield" id="mxColInput" type="number" value="5" min="2" max="7" style="width:60px">
+      <label style="font-size:12px;color:var(--text3)">base</label>
+      <input class="ifield" id="mxBase" type="number" value="100" style="width:80px">
+      <label style="font-size:12px;color:var(--text3)">size</label>
+      <input class="ifield" id="mxSize" type="number" value="4" style="width:60px">
+      <button class="btn pr" id="mxBuildBtn">▶ 생성</button>
+    </div>
+    <div class="matrix-wrap">
+      <div id="mxGrid"></div>
+      <div style="flex:1;min-width:200px">
+        <div class="formula-box" id="mxAddrBox">
+          <div class="fb-title">셀을 클릭하면 주소가 계산됩니다</div>
+        </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--text3)">
+          <span class="pill pill-sky">■ 선택 행</span>
+          <span class="pill pill-rose">■ 선택 열</span>
+          <span class="pill pill-teal">■ 선택 셀</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">🔄 행 우선 저장 순서 시각화</div>
+    <div id="rowMajorVis"></div>
+    <div style="margin-top:10px;font-size:12px;color:var(--text3);font-family:var(--mono)">
+      * C언어: A[0][0]→A[0][1]→A[0][2]→A[1][0]→… (행 우선)<br>
+      * Fortran/MATLAB: A[0][0]→A[1][0]→A[2][0]→A[0][1]→… (열 우선)
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ 주소 계산 ══════════ -->
+<section class="panel" id="tab-addr">
+  <div class="sec-head">
+    <div class="sec-title">주소 <span>계산 공식</span></div>
+    <div class="sec-sub">// 배열 원소의 메모리 주소를 직접 계산</div>
+  </div>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="card-hd">1️⃣ 1차원 배열 주소 계산기</div>
+      <div class="info" style="font-size:12px">
+        <strong>공식:</strong> <code>addr(A[i]) = base + i × size</code>
+      </div>
+      <div class="controls" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <label class="ifield-label">base =</label>
+          <input class="ifield" id="a1base" type="number" value="1000" style="width:90px">
+          <label class="ifield-label">size =</label>
+          <input class="ifield" id="a1size" type="number" value="4" style="width:60px">
+          <label class="ifield-label">i =</label>
+          <input class="ifield" id="a1i" type="number" value="3" style="width:60px">
+        </div>
+        <button class="btn pr" id="calc1DBtn">계산</button>
+      </div>
+      <div class="formula-box" id="result1D"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">2️⃣ 2차원 배열 주소 계산기</div>
+      <div class="info info-teal" style="font-size:12px">
+        <strong>공식(행 우선):</strong> <code>addr(A[i][j]) = base + (i×n + j) × size</code>
+      </div>
+      <div class="controls" style="flex-direction:column;align-items:flex-start;gap:8px">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <label>base=</label>
+          <input class="ifield" id="a2base" type="number" value="200" style="width:80px">
+          <label>n(열수)=</label>
+          <input class="ifield" id="a2n" type="number" value="5" style="width:60px">
+          <label>size=</label>
+          <input class="ifield" id="a2size" type="number" value="4" style="width:60px">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <label>i=</label>
+          <input class="ifield" id="a2i" type="number" value="2" style="width:60px">
+          <label>j=</label>
+          <input class="ifield" id="a2j" type="number" value="3" style="width:60px">
+        </div>
+        <button class="btn tl" id="calc2DBtn">계산</button>
+      </div>
+      <div class="formula-box" id="result2D"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">📋 주소 계산 공식 총정리</div>
+    <table class="ctable" id="addrFormulaTable"></table>
+  </div>
+</section>
+
+<!-- ══════════ 퀴즈 ══════════ -->
+<section class="panel" id="tab-quiz">
+  <div class="sec-head">
+    <div class="sec-title">개념 확인 <span>퀴즈</span></div>
+    <div class="sec-sub">// 자료구조 1장 순차 자료구조와 선형 리스트 — 10문항</div>
+  </div>
+  <div class="sbar">
+    <div class="slbl">점수</div>
+    <div class="sval" id="qScoreVal">0 / 10</div>
+    <div class="strk"><div class="sfil" id="qScoreFil"></div></div>
+    <button class="btn" id="qResetBtn">🔄 다시 풀기</button>
+  </div>
+  <div id="quizWrap"></div>
+</section>
+
+</main>
+
+<script>
+// ════════════════════ DATA ════════════════════
+
+const CONCEPTS = [
+  { icon:"📦", title:"자료(Data)", body:"컴퓨터가 처리할 수 있는 정보의 기본 단위 (숫자, 문자, 주소 등)" },
+  { icon:"🏗️", title:"자료구조", body:"자료를 효율적으로 저장·관리하는 방법과 그 논리적 관계" },
+  { icon:"📏", title:"선형 구조", body:"원소 간 1:1 관계. 배열, 스택, 큐, 연결 리스트" },
+  { icon:"🌳", title:"비선형 구조", body:"원소 간 1:N 또는 N:M 관계. 트리, 그래프" },
+  { icon:"🔢", title:"순차 구조", body:"메모리에 연속 저장. 인덱스로 O(1) 접근 가능" },
+  { icon:"🔗", title:"연결 구조", body:"포인터로 연결. 동적 크기 변경 가능, 임의 접근 불가" },
+];
+
+const SEQ_FEAT = [
+  ["메모리 배치", "연속(Contiguous)"],
+  ["크기", "선언 시 고정 (정적)"],
+  ["임의 접근", "O(1) — 인덱스 직접 계산"],
+  ["순차 접근", "O(n)"],
+  ["삽입·삭제", "O(n) — 원소 이동 필요"],
+  ["공간 활용", "낭비 가능 (미사용 슬롯)"],
+];
+
+const SEQ_COMPL = [
+  ["접근(Access)",  "O(1)", "o1",  "인덱스 주소 계산"],
+  ["탐색(Search)",  "O(n)", "on",  "순차 탐색 기준"],
+  ["삽입(Insert)",  "O(n)", "on",  "원소 이동 필요"],
+  ["삭제(Delete)",  "O(n)", "on",  "원소 이동 필요"],
+];
+
+const QUIZ_DATA = [
+  {
+    q:"순차 자료구조(배열)에서 임의의 원소 A[i]에 접근하는 시간복잡도는?",
+    opts:["O(n)", "O(log n)", "O(1)", "O(n²)"],
+    ans:2,
+    exp:"배열 원소 주소 = base + i × size로 계산되어 항상 한 번만 연산하므로 O(1)입니다."
+  },
+  {
+    q:"크기 n인 순차 리스트의 첫 번째 위치(인덱스 0)에 원소를 삽입할 때 이동해야 하는 원소의 수는?",
+    opts:["0개", "1개", "n/2개", "n개"],
+    ans:3,
+    exp:"첫 번째 위치 삽입은 기존 n개 원소 전체를 한 칸씩 뒤로 이동해야 합니다. → 최악의 경우 n번 이동"
+  },
+  {
+    q:"순차 리스트 A[0..5] = {10,20,30,40,50,60}에서 A[2]를 삭제하면 삭제 후 A[2]의 값은?",
+    opts:["30", "40", "0", "60"],
+    ans:1,
+    exp:"A[2]=30을 삭제하면 A[3]=40, A[4]=50, A[5]=60이 각각 앞으로 한 칸 이동합니다. 따라서 삭제 후 A[2] = 40."
+  },
+  {
+    q:"base=1000, size=4(int)인 1차원 배열에서 A[5]의 주소는?",
+    opts:["1004", "1016", "1020", "1024"],
+    ans:2,
+    exp:"addr(A[5]) = 1000 + 5 × 4 = 1000 + 20 = 1020"
+  },
+  {
+    q:"다항식 P(x) = 4x³ + 0x² + 2x + 7을 배열로 표현할 때 arr[2]의 값은?",
+    opts:["4", "0", "2", "7"],
+    ans:1,
+    exp:"인덱스 = 차수. arr[0]=7(상수항), arr[1]=2(x), arr[2]=0(x²), arr[3]=4(x³). arr[2] = 0"
+  },
+  {
+    q:"정렬된 배열에서 이진 탐색(Binary Search)의 시간복잡도는?",
+    opts:["O(1)", "O(n)", "O(log n)", "O(n log n)"],
+    ans:2,
+    exp:"이진 탐색은 매 단계마다 탐색 범위를 절반으로 줄여 최악 O(log n)에 탐색합니다."
+  },
+  {
+    q:"C언어 2차원 배열의 메모리 저장 방식은?",
+    opts:["열 우선(Column-Major)", "행 우선(Row-Major)", "대각선 우선", "역순 저장"],
+    ans:1,
+    exp:"C언어는 행 우선(Row-Major) 방식입니다. A[0][0], A[0][1], A[0][2], A[1][0], ... 순으로 저장."
+  },
+  {
+    q:"base=200, size=4, 열 수=5인 배열 A[2][3]의 주소는? (행 우선)",
+    opts:["240", "252", "272", "252"],
+    ans:2,
+    exp:"addr = 200 + (2×5 + 3) × 4 = 200 + 13 × 4 = 200 + 52 = 252"
+  },
+  {
+    q:"크기 n인 순차 리스트에서 마지막 원소를 삭제할 때 이동 횟수는?",
+    opts:["0번", "1번", "n-1번", "n번"],
+    ans:0,
+    exp:"마지막 원소 삭제는 그냥 길이(length)를 1 줄이면 됩니다. 원소 이동이 전혀 필요 없으므로 0번, O(1)."
+  },
+  {
+    q:"순차 자료구조와 비교할 때 연결 리스트(Linked List)의 장점은?",
+    opts:["임의 접근이 빠르다", "메모리를 연속으로 사용한다", "삽입·삭제 시 원소 이동이 불필요하다", "캐시 효율이 높다"],
+    ans:2,
+    exp:"연결 리스트는 포인터만 변경하면 되므로 삽입·삭제 시 원소 이동이 필요 없습니다(O(1), 위치 알 때)."
+  },
+];
+
+// ════════════════════ TABS ════════════════════
+document.getElementById('tabList').addEventListener('click', function(e) {
+  var btn = e.target.closest('.tb');
+  if (!btn) return;
+  document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+});
+
+// ════════════════════ CONCEPT ════════════════════
+function buildConcept() {
+  var grid = document.getElementById('conceptGrid');
+  CONCEPTS.forEach(function(c) {
+    var card = document.createElement('div');
+    card.className = 'concept-card';
+    card.innerHTML = '<div class="cc-icon">' + c.icon + '</div><div class="cc-title">' + c.title + '</div><div class="cc-body">' + c.body + '</div>';
+    grid.appendChild(card);
+  });
+
+  // Linear list vis
+  var vis = document.getElementById('linearListVis');
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;align-items:center;gap:0;overflow-x:auto;padding:8px 0';
+  var items = ['a₀','a₁','a₂','a₃','…','aₙ₋₁'];
+  items.forEach(function(val, i) {
+    var cell = document.createElement('div');
+    cell.className = 'cell';
+    var idx = document.createElement('div');
+    idx.className = 'cell-idx';
+    idx.textContent = i < 5 ? '[' + i + ']' : '[n-1]';
+    var box = document.createElement('div');
+    box.className = 'cell-box';
+    box.textContent = val;
+    box.style.fontFamily = 'var(--mono)';
+    cell.appendChild(idx); cell.appendChild(box);
+    wrap.appendChild(cell);
+    if (i < items.length - 1) {
+      var arr = document.createElement('div');
+      arr.style.cssText = 'color:var(--text3);font-size:18px;padding:0 4px;padding-top:20px;font-family:var(--mono)';
+      arr.textContent = '→';
+      wrap.appendChild(arr);
+    }
+  });
+  vis.appendChild(wrap);
+
+  // feat table
+  var tb = document.getElementById('seqFeatTable');
+  var thead = document.createElement('thead');
+  thead.innerHTML = '<tr><th>특성</th><th>내용</th></tr>';
+  var tbody = document.createElement('tbody');
+  SEQ_FEAT.forEach(function(row) {
+    var tr = document.createElement('tr');
+    var td0 = document.createElement('td');
+    td0.textContent = row[0]; td0.style.color = 'var(--text2)';
+    var td1 = document.createElement('td');
+    td1.textContent = row[1]; td1.style.fontFamily = 'var(--mono)';
+    tr.appendChild(td0); tr.appendChild(td1);
+    tbody.appendChild(tr);
+  });
+  tb.appendChild(thead); tb.appendChild(tbody);
+
+  // compl table
+  var tb2 = document.getElementById('seqComplexTable');
+  var th2 = document.createElement('thead');
+  th2.innerHTML = '<tr><th>연산</th><th>복잡도</th><th>설명</th></tr>';
+  var tb2b = document.createElement('tbody');
+  SEQ_COMPL.forEach(function(row) {
+    var tr = document.createElement('tr');
+    var td0 = document.createElement('td'); td0.textContent = row[0];
+    var td1 = document.createElement('td'); td1.className = row[2]; td1.textContent = row[1];
+    var td2 = document.createElement('td'); td2.textContent = row[3]; td2.style.color='var(--text3)'; td2.style.fontSize='12px';
+    tr.appendChild(td0); tr.appendChild(td1); tr.appendChild(td2);
+    tb2b.appendChild(tr);
+  });
+  tb2.appendChild(th2); tb2.appendChild(tb2b);
+}
+
+// ════════════════════ MEMORY ════════════════════
+function buildMemory() {
+  var TYPES = { char:1, short:2, int:4, double:8 };
+  var BASE = 1000;
+
+  function drawMem() {
+    var type = document.getElementById('memTypeSelect').value;
+    var sz = parseInt(document.getElementById('memSizeInput').value) || 6;
+    var esize = TYPES[type];
+    var vis = document.getElementById('memLayoutVis');
+    vis.innerHTML = '';
+    var strip = document.createElement('div');
+    strip.className = 'mem-strip';
+    for (var i = 0; i < sz; i++) {
+      // each element spans esize bytes visually
+      var addr = BASE + i * esize;
+      var blk = document.createElement('div');
+      blk.className = 'mem-block';
+      var lbl = document.createElement('div');
+      lbl.className = 'mem-label';
+      lbl.textContent = 'A[' + i + ']';
+      var box = document.createElement('div');
+      box.className = 'mem-box arr';
+      box.style.width = (52 + (esize - 1) * 16) + 'px';
+      box.textContent = type + '[' + i + ']';
+      var addrDiv = document.createElement('div');
+      addrDiv.className = 'mem-addr';
+      addrDiv.textContent = addr + (esize > 1 ? '~' + (addr + esize - 1) : '');
+      blk.appendChild(lbl); blk.appendChild(box); blk.appendChild(addrDiv);
+      strip.appendChild(blk);
+      if (i < sz - 1) {
+        var sep = document.createElement('div');
+        sep.style.cssText = 'width:0;height:48px;border-left:1px solid var(--border);flex-shrink:0;margin-top:18px';
+        strip.appendChild(sep);
+      }
+    }
+    vis.appendChild(strip);
+
+    var form = document.getElementById('memFormula');
+    form.innerHTML = '<div class="fb-title">주소 계산 공식</div>' +
+      '<div class="fb-eq">addr(A[i]) = <span class="hl">' + BASE + '</span> + i × <span class="hl">' + esize + '</span></div>' +
+      '<div class="fb-eq">A[3] 주소 = ' + BASE + ' + 3 × ' + esize + ' = <span class="res">' + (BASE + 3*esize) + '</span></div>';
+  }
+  document.getElementById('memDrawBtn').addEventListener('click', drawMem);
+  drawMem();
+
+  var pros = document.getElementById('seqPros');
+  var cons = document.getElementById('seqCons');
+  var pItems = [
+    '<span style="color:var(--teal2)">O(1)</span> 임의 접근 — 인덱스 바로 계산',
+    '메모리 <span style="color:var(--teal2)">연속 저장</span> — 캐시 효율 높음',
+    '구현 단순, 포인터 추가 공간 불필요',
+    '직접 주소 계산 가능',
+  ];
+  var cItems = [
+    '<span style="color:var(--rose)">고정 크기</span> — 동적 변경 어려움',
+    '삽입·삭제 <span style="color:var(--rose)">O(n)</span> — 원소 이동 필요',
+    '미사용 공간 낭비 가능',
+    '크기 예측 어려울 때 비효율',
+  ];
+  pItems.forEach(function(t){ var li=document.createElement('li'); li.innerHTML=t; pros.appendChild(li); });
+  cItems.forEach(function(t){ var li=document.createElement('li'); li.innerHTML=t; cons.appendChild(li); });
+}
+
+// ════════════════════ INSERT SIM ════════════════════
+var insData = [], insSteps = [], insCur = -1;
+
+function resetIns() {
+  insData = [15, 28, 34, 47, 63, 75];
+  insSteps = []; insCur = -1;
+  document.getElementById('insStatus').textContent = '';
+  renderIns(insData, -1, -1);
+  buildInsStepPanel([]);
+  clearLog('insLog');
+  addLog('insLog', '초기 리스트 [15, 28, 34, 47, 63, 75]', 'info');
+  document.getElementById('insRunBtn').textContent = '▶ 단계 실행';
+}
+
+function renderIns(data, hlPos, newPos) {
+  var area = document.getElementById('insSimArea');
+  area.innerHTML = '';
+  data.forEach(function(val, i) {
+    var cell = document.createElement('div');
+    cell.className = 'cell';
+    var idx = document.createElement('div');
+    idx.className = 'cell-idx';
+    idx.textContent = '[' + i + ']';
+    var box = document.createElement('div');
+    box.className = 'cell-box';
+    if (i === newPos) box.className += ' inserted';
+    else if (i >= hlPos && hlPos >= 0 && i !== newPos) box.className += ' shifted';
+    box.textContent = val == null ? '' : val;
+    if (val == null) box.className += ' empty';
+    cell.appendChild(idx); cell.appendChild(box);
+    area.appendChild(cell);
+    if (i < data.length - 1) {
+      var sep = document.createElement('div');
+      sep.className = 'cell-sep';
+      area.appendChild(sep);
+    }
+  });
+}
+
+function buildInsStepPanel(steps) {
+  var panel = document.getElementById('insStepPanel');
+  panel.innerHTML = '';
+  if (!steps.length) return;
+  var sp = document.createElement('div');
+  sp.className = 'step-panel';
+  var hd = document.createElement('div');
+  hd.className = 'step-header';
+  hd.innerHTML = '<span>삽입 과정</span><span style="color:var(--amber);font-size:11px">' +
+    'Step ' + (insCur + 2) + ' / ' + steps.length + '</span>';
+  var body = document.createElement('div');
+  body.className = 'step-body';
+  var ul = document.createElement('ul');
+  ul.className = 'step-list';
+  steps.forEach(function(s, i) {
+    var li = document.createElement('li');
+    li.className = 'step-item' + (i === insCur ? ' active' : '') + (i < insCur ? ' done' : '');
+    var num = document.createElement('div');
+    num.className = 'step-num';
+    num.textContent = i < insCur ? '✓' : (i + 1);
+    var txt = document.createElement('div');
+    txt.className = 'step-text';
+    txt.textContent = s;
+    li.appendChild(num); li.appendChild(txt);
+    ul.appendChild(li);
+  });
+  body.appendChild(ul);
+  sp.appendChild(hd); sp.appendChild(body);
+  panel.appendChild(sp);
+}
+
+function initInsert() {
+  resetIns();
+
+  setCodeHTML('insCCode', [
+    '<span class="cm">// 순차 리스트에 원소 삽입</span>',
+    '<span class="cm">// arr: 배열, n: 현재 원소 수, pos: 삽입 위치, val: 삽입 값</span>',
+    '<span class="kw">void</span> <span class="fn">insert</span>(<span class="tp">int</span> arr[], <span class="tp">int</span> *n, <span class="tp">int</span> pos, <span class="tp">int</span> val) {',
+    '    <span class="cm">// 1단계: 마지막부터 pos까지 원소를 뒤로 이동</span>',
+    '    <span class="kw">for</span> (<span class="tp">int</span> i = *n - <span class="nm">1</span>; i >= pos; i--)',
+    '        arr[i + <span class="nm">1</span>] = arr[i];  <span class="cm">// 한 칸 뒤로</span>',
+    '    <span class="cm">// 2단계: 빈 자리에 새 값 삽입</span>',
+    '    arr[pos] = val;',
+    '    (*n)++;  <span class="cm">// 크기 증가</span>',
+    '}',
+    '',
+    '<span class="cm">// 사용 예시</span>',
+    '<span class="tp">int</span> arr[<span class="nm">10</span>] = {<span class="nm">15</span>,<span class="nm">28</span>,<span class="nm">34</span>,<span class="nm">47</span>,<span class="nm">63</span>,<span class="nm">75</span>};',
+    '<span class="tp">int</span> n = <span class="nm">6</span>;',
+    '<span class="fn">insert</span>(arr, &n, <span class="nm">2</span>, <span class="nm">99</span>);  <span class="cm">// [2]에 99 삽입</span>',
+    '<span class="cm">// 결과: {15,28,99,34,47,63,75}</span>',
+  ].join('\n'));
+
+  document.getElementById('insResetBtn').addEventListener('click', resetIns);
+
+  document.getElementById('insRunBtn').addEventListener('click', function() {
+    if (insSteps.length === 0) {
+      // Build steps
+      var val = parseInt(document.getElementById('insVal').value);
+      var pos = parseInt(document.getElementById('insPos').value);
+      if (isNaN(val)) { addLog('insLog','삽입값을 입력하세요','err'); return; }
+      if (isNaN(pos) || pos < 0 || pos > insData.length) {
+        addLog('insLog','위치는 0 ~ ' + insData.length + ' 사이','err'); return;
+      }
+      var steps = ['삽입 준비: 위치 ' + pos + '에 ' + val + ' 삽입 시작'];
+      for (var i = insData.length - 1; i >= pos; i--) {
+        steps.push('A[' + i + '] → A[' + (i+1) + ']: ' + insData[i] + ' 이동 (뒤로 한 칸)');
+      }
+      steps.push('A[' + pos + '] = ' + val + ' 삽입 완료! (' + (insData.length - pos) + '번 이동)');
+      insSteps = steps; insCur = 0;
+
+      // working copy
+      insData._working = JSON.parse(JSON.stringify(insData));
+      insData._working.push(null);
+      insData._val = val;
+      insData._pos = pos;
+      insData._shift = insData.length - 1;
+      document.getElementById('insRunBtn').textContent = '▶ 다음 단계';
+      addLog('insLog', '삽입 시작: A[' + pos + ']에 ' + val, 'info');
+    } else {
+      insCur++;
+    }
+    buildInsStepPanel(insSteps);
+
+    // Animate each step
+    var shift = insData._shift;
+    var pos2 = insData._pos;
+    var val2 = insData._val;
+
+    if (insCur - 1 < insData.length - pos2) {
+      // shifting phase
+      if (shift >= pos2) {
+        insData._working[shift + 1] = insData._working[shift];
+        insData._working[shift] = null;
+        renderIns(insData._working, shift, -1);
+        addLog('insLog', 'A[' + shift + ']=' + insData._working[shift+1] + ' → A[' + (shift+1) + ']', 'step');
+        insData._shift--;
+      }
+    } else {
+      // insert phase
+      insData._working[pos2] = val2;
+      renderIns(insData._working, -1, pos2);
+      addLog('insLog', '✅ A[' + pos2 + '] = ' + val2 + ' 삽입 완료 (' + (insData.length - pos2) + '번 이동)', 'ok');
+      insData = insData._working;
+      insSteps = []; insCur = -1;
+      document.getElementById('insRunBtn').textContent = '▶ 단계 실행';
+      document.getElementById('insStatus').textContent = '총 원소: ' + insData.length + '개';
+    }
+  });
+}
+
+// ════════════════════ DELETE SIM ════════════════════
+var delData = [], delSteps = [], delCur = -1;
+
+function resetDel() {
+  delData = [15, 28, 34, 47, 63, 75, 88];
+  delSteps = []; delCur = -1;
+  document.getElementById('delStatus').textContent = '';
+  renderDel(delData, -1, -1);
+  buildDelStepPanel([]);
+  clearLog('delLog');
+  addLog('delLog', '초기 리스트 [15, 28, 34, 47, 63, 75, 88]', 'info');
+  document.getElementById('delRunBtn').textContent = '▶ 단계 실행';
+}
+
+function renderDel(data, hlDel, hlShift) {
+  var area = document.getElementById('delSimArea');
+  area.innerHTML = '';
+  data.forEach(function(val, i) {
+    var cell = document.createElement('div');
+    cell.className = 'cell';
+    var idx = document.createElement('div');
+    idx.className = 'cell-idx';
+    idx.textContent = '[' + i + ']';
+    var box = document.createElement('div');
+    box.className = 'cell-box';
+    if (val == null) { box.className += ' empty'; box.textContent = ''; }
+    else if (i === hlDel) { box.className += ' highlight'; box.textContent = val; }
+    else if (i >= hlShift && hlShift >= 0) { box.className += ' shifted'; box.textContent = val; }
+    else box.textContent = val;
+    cell.appendChild(idx); cell.appendChild(box);
+    area.appendChild(cell);
+    if (i < data.length - 1) {
+      var sep = document.createElement('div'); sep.className = 'cell-sep';
+      area.appendChild(sep);
+    }
+  });
+}
+
+function buildDelStepPanel(steps) {
+  var panel = document.getElementById('delStepPanel');
+  panel.innerHTML = '';
+  if (!steps.length) return;
+  var sp = document.createElement('div');
+  sp.className = 'step-panel';
+  var hd = document.createElement('div');
+  hd.className = 'step-header';
+  hd.innerHTML = '<span>삭제 과정</span><span style="color:var(--rose);font-size:11px">Step ' + (delCur + 1) + ' / ' + steps.length + '</span>';
+  var body = document.createElement('div');
+  body.className = 'step-body';
+  var ul = document.createElement('ul');
+  ul.className = 'step-list';
+  steps.forEach(function(s, i) {
+    var li = document.createElement('li');
+    li.className = 'step-item' + (i === delCur ? ' active' : '') + (i < delCur ? ' done' : '');
+    var num = document.createElement('div');
+    num.className = 'step-num';
+    num.textContent = i < delCur ? '✓' : (i + 1);
+    var txt = document.createElement('div');
+    txt.className = 'step-text';
+    txt.textContent = s;
+    li.appendChild(num); li.appendChild(txt);
+    ul.appendChild(li);
+  });
+  body.appendChild(ul);
+  sp.appendChild(hd); sp.appendChild(body);
+  panel.appendChild(sp);
+}
+
+function initDelete() {
+  resetDel();
+
+  setCodeHTML('delCCode', [
+    '<span class="cm">// 순차 리스트에서 원소 삭제</span>',
+    '<span class="cm">// arr: 배열, n: 현재 원소 수, pos: 삭제 위치</span>',
+    '<span class="kw">void</span> <span class="fn">delete</span>(<span class="tp">int</span> arr[], <span class="tp">int</span> *n, <span class="tp">int</span> pos) {',
+    '    <span class="cm">// 1단계: pos+1부터 마지막 원소를 앞으로 이동</span>',
+    '    <span class="kw">for</span> (<span class="tp">int</span> i = pos; i < *n - <span class="nm">1</span>; i++)',
+    '        arr[i] = arr[i + <span class="nm">1</span>];  <span class="cm">// 한 칸 앞으로</span>',
+    '    <span class="cm">// 2단계: 크기 감소 (마지막 슬롯 자동 무효화)</span>',
+    '    (*n)--;',
+    '}',
+    '',
+    '<span class="cm">// 사용 예시</span>',
+    '<span class="tp">int</span> arr[] = {<span class="nm">15</span>,<span class="nm">28</span>,<span class="nm">34</span>,<span class="nm">47</span>,<span class="nm">63</span>};',
+    '<span class="tp">int</span> n = <span class="nm">5</span>;',
+    '<span class="fn">delete</span>(arr, &n, <span class="nm">2</span>);  <span class="cm">// [2] = 34 삭제</span>',
+    '<span class="cm">// 결과: {15,28,47,63}</span>',
+  ].join('\n'));
+
+  document.getElementById('delResetBtn').addEventListener('click', resetDel);
+
+  document.getElementById('delRunBtn').addEventListener('click', function() {
+    if (delSteps.length === 0) {
+      var pos = parseInt(document.getElementById('delPos').value);
+      if (isNaN(pos) || pos < 0 || pos >= delData.length) {
+        addLog('delLog','위치는 0 ~ ' + (delData.length-1) + ' 사이','err'); return;
+      }
+      var steps = ['삭제 준비: A[' + pos + '] = ' + delData[pos] + ' 삭제 시작'];
+      for (var i = pos; i < delData.length - 1; i++) {
+        steps.push('A[' + (i+1) + '] → A[' + i + ']: ' + delData[i+1] + ' 이동 (앞으로 한 칸)');
+      }
+      steps.push('삭제 완료! length-- (' + (delData.length - 1 - pos) + '번 이동)');
+      delSteps = steps; delCur = 0;
+      delData._pos = pos;
+      delData._delVal = delData[pos];
+      delData._working = JSON.parse(JSON.stringify(delData));
+      delData._cur = pos;
+      document.getElementById('delRunBtn').textContent = '▶ 다음 단계';
+      addLog('delLog', '삭제 시작: A[' + pos + '] = ' + delData[pos], 'info');
+      renderDel(delData._working, pos, -1);
+    } else {
+      incrDelStep();
+    }
+    buildDelStepPanel(delSteps);
+  });
+
+  function incrDelStep() {
+    var pos = delData._pos;
+    var cur = delData._cur;
+    if (cur < delData._working.length - 1) {
+      delData._working[cur] = delData._working[cur + 1];
+      renderDel(delData._working, -1, cur);
+      addLog('delLog', 'A[' + (cur+1) + ']=' + delData._working[cur] + ' → A[' + cur + ']', 'step');
+      delData._cur++;
+      delCur++;
+    } else {
+      delData._working[delData._working.length - 1] = null;
+      var final = delData._working.slice(0, delData._working.length - 1);
+      renderDel(final, -1, -1);
+      addLog('delLog', '✅ 삭제 완료: ' + delData._delVal + ' 제거 (' + (delData._working.length - 1 - pos) + '번 이동)', 'ok');
+      delData = final;
+      delSteps = []; delCur = -1;
+      document.getElementById('delRunBtn').textContent = '▶ 단계 실행';
+      document.getElementById('delStatus').textContent = '총 원소: ' + delData.length + '개';
+    }
+    buildDelStepPanel(delSteps);
+  }
+}
+
+// ════════════════════ SEARCH SIM ════════════════════
+var srchData = [7, 14, 21, 28, 35, 42, 49, 56, 63, 70];
+
+function initSearch() {
+  renderSrch(srchData, [], [], -1, -1);
+
+  setCodeHTML('srchCCode', [
+    '<span class="cm">// 순차 탐색 O(n)</span>',
+    '<span class="tp">int</span> <span class="fn">seqSearch</span>(<span class="tp">int</span> arr[], <span class="tp">int</span> n, <span class="tp">int</span> target) {',
+    '    <span class="kw">for</span> (<span class="tp">int</span> i = <span class="nm">0</span>; i < n; i++)',
+    '        <span class="kw">if</span> (arr[i] == target) <span class="kw">return</span> i;',
+    '    <span class="kw">return</span> -<span class="nm">1</span>;  <span class="cm">// 없음</span>',
+    '}',
+    '',
+    '<span class="cm">// 이진 탐색 O(log n) — 정렬된 배열 필요</span>',
+    '<span class="tp">int</span> <span class="fn">binSearch</span>(<span class="tp">int</span> arr[], <span class="tp">int</span> n, <span class="tp">int</span> target) {',
+    '    <span class="tp">int</span> lo = <span class="nm">0</span>, hi = n - <span class="nm">1</span>;',
+    '    <span class="kw">while</span> (lo <= hi) {',
+    '        <span class="tp">int</span> mid = (lo + hi) / <span class="nm">2</span>;',
+    '        <span class="kw">if</span> (arr[mid] == target) <span class="kw">return</span> mid;',
+    '        <span class="kw">if</span> (arr[mid] < target) lo = mid + <span class="nm">1</span>;',
+    '        <span class="kw">else</span>                  hi = mid - <span class="nm">1</span>;',
+    '    }',
+    '    <span class="kw">return</span> -<span class="nm">1</span>;',
+    '}',
+  ].join('\n'));
+
+  document.getElementById('srchResetBtn').addEventListener('click', function() {
+    renderSrch(srchData, [], [], -1, -1);
+    clearLog('seqLog'); clearLog('binLog');
+    document.getElementById('srchResult').textContent = '';
+  });
+
+  document.getElementById('seqSrchBtn').addEventListener('click', function() {
+    var target = parseInt(document.getElementById('srchVal').value);
+    if (isNaN(target)) { addLog('seqLog','탐색값을 입력하세요','err'); return; }
+    clearLog('seqLog');
+    var visited = [], found = -1, cmps = 0;
+    for (var i = 0; i < srchData.length; i++) {
+      cmps++;
+      visited.push(i);
+      addLog('seqLog', 'A[' + i + ']=' + srchData[i] + (srchData[i]===target?' ← 발견!':' ≠ ' + target), srchData[i]===target?'ok':'');
+      if (srchData[i] === target) { found = i; break; }
+    }
+    renderSrch(srchData, visited, [], found, -1);
+    var res = document.getElementById('srchResult');
+    res.innerHTML = found >= 0
+      ? '<span class="pill pill-teal">순차 탐색: A[' + found + '] 발견 (' + cmps + '번 비교)</span>'
+      : '<span class="pill pill-rose">순차 탐색: 없음 (' + cmps + '번 비교)</span>';
+  });
+
+  document.getElementById('binSrchBtn').addEventListener('click', function() {
+    var target = parseInt(document.getElementById('srchVal').value);
+    if (isNaN(target)) { addLog('binLog','탐색값을 입력하세요','err'); return; }
+    clearLog('binLog');
+    var lo = 0, hi = srchData.length - 1, found = -1, cmps = 0, ranges = [];
+    while (lo <= hi) {
+      var mid = Math.floor((lo + hi) / 2);
+      cmps++; ranges.push({lo:lo, hi:hi, mid:mid});
+      addLog('binLog', 'lo=' + lo + ' hi=' + hi + ' mid=' + mid + '→A[' + mid + ']=' + srchData[mid], '');
+      if (srchData[mid] === target) { found = mid; break; }
+      if (srchData[mid] < target) lo = mid + 1;
+      else hi = mid - 1;
+    }
+    renderSrch(srchData, [], ranges, -1, found);
+    var res = document.getElementById('srchResult');
+    var prev = res.innerHTML;
+    var newPart = found >= 0
+      ? '<span class="pill pill-amber">이진 탐색: A[' + found + '] 발견 (' + cmps + '번 비교)</span>'
+      : '<span class="pill pill-rose">이진 탐색: 없음 (' + cmps + '번 비교)</span>';
+    res.innerHTML = prev + ' ' + newPart;
+  });
+}
+
+function renderSrch(data, seqVisited, binRanges, seqFound, binFound) {
+  var area = document.getElementById('srchSimArea');
+  area.innerHTML = '';
+  var lastRange = binRanges.length ? binRanges[binRanges.length - 1] : null;
+
+  data.forEach(function(val, i) {
+    var cell = document.createElement('div');
+    cell.className = 'cell';
+    var idx = document.createElement('div');
+    idx.className = 'cell-idx';
+    idx.textContent = '[' + i + ']';
+    var box = document.createElement('div');
+    box.className = 'cell-box';
+    box.textContent = val;
+
+    if (i === seqFound || i === binFound) {
+      box.className += ' inserted'; // green highlight
+    } else if (lastRange && i >= lastRange.lo && i <= lastRange.hi) {
+      if (i === lastRange.mid) box.className += ' highlight';
+      else box.className += ' shifted';
+    } else if (seqVisited.indexOf(i) >= 0) {
+      box.className += ' highlight';
+    }
+    cell.appendChild(idx); cell.appendChild(box);
+    area.appendChild(cell);
+    if (i < data.length - 1) {
+      var sep = document.createElement('div'); sep.className = 'cell-sep';
+      area.appendChild(sep);
+    }
+  });
+}
+
+// ════════════════════ POLYNOMIAL ════════════════════
+function initPoly() {
+  document.getElementById('polyDemoBtn').addEventListener('click', function() {
+    document.getElementById('polyInput').value = '3x^4+5x^2-2x+7';
+    parsePoly();
+  });
+  document.getElementById('polyParseBtn').addEventListener('click', parsePoly);
+  document.getElementById('polyAddBtn').addEventListener('click', polyAdd);
+}
+
+function parsePoly() {
+  var expr = document.getElementById('polyInput').value.trim();
+  var coeffs = polyParse(expr);
+  if (!coeffs) { return; }
+  renderPolyExpr(coeffs);
+  renderPolyArr(coeffs);
+}
+
+function polyParse(expr) {
+  var maxDeg = 8;
+  var coeffs = new Array(maxDeg + 1).fill(0);
+  // normalize: insert * sign before x, handle -
+  var e = expr.replace(/\s+/g,'');
+  // split by + or - (keep sign)
+  var terms = e.match(/[+-]?[^+-]+/g);
+  if (!terms) return null;
+  var maxUsed = 0;
+  terms.forEach(function(term) {
+    var sign = 1;
+    if (term[0] === '-') { sign = -1; term = term.slice(1); }
+    else if (term[0] === '+') { term = term.slice(1); }
+    if (term.indexOf('x') === -1) {
+      // constant
+      coeffs[0] += sign * parseInt(term || '1');
+    } else {
+      var parts = term.split('x');
+      var coef = parts[0] === '' ? 1 : (parts[0] === '-' ? -1 : parseInt(parts[0]));
+      coef *= sign;
+      var deg = 1;
+      if (parts[1] && parts[1][0] === '^') {
+        deg = parseInt(parts[1].slice(1));
+      }
+      if (deg <= maxDeg) {
+        coeffs[deg] += coef;
+        if (deg > maxUsed) maxUsed = deg;
+      }
+    }
+  });
+  return coeffs.slice(0, maxUsed + 1);
+}
+
+function renderPolyExpr(coeffs) {
+  var area = document.getElementById('polyExprArea');
+  area.innerHTML = '';
+  var terms = [];
+  for (var i = coeffs.length - 1; i >= 0; i--) {
+    if (coeffs[i] !== 0) terms.push({c: coeffs[i], d: i});
+  }
+  if (!terms.length) { area.innerHTML = '<span style="color:var(--text3);font-family:var(--mono)">0</span>'; return; }
+  var label = document.createElement('span');
+  label.style.cssText = 'font-family:var(--mono);font-size:13px;color:var(--text3);margin-right:8px';
+  label.textContent = 'P(x) =';
+  area.appendChild(label);
+  terms.forEach(function(t, i) {
+    var span = document.createElement('span');
+    span.className = 'poly-term';
+    var str = '';
+    if (t.d === 0) str = '<span class="coef">' + t.c + '</span>';
+    else if (t.d === 1) str = '<span class="coef">' + (t.c === 1 ? '' : t.c === -1 ? '-' : t.c) + '</span><span class="var">x</span>';
+    else str = '<span class="coef">' + (t.c === 1 ? '' : t.c === -1 ? '-' : t.c) + '</span><span class="var">x</span><span class="exp">' + t.d + '</span>';
+    if (i < terms.length - 1) str += '<span class="plus"> +</span>';
+    span.innerHTML = str;
+    area.appendChild(span);
+  });
+}
+
+function renderPolyArr(coeffs) {
+  var area = document.getElementById('polyArrArea');
+  area.innerHTML = '';
+  for (var i = 0; i < coeffs.length; i++) {
+    var cell = document.createElement('div');
+    cell.className = 'poly-arr-cell';
+    var val = document.createElement('div');
+    val.className = 'poly-arr-val';
+    val.textContent = coeffs[i];
+    if (coeffs[i] !== 0) val.style.color = 'var(--amber2)';
+    else val.style.color = 'var(--text3)';
+    var exp = document.createElement('div');
+    exp.className = 'poly-arr-exp';
+    exp.textContent = 'x^' + i;
+    cell.appendChild(val); cell.appendChild(exp);
+    area.appendChild(cell);
+    if (i < coeffs.length - 1) {
+      var sep = document.createElement('div');
+      sep.className = 'poly-arr-sep';
+      area.appendChild(sep);
+    }
+  }
+}
+
+function polyAdd() {
+  var aStr = document.getElementById('polyA').value.trim();
+  var bStr = document.getElementById('polyB').value.trim();
+  if (!aStr || !bStr) return;
+  var A = polyParse(aStr);
+  var B = polyParse(bStr);
+  if (!A || !B) return;
+  var maxLen = Math.max(A.length, B.length);
+  while (A.length < maxLen) A.push(0);
+  while (B.length < maxLen) B.push(0);
+  var C = A.map(function(v, i){ return v + B[i]; });
+  while (C.length > 1 && C[C.length-1] === 0) C.pop();
+
+  var result = document.getElementById('polyAddResult');
+  result.innerHTML = '';
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:14px';
+
+  var rows = [
+    {label:'P(x)', coeffs: A, color:'var(--amber)'},
+    {label:'Q(x)', coeffs: B, color:'var(--teal)'},
+    {label:'R(x) = P+Q', coeffs: C, color:'var(--sky)'},
+  ];
+  rows.forEach(function(row) {
+    var rowDiv = document.createElement('div');
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'font-family:var(--mono);font-size:11px;color:'+row.color+';margin-bottom:6px;';
+    lbl.textContent = row.label;
+    rowDiv.appendChild(lbl);
+    var strip = document.createElement('div');
+    strip.style.cssText = 'display:flex;gap:0;overflow-x:auto';
+    row.coeffs.forEach(function(v, i) {
+      var cell = document.createElement('div');
+      cell.className = 'poly-arr-cell';
+      var box = document.createElement('div');
+      box.className = 'poly-arr-val';
+      box.style.color = v !== 0 ? row.color : 'var(--text3)';
+      box.textContent = v;
+      var exp = document.createElement('div');
+      exp.className = 'poly-arr-exp';
+      exp.textContent = 'x^' + i;
+      cell.appendChild(box); cell.appendChild(exp);
+      strip.appendChild(cell);
+      if (i < row.coeffs.length - 1) {
+        var s = document.createElement('div'); s.className = 'poly-arr-sep';
+        strip.appendChild(s);
+      }
+    });
+    rowDiv.appendChild(strip);
+    wrap.appendChild(rowDiv);
+  });
+  result.appendChild(wrap);
+}
+
+// ════════════════════ MATRIX ════════════════════
+function initMatrix() {
+  buildMatrix();
+  document.getElementById('mxBuildBtn').addEventListener('click', buildMatrix);
+
+  function buildMatrix() {
+    var rows = parseInt(document.getElementById('mxRowInput').value) || 4;
+    var cols = parseInt(document.getElementById('mxColInput').value) || 5;
+    var base = parseInt(document.getElementById('mxBase').value) || 100;
+    var size = parseInt(document.getElementById('mxSize').value) || 4;
+
+    var grid = document.getElementById('mxGrid');
+    grid.innerHTML = '';
+    var tbl = document.createElement('div');
+    tbl.className = 'matrix';
+    tbl.style.gridTemplateColumns = 'repeat(' + cols + ', 42px)';
+
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var cell = document.createElement('div');
+        cell.className = 'mx-cell';
+        cell.textContent = r + '' + c;
+        cell.dataset.r = r; cell.dataset.c = c;
+        cell.addEventListener('click', (function(ri, ci) {
+          return function() {
+            var addr = base + (ri * cols + ci) * size;
+            // clear all
+            tbl.querySelectorAll('.mx-cell').forEach(function(x){ x.className='mx-cell'; });
+            // row
+            for (var cc = 0; cc < cols; cc++) tbl.querySelectorAll('[data-r="'+ri+'"]').forEach(function(x){ x.classList.add('hl-row'); });
+            // col
+            for (var rr = 0; rr < rows; rr++) tbl.querySelectorAll('[data-c="'+ci+'"]').forEach(function(x){ x.classList.add('hl-col'); });
+            // selected
+            cell.className = 'mx-cell hl-sel';
+
+            var box = document.getElementById('mxAddrBox');
+            box.innerHTML = '<div class="fb-title">A[' + ri + '][' + ci + '] 주소 계산</div>' +
+              '<div class="fb-eq">= <span class="hl">' + base + '</span> + (' + ri + ' × ' + cols + ' + ' + ci + ') × <span class="hl">' + size + '</span></div>' +
+              '<div class="fb-eq">= ' + base + ' + ' + (ri*cols+ci) + ' × ' + size + '</div>' +
+              '<div class="fb-eq">= <span class="res">' + addr + '</span></div>';
+          };
+        })(r, c));
+        tbl.appendChild(cell);
+      }
+    }
+    grid.appendChild(tbl);
+
+    // Row-Major vis
+    var rmv = document.getElementById('rowMajorVis');
+    rmv.innerHTML = '';
+    var strip = document.createElement('div');
+    strip.style.cssText = 'display:flex;flex-wrap:wrap;gap:3px;margin-top:8px';
+    for (var rr = 0; rr < rows; rr++) {
+      for (var cc = 0; cc < cols; cc++) {
+        var b = document.createElement('div');
+        b.style.cssText = 'width:44px;height:36px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:600;border:1px solid var(--border2);background:var(--bg3);color:var(--teal2);cursor:default;';
+        b.textContent = '[' + rr + '][' + cc + ']';
+        var n = rr * cols + cc;
+        b.title = '저장 순서: ' + n + ' | 주소: ' + (base + n * size);
+        b.style.opacity = 0.4 + (n / (rows*cols)) * 0.6;
+        strip.appendChild(b);
+      }
+    }
+    rmv.appendChild(strip);
+  }
+}
+
+// ════════════════════ ADDR CALC ════════════════════
+function initAddrCalc() {
+  document.getElementById('calc1DBtn').addEventListener('click', function() {
+    var base = parseInt(document.getElementById('a1base').value);
+    var size = parseInt(document.getElementById('a1size').value);
+    var i = parseInt(document.getElementById('a1i').value);
+    var addr = base + i * size;
+    var box = document.getElementById('result1D');
+    box.innerHTML = '<div class="fb-title">계산 과정</div>' +
+      '<div class="fb-eq">addr(A[<span class="hl">' + i + '</span>]) = <span class="hl">' + base + '</span> + <span class="hl">' + i + '</span> × <span class="hl">' + size + '</span></div>' +
+      '<div class="fb-eq">= ' + base + ' + ' + (i*size) + '</div>' +
+      '<div class="fb-eq">= <span class="res">' + addr + '</span></div>';
+  });
+
+  document.getElementById('calc2DBtn').addEventListener('click', function() {
+    var base = parseInt(document.getElementById('a2base').value);
+    var n = parseInt(document.getElementById('a2n').value);
+    var size = parseInt(document.getElementById('a2size').value);
+    var i = parseInt(document.getElementById('a2i').value);
+    var j = parseInt(document.getElementById('a2j').value);
+    var offset = i * n + j;
+    var addr = base + offset * size;
+    var box = document.getElementById('result2D');
+    box.innerHTML = '<div class="fb-title">계산 과정 (행 우선)</div>' +
+      '<div class="fb-eq">addr(A[<span class="hl">' + i + '</span>][<span class="hl">' + j + '</span>]) = <span class="hl">' + base + '</span> + (<span class="hl">' + i + '</span>×<span class="hl">' + n + '</span> + <span class="hl">' + j + '</span>) × <span class="hl">' + size + '</span></div>' +
+      '<div class="fb-eq">= ' + base + ' + ' + offset + ' × ' + size + '</div>' +
+      '<div class="fb-eq">= <span class="res">' + addr + '</span></div>';
+  });
+
+  // Formula table
+  var t = document.getElementById('addrFormulaTable');
+  var rows = [
+    ['1차원 A[i]',     'base + i × size',                  'base=1000, i=3, size=4 → 1012'],
+    ['2차원 A[i][j] (행우선)', 'base + (i×n + j) × size', 'base=200, i=2, j=3, n=5, size=4 → 252'],
+    ['2차원 A[i][j] (열우선)', 'base + (j×m + i) × size', 'base=200, i=2, j=3, m=4, size=4 → 256'],
+  ];
+  var thead = document.createElement('thead');
+  thead.innerHTML = '<tr><th>종류</th><th>공식</th><th>예시</th></tr>';
+  var tbody = document.createElement('tbody');
+  rows.forEach(function(row) {
+    var tr = document.createElement('tr');
+    row.forEach(function(v, vi) {
+      var td = document.createElement('td');
+      td.textContent = v;
+      if (vi === 1) { td.style.fontFamily = 'var(--mono)'; td.style.color = 'var(--amber2)'; td.style.fontSize='12px'; }
+      if (vi === 2) { td.style.fontFamily = 'var(--mono)'; td.style.color = 'var(--text3)'; td.style.fontSize='11px'; }
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  t.appendChild(thead); t.appendChild(tbody);
+}
+
+// ════════════════════ QUIZ ════════════════════
+var qScore = 0, qDone = new Array(QUIZ_DATA.length).fill(false);
+
+function buildQuiz() {
+  qScore = 0; qDone.fill(false);
+  updateScore();
+  var wrap = document.getElementById('quizWrap');
+  wrap.innerHTML = '';
+  QUIZ_DATA.forEach(function(q, qi) {
+    var card = document.createElement('div');
+    card.className = 'qcard';
+    var qDiv = document.createElement('div');
+    qDiv.className = 'qcard-q';
+    qDiv.innerHTML = '<span class="qno">Q' + (qi+1) + '.</span>' + q.q;
+    var opts = document.createElement('div');
+    opts.className = 'qopts';
+    var marks = ['A','B','C','D'];
+    q.opts.forEach(function(opt, oi) {
+      var o = document.createElement('div');
+      o.className = 'qopt';
+      o.dataset.qi = qi; o.dataset.oi = oi;
+      o.innerHTML = '<span class="qmark">' + marks[oi] + '</span>' + opt;
+      o.addEventListener('click', function(){ answerQuiz(qi, oi); });
+      opts.appendChild(o);
+    });
+    var fb = document.createElement('div');
+    fb.className = 'qfb'; fb.id = 'qfb' + qi;
+    card.appendChild(qDiv); card.appendChild(opts); card.appendChild(fb);
+    wrap.appendChild(card);
+  });
+}
+
+function answerQuiz(qi, oi) {
+  if (qDone[qi]) return;
+  qDone[qi] = true;
+  var q = QUIZ_DATA[qi];
+  var opts = document.querySelectorAll('[data-qi="' + qi + '"]');
+  opts.forEach(function(o){ o.classList.add('disabled'); });
+  opts[oi].classList.add(oi === q.ans ? 'correct' : 'wrong');
+  opts[q.ans].classList.add('correct');
+  var fb = document.getElementById('qfb' + qi);
+  fb.classList.add('show');
+  if (oi === q.ans) { fb.classList.add('ok'); fb.textContent = '✅ 정답! ' + q.exp; qScore++; }
+  else { fb.classList.add('ng'); fb.textContent = '❌ 오답. ' + q.exp; }
+  updateScore();
+}
+function updateScore() {
+  document.getElementById('qScoreVal').textContent = qScore + ' / ' + QUIZ_DATA.length;
+  document.getElementById('qScoreFil').style.width = (qScore / QUIZ_DATA.length * 100) + '%';
+}
+document.getElementById('qResetBtn').addEventListener('click', buildQuiz);
+
+// ════════════════════ HELPERS ════════════════════
+function setCodeHTML(id, html) {
+  var el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+function addLog(id, msg, type) {
+  var log = document.getElementById(id);
+  if (!log) return;
+  var line = document.createElement('div');
+  line.className = 'll ' + (type || '');
+  line.textContent = '> ' + msg;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+function clearLog(id) {
+  var log = document.getElementById(id);
+  if (log) log.innerHTML = '';
+}
+
+// ════════════════════ INIT ════════════════════
+buildConcept();
+buildMemory();
+initInsert();
+initDelete();
+initSearch();
+initPoly();
+initMatrix();
+initAddrCalc();
+buildQuiz();
+</script>
+</body>
+</html>
