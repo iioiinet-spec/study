@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>C언어 fgets 인터렉티브 강의자료</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,'Noto Sans KR',sans-serif;background:linear-gradient(135deg,#ecfeff,#fef3c7);color:#1f2937;line-height:1.75}
+header{background:linear-gradient(135deg,#0891b2,#ca8a04);color:white;text-align:center;padding:40px 20px}
+header h1{margin:0;font-size:34px}
+main{max-width:1120px;margin:30px auto;padding:0 20px 60px}
+section{background:white;border-radius:22px;padding:28px;margin-bottom:24px;box-shadow:0 12px 30px rgba(8,145,178,.12)}
+h2{color:#0e7490;border-left:8px solid #06b6d4;padding-left:12px;margin-top:0}
+h3{color:#b45309}
+.box{background:#ecfeff;border:2px solid #a5f3fc;border-radius:16px;padding:18px;margin:16px 0}
+.warn{background:#fff7ed;border-left:8px solid #f97316;border-radius:14px;padding:16px;margin:16px 0}
+.good{background:#f0fdf4;border:2px solid #bbf7d0;border-radius:16px;padding:18px;margin:16px 0}
+pre{background:#111827;color:#f9fafb;padding:22px;border-radius:16px;overflow-x:auto;font-size:15px;line-height:1.6}
+code{font-family:Consolas,Monaco,monospace}
+textarea,input{width:100%;padding:13px;border-radius:14px;border:2px solid #67e8f9;font-size:16px;line-height:1.6}
+button{border:0;border-radius:12px;padding:12px 18px;background:#0891b2;color:white;font-weight:800;cursor:pointer;font-size:15px;margin:8px 4px 8px 0}
+button:hover{background:#155e75}
+.result{font-size:19px;font-weight:900;color:#0f172a;background:#f8fafc;border-radius:16px;padding:18px;margin-top:18px;border:1px solid #e5e7eb}
+.highlight{display:inline-block;padding:4px 8px;border-radius:8px;background:#fef3c7;border:1px solid #f59e0b;color:#92400e;font-family:Consolas,monospace}
+.token{display:inline-block;padding:8px 12px;border-radius:999px;background:#dbeafe;border:2px solid #93c5fd;margin:5px;font-weight:800;font-family:Consolas,monospace}
+.table{width:100%;border-collapse:collapse;margin-top:18px;font-size:15px}
+.table th,.table td{border:1px solid #d1d5db;padding:10px;text-align:center}
+.table th{background:#cffafe;color:#164e63}
+.table tr:nth-child(even){background:#f9fafb}
+.quiz{background:#f0fdf4;border:2px solid #bbf7d0;border-radius:16px;padding:18px;margin:14px 0}
+.answer{display:none;background:#dcfce7;border-radius:12px;padding:12px;margin-top:10px}
+.small{color:#6b7280;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:16px;padding:18px}
+</style>
+</head>
+<body>
+<header>
+<h1>C언어 fgets 인터렉티브 강의자료</h1>
+<p>공백 포함 문자열 입력 · 줄바꿈 제거 · scanf와 함께 쓰기 · strtok 단어 분리</p>
+</header>
+
+<main>
+
+<section>
+<h2>1. fgets란?</h2>
+<p><b>fgets</b>는 C언어에서 한 줄 전체를 입력받을 때 사용하는 함수입니다.</p>
+<div class="box">
+<p>1. 공백이 포함된 문장을 입력받을 수 있습니다.</p>
+<p>2. 배열 크기를 함께 전달하므로 scanf("%s")보다 안전합니다.</p>
+<p>3. 줄바꿈 문자 <span class="highlight">\\n</span>까지 저장될 수 있습니다.</p>
+</div>
+<pre><code>char line[100];
+
+fgets(line, sizeof(line), stdin);</code></pre>
+</section>
+
+<section>
+<h2>2. scanf("%s")와 fgets 차이 체험</h2>
+<p>아래 문장을 입력하면 scanf("%s")와 fgets가 어떻게 다르게 저장하는지 볼 수 있습니다.</p>
+<textarea id="compareInput">I love C language</textarea>
+<button onclick="compareInput()">비교하기</button>
+<div id="compareResult"></div>
+</section>
+
+<section>
+<h2>3. fgets 줄바꿈 문자 체험</h2>
+<p>fgets는 엔터를 누르면 줄바꿈 문자도 함께 저장할 수 있습니다. 아래에서 줄바꿈 제거 전후를 확인하세요.</p>
+<textarea id="newlineInput">hello world</textarea>
+<button onclick="showNewline()">줄바꿈 확인하기</button>
+<div id="newlineResult"></div>
+<pre><code>line[strcspn(line, "\n")] = '\0';</code></pre>
+</section>
+
+<section>
+<h2>4. 단어 분리 strtok 체험</h2>
+<p>fgets로 문장 한 줄을 입력받은 뒤, strtok로 공백 기준 단어를 나눌 수 있습니다.</p>
+<textarea id="tokenInput">apple banana apple cherry</textarea>
+<button onclick="tokenize()">단어 분리하기</button>
+<div id="tokenResult"></div>
+</section>
+
+<section>
+<h2>5. scanf 뒤 fgets 문제 체험</h2>
+<div class="warn">
+<p>scanf로 숫자를 입력받은 뒤 바로 fgets를 쓰면, 숫자 뒤에 남은 줄바꿈 문자를 fgets가 읽어버릴 수 있습니다.</p>
+</div>
+<div class="grid">
+<div class="card">
+<h3>잘못된 코드</h3>
+<pre><code>scanf("%d", &n);
+fgets(line, sizeof(line), stdin);</code></pre>
+<p>숫자 뒤의 엔터가 남아 있어서 line이 빈 문자열처럼 처리될 수 있습니다.</p>
+</div>
+<div class="card">
+<h3>해결 코드</h3>
+<pre><code>scanf("%d", &n);
+getchar();
+fgets(line, sizeof(line), stdin);</code></pre>
+<p>getchar()로 남은 엔터를 제거한 뒤 fgets를 실행합니다.</p>
+</div>
+</div>
+</section>
+
+<section>
+<h2>6. 직접 문제 풀이 예제</h2>
+
+<h3>예제 1. 문장 그대로 출력</h3>
+<pre><code>#include &lt;stdio.h&gt;
+
+int main() {
+    char sentence[100];
+
+    fgets(sentence, sizeof(sentence), stdin);
+
+    printf("%s", sentence);
+
+    return 0;
+}</code></pre>
+
+<h3>예제 2. 줄바꿈 제거 후 출력</h3>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+    char sentence[100];
+
+    fgets(sentence, sizeof(sentence), stdin);
+
+    sentence[strcspn(sentence, "\n")] = '\0';
+
+    printf("[%s]\n", sentence);
+
+    return 0;
+}</code></pre>
+
+<h3>예제 3. 단어 개수 세기</h3>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+    char sentence[200];
+    int count = 0;
+
+    fgets(sentence, sizeof(sentence), stdin);
+
+    sentence[strcspn(sentence, "\n")] = '\0';
+
+    char *token = strtok(sentence, " ");
+
+    while (token != NULL) {
+        count++;
+        token = strtok(NULL, " ");
+    }
+
+    printf("%d\n", count);
+
+    return 0;
+}</code></pre>
+</section>
+
+<section>
+<h2>7. 인터렉티브 단어 개수 세기</h2>
+<p>문장을 입력하면 strtok처럼 공백 기준으로 단어를 나누고 개수를 세어 줍니다.</p>
+<textarea id="countInput">I love C language</textarea>
+<button onclick="countWords()">단어 개수 세기</button>
+<div id="countResult"></div>
+</section>
+
+<section>
+<h2>8. 자주 하는 실수</h2>
+<div class="quiz">
+<h3>실수 1. scanf("%s")로 문장 입력받기</h3>
+<p>scanf("%s")는 공백 전까지만 입력받습니다.</p>
+<button onclick="toggleAnswer('q1')">설명 보기</button>
+<div id="q1" class="answer">입력이 hello world라면 scanf("%s")는 hello만 저장합니다. 문장 전체가 필요하면 fgets를 써야 합니다.</div>
+</div>
+
+<div class="quiz">
+<h3>실수 2. 줄바꿈 문자를 제거하지 않기</h3>
+<p>fgets는 \\n을 포함할 수 있어서 strcmp 결과가 달라질 수 있습니다.</p>
+<button onclick="toggleAnswer('q2')">설명 보기</button>
+<div id="q2" class="answer">입력 END를 fgets로 받으면 실제 저장값이 END\\n일 수 있습니다. strcmp(line, "END")가 실패할 수 있으므로 줄바꿈을 제거해야 합니다.</div>
+</div>
+
+<div class="quiz">
+<h3>실수 3. scanf 다음에 바로 fgets 사용</h3>
+<p>남은 엔터를 fgets가 읽을 수 있습니다.</p>
+<button onclick="toggleAnswer('q3')">설명 보기</button>
+<div id="q3" class="answer">scanf("%d", &n); 뒤에 getchar();를 넣어 남은 줄바꿈을 제거하면 해결됩니다.</div>
+</div>
+</section>
+
+<section>
+<h2>9. fgets 기본 공식</h2>
+<pre><code>#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+int main() {
+    char line[1000];
+
+    fgets(line, sizeof(line), stdin);
+
+    line[strcspn(line, "\n")] = '\0';
+
+    printf("%s\n", line);
+
+    return 0;
+}</code></pre>
+</section>
+
+<section>
+<h2>10. 핵심 정리</h2>
+<p>1. fgets는 한 줄 전체를 입력받습니다.</p>
+<p>2. 공백이 포함된 문장 입력에 좋습니다.</p>
+<p>3. 줄바꿈 문자 \\n이 저장될 수 있습니다.</p>
+<p>4. 줄바꿈 제거는 strcspn을 사용합니다.</p>
+<p>5. scanf 뒤 fgets를 쓸 때는 getchar로 엔터를 제거합니다.</p>
+<p>6. 단어 분리는 strtok와 함께 사용합니다.</p>
+</section>
+
+</main>
+
+<script>
+function esc(s){
+    return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll("\n","\\n");
+}
+function compareInput(){
+    const text=document.getElementById("compareInput").value;
+    const scanfResult=text.trim().split(/\s+/)[0] || "";
+    const fgetsResult=text;
+    document.getElementById("compareResult").innerHTML =
+        "<table class='table'><tr><th>입력 방식</th><th>저장 결과</th><th>설명</th></tr>"+
+        "<tr><td>scanf(\"%s\")</td><td><span class='highlight'>"+esc(scanfResult)+"</span></td><td>공백 전까지만 저장</td></tr>"+
+        "<tr><td>fgets</td><td><span class='highlight'>"+esc(fgetsResult)+"</span></td><td>한 줄 전체 저장</td></tr></table>";
+}
+function showNewline(){
+    const text=document.getElementById("newlineInput").value;
+    const withNewline=text+"\\n";
+    const removed=text;
+    document.getElementById("newlineResult").innerHTML =
+        "<div class='result'>"+
+        "fgets 저장 예시: <span class='highlight'>"+esc(withNewline)+"</span><br>"+
+        "줄바꿈 제거 후: <span class='highlight'>"+esc(removed)+"</span>"+
+        "</div>";
+}
+function tokenize(){
+    const text=document.getElementById("tokenInput").value.trim();
+    const tokens=text.length?text.split(/\s+/):[];
+    document.getElementById("tokenResult").innerHTML =
+        "<div class='word-list'>"+tokens.map(t=>"<span class='token'>"+esc(t)+"</span>").join("")+"</div>"+
+        "<div class='result'>총 단어 수: "+tokens.length+"개</div>";
+}
+function countWords(){
+    const text=document.getElementById("countInput").value.trim();
+    const tokens=text.length?text.split(/\s+/):[];
+    let rows="";
+    tokens.forEach((t,i)=>{
+        rows += "<tr><td>"+(i+1)+"</td><td>"+esc(t)+"</td></tr>";
+    });
+    document.getElementById("countResult").innerHTML =
+        "<table class='table'><tr><th>순서</th><th>단어</th></tr>"+rows+"</table>"+
+        "<div class='result'>단어 개수: "+tokens.length+"개</div>";
+}
+function toggleAnswer(id){
+    const el=document.getElementById(id);
+    el.style.display=el.style.display==="block"?"none":"block";
+}
+compareInput();
+showNewline();
+tokenize();
+countWords();
+</script>
+</body>
+</html>
