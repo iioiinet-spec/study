@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>순차 자료구조로 다항식 저장하기</title>
+<style>
+    :root{
+        --bg:#f7fbff;
+        --card:#ffffff;
+        --ink:#14213d;
+        --muted:#4b5563;
+        --blue:#2563eb;
+        --green:#059669;
+        --orange:#ea580c;
+        --red:#dc2626;
+        --line:#d8e3f0;
+        --soft:#eaf2ff;
+        --yellow:#fff7d6;
+    }
+    *{box-sizing:border-box;}
+    body{
+        margin:0;
+        font-family:"Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+        background:var(--bg);
+        color:var(--ink);
+        line-height:1.75;
+        font-size:20px;
+    }
+    header{
+        background:linear-gradient(135deg,#dbeafe,#fef3c7);
+        padding:34px 20px;
+        border-bottom:4px solid var(--line);
+        text-align:center;
+    }
+    h1{font-size:38px;margin:0 0 10px;}
+    h2{font-size:30px;margin:0 0 14px;border-left:10px solid var(--blue);padding-left:14px;}
+    h3{font-size:24px;margin:18px 0 8px;}
+    main{max-width:1180px;margin:0 auto;padding:24px;}
+    .card{
+        background:var(--card);
+        border:2px solid var(--line);
+        border-radius:20px;
+        padding:24px;
+        margin:22px 0;
+        box-shadow:0 8px 22px rgba(15,23,42,.08);
+    }
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+    @media(max-width:850px){.grid{grid-template-columns:1fr;} body{font-size:18px;} h1{font-size:30px;} h2{font-size:25px;}}
+    code, pre{
+        font-family:Consolas, Monaco, monospace;
+        font-size:18px;
+    }
+    pre{
+        background:#0f172a;
+        color:#f8fafc;
+        padding:18px;
+        border-radius:14px;
+        overflow:auto;
+        line-height:1.55;
+    }
+    .formula{
+        background:var(--yellow);
+        border:2px solid #facc15;
+        padding:16px;
+        border-radius:14px;
+        font-weight:800;
+        font-size:24px;
+        text-align:center;
+    }
+    .note{
+        background:var(--soft);
+        border-left:8px solid var(--blue);
+        padding:16px;
+        border-radius:12px;
+    }
+    .controls{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+        gap:14px;
+        margin:18px 0;
+    }
+    label{font-weight:800;display:block;margin-bottom:6px;}
+    input, select, button, textarea{
+        width:100%;
+        padding:13px 14px;
+        font-size:19px;
+        border:2px solid #b7c8dc;
+        border-radius:12px;
+        background:white;
+    }
+    button{
+        background:var(--blue);
+        color:white;
+        font-weight:900;
+        cursor:pointer;
+        border:none;
+    }
+    button:hover{filter:brightness(.95);}
+    .btn-green{background:var(--green);}
+    .btn-orange{background:var(--orange);}
+    table{width:100%;border-collapse:collapse;margin-top:14px;background:white;}
+    th,td{border:2px solid var(--line);padding:12px;text-align:center;}
+    th{background:#e0ecff;}
+    .array-box{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+    .cell{
+        min-width:82px;
+        border:2px solid var(--blue);
+        border-radius:12px;
+        overflow:hidden;
+        background:white;
+        text-align:center;
+    }
+    .idx{background:#dbeafe;font-weight:900;padding:6px;font-size:16px;}
+    .val{padding:10px;font-size:23px;font-weight:900;}
+    .zero .val{color:#94a3b8;}
+    .term{display:inline-block;background:#ecfdf5;border:2px solid #86efac;border-radius:999px;padding:8px 14px;margin:5px;font-weight:900;}
+    .warn{background:#fff1f2;border-left:8px solid var(--red);padding:14px;border-radius:12px;}
+    .quizBox{border:2px dashed #94a3b8;border-radius:16px;padding:16px;margin:14px 0;background:#fbfdff;}
+    .answer{display:none;background:#f0fdf4;border:2px solid #86efac;border-radius:12px;padding:12px;margin-top:10px;}
+    .big{font-size:25px;font-weight:900;color:var(--blue);}
+</style>
+</head>
+<body>
+<header>
+    <h1>순차 자료구조로 다항식 Polynomial 저장하기</h1>
+    <p>배열을 이용해 다항식을 저장하는 두 가지 방법을 직접 실습해 봅니다.</p>
+</header>
+<main>
+
+<section class="card">
+    <h2>1. 핵심 개념</h2>
+    <p>다항식은 여러 개의 항으로 이루어진 식입니다.</p>
+    <div class="formula">P(x) = 3x⁴ + 2x³ + 5x + 7</div>
+    <p>각 항은 <b>계수</b>와 <b>차수</b>로 나눌 수 있습니다.</p>
+    <table>
+        <tr><th>항</th><th>계수</th><th>차수</th></tr>
+        <tr><td>3x⁴</td><td>3</td><td>4</td></tr>
+        <tr><td>2x³</td><td>2</td><td>3</td></tr>
+        <tr><td>5x</td><td>5</td><td>1</td></tr>
+        <tr><td>7</td><td>7</td><td>0</td></tr>
+    </table>
+</section>
+
+<section class="card">
+    <h2>2. 방법 1: 계수 배열 방식</h2>
+    <div class="note">
+        배열의 인덱스를 차수로 사용합니다.<br>
+        <b>coef[i] = xᶦ의 계수</b>
+    </div>
+    <p>예를 들어 P(x) = 3x⁴ + 2x³ + 5x + 7 은 다음처럼 저장합니다.</p>
+    <div class="array-box" id="staticArray"></div>
+</section>
+
+<section class="card">
+    <h2>3. 직접 만들어 보기: 계수 배열 → 다항식</h2>
+    <p>각 차수의 계수를 입력하면 다항식이 자동으로 만들어집니다.</p>
+    <div class="controls">
+        <div><label>x⁰ 계수</label><input type="number" id="c0" value="7"></div>
+        <div><label>x¹ 계수</label><input type="number" id="c1" value="5"></div>
+        <div><label>x² 계수</label><input type="number" id="c2" value="0"></div>
+        <div><label>x³ 계수</label><input type="number" id="c3" value="2"></div>
+        <div><label>x⁴ 계수</label><input type="number" id="c4" value="3"></div>
+    </div>
+    <button onclick="renderCoefPoly()">다항식 만들기</button>
+    <h3>배열 저장 모습</h3>
+    <div class="array-box" id="coefArray"></div>
+    <h3>결과 다항식</h3>
+    <div class="formula" id="coefResult"></div>
+</section>
+
+<section class="card">
+    <h2>4. 방법 2: 구조체 배열 방식</h2>
+    <div class="note">
+        0이 아닌 항만 저장합니다.<br>
+        각 항을 <b>{계수, 차수}</b> 형태로 저장합니다.
+    </div>
+    <p>예를 들어 P(x) = 5x¹⁰⁰⁰ + 3 은 실제 항이 2개뿐입니다.</p>
+    <div id="termExample"></div>
+    <pre>typedef struct {
+    int coef;  // 계수
+    int exp;   // 차수
+} Term;
+
+Term poly[2] = {
+    {5, 1000},
+    {3, 0}
+};</pre>
+</section>
+
+<section class="card">
+    <h2>5. 직접 만들어 보기: 구조체 배열 → 다항식</h2>
+    <p>계수와 차수를 입력해서 0이 아닌 항만 저장해 봅니다.</p>
+    <div class="controls">
+        <div><label>1번 항 계수</label><input type="number" id="t1c" value="5"></div>
+        <div><label>1번 항 차수</label><input type="number" id="t1e" value="1000"></div>
+        <div><label>2번 항 계수</label><input type="number" id="t2c" value="3"></div>
+        <div><label>2번 항 차수</label><input type="number" id="t2e" value="0"></div>
+        <div><label>3번 항 계수</label><input type="number" id="t3c" value="0"></div>
+        <div><label>3번 항 차수</label><input type="number" id="t3e" value="0"></div>
+    </div>
+    <button class="btn-green" onclick="renderTermPoly()">구조체 배열 만들기</button>
+    <h3>저장된 항</h3>
+    <div id="termArray"></div>
+    <h3>결과 다항식</h3>
+    <div class="formula" id="termResult"></div>
+</section>
+
+<section class="card">
+    <h2>6. 다항식 덧셈 실습</h2>
+    <p>계수 배열 방식에서는 같은 인덱스끼리 더하면 됩니다.</p>
+    <div class="grid">
+        <div>
+            <h3>A(x)</h3>
+            <textarea id="polyA" rows="2">7 5 0 2 3</textarea>
+            <p>뜻: coef[0] coef[1] coef[2] coef[3] coef[4]</p>
+        </div>
+        <div>
+            <h3>B(x)</h3>
+            <textarea id="polyB" rows="2">3 0 4 0 1</textarea>
+            <p>뜻: coef[0] coef[1] coef[2] coef[3] coef[4]</p>
+        </div>
+    </div>
+    <button class="btn-orange" onclick="addPoly()">A(x) + B(x) 계산하기</button>
+    <h3>덧셈 과정</h3>
+    <div id="addTable"></div>
+    <h3>결과</h3>
+    <div class="formula" id="addResult"></div>
+</section>
+
+<section class="card">
+    <h2>7. 두 방식 비교</h2>
+    <table>
+        <tr><th>방식</th><th>저장 방법</th><th>장점</th><th>단점</th></tr>
+        <tr><td>계수 배열</td><td>인덱스 = 차수</td><td>구현이 쉽고 덧셈이 간단함</td><td>차수가 크면 0이 많이 저장됨</td></tr>
+        <tr><td>구조체 배열</td><td>{계수, 차수} 저장</td><td>0인 항을 저장하지 않아 공간 절약</td><td>덧셈과 곱셈 구현이 더 복잡함</td></tr>
+    </table>
+    <div class="warn">
+        P(x) = 5x¹⁰⁰⁰ + 3 처럼 차수는 크지만 항이 적은 경우에는 구조체 배열 방식이 더 효율적입니다.
+    </div>
+</section>
+
+<section class="card">
+    <h2>8. 확인 문제</h2>
+    <div class="quizBox">
+        <p><b>문제 1.</b> 배열 coef = {4, 0, 2, 1} 이면 다항식은?</p>
+        <button onclick="toggleAnswer('a1')">정답 보기</button>
+        <div class="answer" id="a1">1x³ + 2x² + 4, 즉 <b>x³ + 2x² + 4</b></div>
+    </div>
+    <div class="quizBox">
+        <p><b>문제 2.</b> P(x) = 6x⁵ + 2x + 9 를 계수 배열로 저장하면?</p>
+        <button onclick="toggleAnswer('a2')">정답 보기</button>
+        <div class="answer" id="a2">coef[0]=9, coef[1]=2, coef[2]=0, coef[3]=0, coef[4]=0, coef[5]=6</div>
+    </div>
+    <div class="quizBox">
+        <p><b>문제 3.</b> P(x) = 7x¹⁰⁰ + 3x² 처럼 항이 적고 차수가 큰 경우 어떤 방식이 좋은가?</p>
+        <button onclick="toggleAnswer('a3')">정답 보기</button>
+        <div class="answer" id="a3">구조체 배열 방식이 좋습니다. 0인 항을 많이 저장하지 않아도 되기 때문입니다.</div>
+    </div>
+</section>
+
+<section class="card">
+    <h2>9. C언어 예제 코드</h2>
+    <pre>#include &lt;stdio.h&gt;
+
+typedef struct {
+    int coef;
+    int exp;
+} Term;
+
+int main(void) {
+    int coef[5] = {7, 5, 0, 2, 3};
+
+    printf("계수 배열 방식:\\n");
+    for(int i = 4; i &gt;= 0; i--) {
+        if(coef[i] != 0) {
+            printf("%dx^%d ", coef[i], i);
+        }
+    }
+
+    Term poly[2] = {
+        {5, 1000},
+        {3, 0}
+    };
+
+    printf("\\n\\n구조체 배열 방식:\\n");
+    for(int i = 0; i &lt; 2; i++) {
+        printf("%dx^%d ", poly[i].coef, poly[i].exp);
+    }
+
+    return 0;
+}</pre>
+</section>
+
+</main>
+<script>
+function sup(num){
+    const map={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻'};
+    return String(num).split('').map(ch=>map[ch]||ch).join('');
+}
+function termToString(coef, exp){
+    coef = Number(coef); exp = Number(exp);
+    if(coef === 0) return '';
+    if(exp === 0) return String(coef);
+    if(exp === 1){
+        if(coef === 1) return 'x';
+        if(coef === -1) return '-x';
+        return coef + 'x';
+    }
+    if(coef === 1) return 'x' + sup(exp);
+    if(coef === -1) return '-x' + sup(exp);
+    return coef + 'x' + sup(exp);
+}
+function polyFromCoef(arr){
+    let parts=[];
+    for(let i=arr.length-1;i>=0;i--){
+        let s=termToString(arr[i],i);
+        if(s) parts.push(s);
+    }
+    return parts.length ? parts.join(' + ').replace(/\+ -/g,'- ') : '0';
+}
+function renderArray(containerId, arr){
+    const box=document.getElementById(containerId);
+    box.innerHTML='';
+    arr.forEach((v,i)=>{
+        const div=document.createElement('div');
+        div.className='cell '+(Number(v)===0?'zero':'');
+        div.innerHTML=`<div class="idx">coef[${i}]<br>x${sup(i)}</div><div class="val">${v}</div>`;
+        box.appendChild(div);
+    });
+}
+function renderCoefPoly(){
+    const arr=[];
+    for(let i=0;i<=4;i++) arr.push(Number(document.getElementById('c'+i).value));
+    renderArray('coefArray',arr);
+    document.getElementById('coefResult').textContent='P(x) = '+polyFromCoef(arr);
+}
+function renderTermPoly(){
+    let terms=[];
+    for(let i=1;i<=3;i++){
+        let c=Number(document.getElementById('t'+i+'c').value);
+        let e=Number(document.getElementById('t'+i+'e').value);
+        if(c!==0) terms.push({coef:c,exp:e});
+    }
+    terms.sort((a,b)=>b.exp-a.exp);
+    const box=document.getElementById('termArray');
+    box.innerHTML='';
+    if(terms.length===0){ box.innerHTML='<span class="term">저장된 항 없음</span>'; }
+    terms.forEach(t=>{
+        const span=document.createElement('span');
+        span.className='term';
+        span.textContent=`{계수:${t.coef}, 차수:${t.exp}}`;
+        box.appendChild(span);
+    });
+    const str=terms.map(t=>termToString(t.coef,t.exp)).join(' + ').replace(/\+ -/g,'- ') || '0';
+    document.getElementById('termResult').textContent='P(x) = '+str;
+}
+function addPoly(){
+    let A=document.getElementById('polyA').value.trim().split(/\s+/).map(Number);
+    let B=document.getElementById('polyB').value.trim().split(/\s+/).map(Number);
+    let len=Math.max(A.length,B.length);
+    while(A.length<len) A.push(0);
+    while(B.length<len) B.push(0);
+    let C=[];
+    for(let i=0;i<len;i++) C[i]=A[i]+B[i];
+    let html='<table><tr><th>차수</th><th>A 계수</th><th>B 계수</th><th>C 계수</th></tr>';
+    for(let i=0;i<len;i++) html+=`<tr><td>x${sup(i)}</td><td>${A[i]}</td><td>${B[i]}</td><td><b>${C[i]}</b></td></tr>`;
+    html+='</table>';
+    document.getElementById('addTable').innerHTML=html;
+    document.getElementById('addResult').textContent='C(x) = '+polyFromCoef(C);
+}
+function toggleAnswer(id){
+    const el=document.getElementById(id);
+    el.style.display=el.style.display==='block'?'none':'block';
+}
+renderArray('staticArray',[7,5,0,2,3]);
+renderCoefPoly();
+renderTermPoly();
+addPoly();
+document.getElementById('termExample').innerHTML='<span class="term">{계수:5, 차수:1000}</span><span class="term">{계수:3, 차수:0}</span>';
+</script>
+</body>
+</html>

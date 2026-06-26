@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>골드 다항식 인터렉티브 강의자료</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+  --bg:#f8fafc; --card:#fff; --ink:#111827; --muted:#475569;
+  --blue:#2563eb; --blue2:#1d4ed8; --line:#cbd5e1;
+  --yellow:#fef08a; --green:#dcfce7; --red:#fee2e2; --code:#0f172a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif;
+  background:var(--bg); color:var(--ink); font-size:20px; line-height:1.75;
+}
+header{
+  background:linear-gradient(135deg,#1e3a8a,#2563eb,#38bdf8);
+  color:white; text-align:center; padding:36px 18px;
+}
+header h1{margin:0;font-size:36px}
+header p{margin:10px 0 0;font-size:22px}
+main{max-width:1200px;margin:0 auto;padding:24px 16px 70px}
+.tabs{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  display:flex;gap:10px;flex-wrap:wrap;padding:12px 0;
+}
+.tab-btn{
+  border:3px solid var(--blue); background:white; color:var(--blue);
+  border-radius:16px; padding:13px 20px; font-size:21px; font-weight:900; cursor:pointer;
+}
+.tab-btn.active{background:var(--blue);color:white}
+section{display:none}
+section.active{display:block}
+.card{
+  background:var(--card); border:2px solid var(--line); border-radius:20px;
+  padding:24px; margin:20px 0; box-shadow:0 8px 18px rgba(15,23,42,.08);
+}
+h2{font-size:32px;color:#1e3a8a;margin:6px 0 14px}
+h3{font-size:26px;margin:8px 0 12px}
+.notice{
+  background:#fff7ed; border-left:8px solid #ea580c;
+  border-radius:12px; padding:16px; font-weight:800;
+}
+.formula{
+  background:#eff6ff;border:2px solid #bfdbfe;border-radius:16px;
+  padding:18px;font-size:25px;font-weight:900;text-align:center;
+}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+label{font-weight:900}
+input,textarea{
+  font-size:22px;padding:12px 14px;border:2px solid #94a3b8;border-radius:12px;background:white;
+}
+textarea{width:100%;min-height:78px;font-family:Consolas,monospace}
+button.action{
+  background:var(--blue);color:white;border:none;border-radius:14px;
+  padding:14px 20px;font-size:21px;font-weight:900;cursor:pointer;
+}
+button.action:hover{background:var(--blue2)}
+.warn{display:none;background:var(--red);border:2px solid #fca5a5;border-radius:14px;padding:14px;color:#7f1d1d;font-weight:800}
+.result{
+  background:var(--green);border:3px solid #86efac;border-radius:18px;
+  padding:20px;font-size:25px;font-weight:900;color:#14532d;word-break:break-word;
+}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:19px}
+th,td{border:2px solid var(--line);padding:10px;text-align:center}
+th{background:#e0f2fe}
+.highlight{background:var(--yellow)!important;outline:4px solid #f59e0b}
+.good{background:#dcfce7}
+.bad{background:#fee2e2}
+.stepbox{
+  background:#f1f5f9;border:2px solid var(--line);border-radius:16px;
+  padding:18px;min-height:100px;font-size:23px;font-weight:850;
+}
+.pill{
+  display:inline-block;background:#e0e7ff;color:#312e81;border-radius:999px;
+  padding:5px 13px;margin:3px;font-weight:900;
+}
+pre{
+  background:var(--code);color:#e5e7eb;padding:20px;border-radius:18px;overflow:auto;
+  font-size:17px;line-height:1.55;
+}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px}
+.small{font-size:17px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <h1>골드 다항식 인터렉티브 강의자료</h1>
+  <p>다항식 곱셈과 희소 다항식 덧셈을 단계별로 시각화합니다.</p>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('mul', event)">골드 1. 다항식 곱셈</button>
+    <button class="tab-btn" onclick="showTab('sparse', event)">골드 2. 희소 다항식 덧셈</button>
+    <button class="tab-btn" onclick="showTab('code', event)">C 정답 코드</button>
+  </div>
+
+  <section id="mul" class="active">
+    <div class="card">
+      <h2>골드 1. 두 다항식 곱셈</h2>
+      <p>계수 배열로 저장된 두 다항식을 곱합니다. 핵심은 모든 항을 서로 곱하고, 결과 차수에 누적하는 것입니다.</p>
+      <div class="formula">C[i + j] += A[i] × B[j]</div>
+      <p class="notice">x^i × x^j = x^(i+j)이므로 결과 배열의 위치는 i+j가 됩니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>1. 입력값 바꾸기</h3>
+      <div class="row">
+        <label>A 최고차수 N</label><input id="mulN" type="number" value="2" min="0" max="8">
+        <label>B 최고차수 M</label><input id="mulM" type="number" value="1" min="0" max="8">
+        <button class="action" onclick="loadMulExample()">예제 불러오기</button>
+        <button class="action" onclick="calcMul()">계산하기</button>
+      </div>
+      <p class="small">낮은 차수부터 입력합니다. 예: 1 2 3 → 3x^2 + 2x + 1</p>
+      <label>A 계수</label>
+      <textarea id="mulA">1 2 3</textarea>
+      <label>B 계수</label>
+      <textarea id="mulB">4 5</textarea>
+      <div id="mulWarn" class="warn"></div>
+    </div>
+
+    <div class="card">
+      <h3>2. 결과 배열 C 보기</h3>
+      <div id="mulTable"></div>
+    </div>
+
+    <div class="card">
+      <h3>3. 출력 결과</h3>
+      <div id="mulResult" class="result"></div>
+    </div>
+
+    <div class="card">
+      <h3>4. 단계별 곱셈</h3>
+      <div class="row">
+        <button class="action" onclick="prevMulStep()">이전 단계</button>
+        <button class="action" onclick="nextMulStep()">다음 단계</button>
+        <button class="action" onclick="resetMulStep()">처음으로</button>
+      </div>
+      <div id="mulStep" class="stepbox"></div>
+    </div>
+  </section>
+
+  <section id="sparse">
+    <div class="card">
+      <h2>골드 2. 희소 다항식 덧셈</h2>
+      <p>차수가 크고 항이 적은 다항식은 배열 전체를 만들지 않고, 0이 아닌 항만 구조체 배열로 저장합니다.</p>
+      <div class="formula">Term = { coef, exp }</div>
+      <p class="notice">두 다항식의 항이 차수 내림차순으로 주어지므로, 두 포인터 i, j로 병합하면 됩니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>1. 입력값 바꾸기</h3>
+      <p class="small">한 줄에 하나의 항을 입력합니다. 형식: 계수 차수</p>
+      <div class="row">
+        <button class="action" onclick="loadSparseExample()">예제 불러오기</button>
+        <button class="action" onclick="calcSparse()">계산하기</button>
+      </div>
+      <div class="grid2">
+        <div>
+          <label>A 항 목록</label>
+          <textarea id="sparseA" style="min-height:160px">3 5
+2 3
+7 0</textarea>
+        </div>
+        <div>
+          <label>B 항 목록</label>
+          <textarea id="sparseB" style="min-height:160px">4 4
+5 3
+-7 0</textarea>
+        </div>
+      </div>
+      <div id="sparseWarn" class="warn"></div>
+    </div>
+
+    <div class="card">
+      <h3>2. 항 배열 비교</h3>
+      <div id="sparseTable"></div>
+    </div>
+
+    <div class="card">
+      <h3>3. 출력 결과</h3>
+      <div id="sparseResult" class="result"></div>
+    </div>
+
+    <div class="card">
+      <h3>4. 단계별 병합</h3>
+      <div class="row">
+        <button class="action" onclick="prevSparseStep()">이전 단계</button>
+        <button class="action" onclick="nextSparseStep()">다음 단계</button>
+        <button class="action" onclick="resetSparseStep()">처음으로</button>
+      </div>
+      <div id="sparseStep" class="stepbox"></div>
+    </div>
+  </section>
+
+  <section id="code">
+    <div class="card">
+      <h2>C 정답 코드</h2>
+      <div class="grid2">
+        <div>
+          <h3>골드 1. 다항식 곱셈</h3>
+<pre>#include &lt;stdio.h&gt;
+
+void printPoly(int coef[], int degree)
+{
+    int first = 1;
+
+    for(int i = degree; i &gt;= 0; i--)
+    {
+        if(coef[i] == 0) continue;
+
+        if(!first) printf(" + ");
+
+        if(i == 0)
+            printf("%d", coef[i]);
+        else if(i == 1)
+            printf("%dx", coef[i]);
+        else
+            printf("%dx^%d", coef[i], i);
+
+        first = 0;
+    }
+
+    if(first) printf("0");
+}
+
+int main(void)
+{
+    int N, M;
+    int A[101], B[101], C[201] = {0};
+
+    scanf("%d", &amp;N);
+    for(int i = 0; i &lt;= N; i++)
+        scanf("%d", &amp;A[i]);
+
+    scanf("%d", &amp;M);
+    for(int i = 0; i &lt;= M; i++)
+        scanf("%d", &amp;B[i]);
+
+    for(int i = 0; i &lt;= N; i++)
+        for(int j = 0; j &lt;= M; j++)
+            C[i + j] += A[i] * B[j];
+
+    printPoly(C, N + M);
+
+    return 0;
+}</pre>
+        </div>
+
+        <div>
+          <h3>골드 2. 희소 다항식 덧셈</h3>
+<pre>#include &lt;stdio.h&gt;
+
+typedef struct
+{
+    int coef;
+    int exp;
+} Term;
+
+void printTerm(int coef, int exp, int *first)
+{
+    if(coef == 0) return;
+
+    if(!(*first)) printf(" + ");
+
+    if(exp == 0)
+        printf("%d", coef);
+    else if(exp == 1)
+        printf("%dx", coef);
+    else
+        printf("%dx^%d", coef, exp);
+
+    *first = 0;
+}
+
+int main(void)
+{
+    int N, M;
+    Term A[101], B[101];
+
+    scanf("%d", &amp;N);
+    for(int i = 0; i &lt; N; i++)
+        scanf("%d %d", &amp;A[i].coef, &amp;A[i].exp);
+
+    scanf("%d", &amp;M);
+    for(int i = 0; i &lt; M; i++)
+        scanf("%d %d", &amp;B[i].coef, &amp;B[i].exp);
+
+    int i = 0, j = 0;
+    int first = 1;
+
+    while(i &lt; N &amp;&amp; j &lt; M)
+    {
+        if(A[i].exp &gt; B[j].exp)
+            printTerm(A[i].coef, A[i].exp, &amp;first), i++;
+        else if(A[i].exp &lt; B[j].exp)
+            printTerm(B[j].coef, B[j].exp, &amp;first), j++;
+        else
+        {
+            printTerm(A[i].coef + B[j].coef, A[i].exp, &amp;first);
+            i++;
+            j++;
+        }
+    }
+
+    while(i &lt; N)
+        printTerm(A[i].coef, A[i].exp, &amp;first), i++;
+
+    while(j &lt; M)
+        printTerm(B[j].coef, B[j].exp, &amp;first), j++;
+
+    if(first) printf("0");
+
+    return 0;
+}</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+let mulData=null, mulStepIndex=0;
+let sparseData=null, sparseStepIndex=0;
+
+function showTab(id, ev){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  ev.target.classList.add('active');
+}
+function nums(text){return text.trim().split(/\s+/).filter(Boolean).map(Number);}
+function termText(c,e){
+  if(c===0) return "";
+  if(e===0) return String(c);
+  if(e===1) return c+"x";
+  return c+"x^"+e;
+}
+function polyToString(coef, degree){
+  let parts=[];
+  for(let i=degree;i>=0;i--) if(coef[i]!==0) parts.push(termText(coef[i],i));
+  return parts.length?parts.join(" + "):"0";
+}
+function sparseToString(terms){
+  let parts=[];
+  for(const t of terms) if(t.coef!==0) parts.push(termText(t.coef,t.exp));
+  return parts.length?parts.join(" + "):"0";
+}
+function warn(id,msg){
+  const e=document.getElementById(id);
+  e.style.display=msg?'block':'none';
+  e.textContent=msg||'';
+}
+
+function loadMulExample(){
+  document.getElementById('mulN').value=2;
+  document.getElementById('mulM').value=1;
+  document.getElementById('mulA').value="1 2 3";
+  document.getElementById('mulB').value="4 5";
+  calcMul();
+}
+function calcMul(){
+  const N=Number(document.getElementById('mulN').value);
+  const M=Number(document.getElementById('mulM').value);
+  const A=nums(document.getElementById('mulA').value);
+  const B=nums(document.getElementById('mulB').value);
+  if(A.length!==N+1 || B.length!==M+1){
+    warn('mulWarn',`A는 ${N+1}개, B는 ${M+1}개의 계수가 필요합니다. 현재 A=${A.length}개, B=${B.length}개입니다.`);
+    return;
+  }
+  warn('mulWarn',"");
+  let C=Array(N+M+1).fill(0);
+  let steps=[];
+  for(let i=0;i<=N;i++){
+    for(let j=0;j<=M;j++){
+      let before=C[i+j];
+      let add=A[i]*B[j];
+      C[i+j]+=add;
+      steps.push({i,j,target:i+j,before,add,after:C[i+j]});
+    }
+  }
+  mulData={N,M,A,B,C,steps};
+  mulStepIndex=0;
+  renderMulTable();
+  document.getElementById('mulResult').innerHTML="C(x) = "+polyToString(C,N+M);
+  renderMulStep();
+}
+function renderMulTable(high=-1){
+  const {N,M,C}=mulData;
+  let html="<table><tr><th>결과 차수 k</th>";
+  for(let k=0;k<=N+M;k++) html+=`<th class="${k===high?'highlight':''}">${k}</th>`;
+  html+="</tr><tr><th>C[k]</th>";
+  for(let k=0;k<=N+M;k++) html+=`<td class="${k===high?'highlight':''}">${C[k]}</td>`;
+  html+="</tr></table>";
+  document.getElementById('mulTable').innerHTML=html;
+}
+function renderMulStep(){
+  if(!mulData)return;
+  if(mulStepIndex===0){
+    renderMulTable(-1);
+    document.getElementById('mulStep').innerHTML="시작합니다. C 배열은 모두 0으로 초기화합니다.";
+    return;
+  }
+  const s=mulData.steps[mulStepIndex-1];
+  renderMulTable(s.target);
+  document.getElementById('mulStep').innerHTML=
+    `<span class="pill">i=${s.i}</span><span class="pill">j=${s.j}</span>
+     A[${s.i}] × B[${s.j}] = ${mulData.A[s.i]} × ${mulData.B[s.j]} = <b>${s.add}</b><br>
+     차수는 ${s.i}+${s.j}=<b>${s.target}</b> 이므로 C[${s.target}]에 더합니다.<br>
+     C[${s.target}] : ${s.before} + ${s.add} = <b>${s.after}</b>`;
+}
+function nextMulStep(){if(!mulData)calcMul(); if(mulStepIndex<mulData.steps.length)mulStepIndex++; renderMulStep();}
+function prevMulStep(){if(mulStepIndex>0)mulStepIndex--; renderMulStep();}
+function resetMulStep(){mulStepIndex=0; renderMulStep();}
+
+function parseTerms(text){
+  if(!text.trim()) return [];
+  return text.trim().split(/\n+/).map(line=>{
+    const a=line.trim().split(/\s+/).map(Number);
+    return {coef:a[0],exp:a[1]};
+  });
+}
+function loadSparseExample(){
+  document.getElementById('sparseA').value="3 5\n2 3\n7 0";
+  document.getElementById('sparseB').value="4 4\n5 3\n-7 0";
+  calcSparse();
+}
+function calcSparse(){
+  const A=parseTerms(document.getElementById('sparseA').value);
+  const B=parseTerms(document.getElementById('sparseB').value);
+  if(A.some(t=>Number.isNaN(t.coef)||Number.isNaN(t.exp)) || B.some(t=>Number.isNaN(t.coef)||Number.isNaN(t.exp))){
+    warn('sparseWarn',"각 줄은 반드시 '계수 차수' 형식이어야 합니다.");
+    return;
+  }
+  warn('sparseWarn',"");
+  let i=0,j=0,res=[],steps=[];
+  while(i<A.length && j<B.length){
+    const ai=A[i], bj=B[j];
+    if(ai.exp>bj.exp){
+      res.push({...ai});
+      steps.push({i,j,action:"A",msg:`A의 차수 ${ai.exp}가 B의 차수 ${bj.exp}보다 큽니다. A 항 ${termText(ai.coef,ai.exp)}를 결과에 넣습니다.`,res:[...res]});
+      i++;
+    }else if(ai.exp<bj.exp){
+      res.push({...bj});
+      steps.push({i,j,action:"B",msg:`B의 차수 ${bj.exp}가 A의 차수 ${ai.exp}보다 큽니다. B 항 ${termText(bj.coef,bj.exp)}를 결과에 넣습니다.`,res:[...res]});
+      j++;
+    }else{
+      const sum=ai.coef+bj.coef;
+      if(sum!==0) res.push({coef:sum,exp:ai.exp});
+      steps.push({i,j,action:"SAME",msg:`차수가 ${ai.exp}로 같습니다. 계수 ${ai.coef}+${bj.coef}=${sum} 입니다. ${sum===0?'0이므로 출력하지 않습니다.':'결과에 넣습니다.'}`,res:[...res]});
+      i++; j++;
+    }
+  }
+  while(i<A.length){
+    res.push({...A[i]});
+    steps.push({i,j,action:"A_REST",msg:`B가 끝났습니다. 남은 A 항 ${termText(A[i].coef,A[i].exp)}를 결과에 넣습니다.`,res:[...res]});
+    i++;
+  }
+  while(j<B.length){
+    res.push({...B[j]});
+    steps.push({i,j,action:"B_REST",msg:`A가 끝났습니다. 남은 B 항 ${termText(B[j].coef,B[j].exp)}를 결과에 넣습니다.`,res:[...res]});
+    j++;
+  }
+  sparseData={A,B,res,steps};
+  sparseStepIndex=0;
+  renderSparseTable();
+  document.getElementById('sparseResult').innerHTML="A(x)+B(x) = "+sparseToString(res);
+  renderSparseStep();
+}
+function renderTermTable(name, arr, high){
+  let html=`<table><tr><th colspan="3">${name}</th></tr><tr><th>번호</th><th>계수</th><th>차수</th></tr>`;
+  arr.forEach((t,idx)=>{
+    html+=`<tr class="${idx===high?'highlight':''}"><td>${idx}</td><td>${t.coef}</td><td>${t.exp}</td></tr>`;
+  });
+  html+="</table>";
+  return html;
+}
+function renderSparseTable(hiA=-1,hiB=-1,res=null){
+  const {A,B}=sparseData;
+  let html=`<div class="grid2">${renderTermTable("A 항 배열",A,hiA)}${renderTermTable("B 항 배열",B,hiB)}</div>`;
+  if(res){
+    html+=`<h3>현재 결과</h3><div class="result">${sparseToString(res)}</div>`;
+  }
+  document.getElementById('sparseTable').innerHTML=html;
+}
+function renderSparseStep(){
+  if(!sparseData)return;
+  if(sparseStepIndex===0){
+    renderSparseTable(-1,-1,[]);
+    document.getElementById('sparseStep').innerHTML="시작합니다. A와 B의 첫 항부터 차수를 비교합니다.";
+    return;
+  }
+  const s=sparseData.steps[sparseStepIndex-1];
+  renderSparseTable(s.i,s.j,s.res);
+  document.getElementById('sparseStep').innerHTML=
+    `<span class="pill">i=${s.i}</span><span class="pill">j=${s.j}</span><br>${s.msg}<br>
+     현재 결과: <b>${sparseToString(s.res)}</b>`;
+}
+function nextSparseStep(){if(!sparseData)calcSparse(); if(sparseStepIndex<sparseData.steps.length)sparseStepIndex++; renderSparseStep();}
+function prevSparseStep(){if(sparseStepIndex>0)sparseStepIndex--; renderSparseStep();}
+function resetSparseStep(){sparseStepIndex=0; renderSparseStep();}
+
+calcMul();
+calcSparse();
+</script>
+</body>
+</html>

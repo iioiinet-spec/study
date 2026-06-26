@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>플래티넘 다항식 인터렉티브 강의자료</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root{
+  --bg:#f8fafc;--card:#ffffff;--ink:#111827;--muted:#475569;
+  --blue:#2563eb;--blue2:#1d4ed8;--purple:#7c3aed;--line:#cbd5e1;
+  --yellow:#fef08a;--green:#dcfce7;--red:#fee2e2;--orange:#fff7ed;--code:#0f172a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Malgun Gothic","Apple SD Gothic Neo",Arial,sans-serif;
+  font-size:20px;line-height:1.75;
+}
+header{
+  background:linear-gradient(135deg,#312e81,#2563eb,#38bdf8);
+  color:white;text-align:center;padding:38px 18px;
+}
+header h1{margin:0;font-size:37px}
+header p{margin:10px 0 0;font-size:22px}
+main{max-width:1200px;margin:0 auto;padding:24px 16px 70px}
+.tabs{
+  position:sticky;top:0;z-index:20;background:var(--bg);
+  display:flex;gap:10px;flex-wrap:wrap;padding:12px 0;
+}
+.tab-btn{
+  border:3px solid var(--blue);background:white;color:var(--blue);
+  border-radius:16px;padding:13px 20px;font-size:21px;font-weight:900;cursor:pointer;
+}
+.tab-btn.active{background:var(--blue);color:white}
+section{display:none}
+section.active{display:block}
+.card{
+  background:var(--card);border:2px solid var(--line);border-radius:20px;
+  padding:24px;margin:20px 0;box-shadow:0 8px 18px rgba(15,23,42,.08);
+}
+h2{font-size:32px;color:#1e3a8a;margin:6px 0 14px}
+h3{font-size:26px;margin:8px 0 12px}
+.formula{
+  background:#eff6ff;border:2px solid #bfdbfe;border-radius:16px;
+  padding:18px;font-size:24px;font-weight:900;text-align:center;
+}
+.notice{
+  background:var(--orange);border-left:8px solid #ea580c;
+  border-radius:12px;padding:16px;font-weight:850;
+}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+label{font-weight:900}
+input,textarea{
+  font-size:22px;padding:12px 14px;border:2px solid #94a3b8;border-radius:12px;background:white;
+}
+textarea{width:100%;min-height:86px;font-family:Consolas,monospace}
+button.action{
+  background:var(--blue);color:white;border:none;border-radius:14px;
+  padding:14px 20px;font-size:21px;font-weight:900;cursor:pointer;
+}
+button.action:hover{background:var(--blue2)}
+.warn{display:none;background:var(--red);border:2px solid #fca5a5;border-radius:14px;padding:14px;color:#7f1d1d;font-weight:800}
+.result{
+  background:var(--green);border:3px solid #86efac;border-radius:18px;
+  padding:20px;font-size:25px;font-weight:900;color:#14532d;word-break:break-word;
+}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:19px}
+th,td{border:2px solid var(--line);padding:10px;text-align:center}
+th{background:#e0f2fe}
+.highlight{background:var(--yellow)!important;outline:4px solid #f59e0b}
+.stepbox{
+  background:#f1f5f9;border:2px solid var(--line);border-radius:16px;
+  padding:18px;min-height:112px;font-size:23px;font-weight:850;
+}
+.pill{
+  display:inline-block;background:#e0e7ff;color:#312e81;border-radius:999px;
+  padding:5px 13px;margin:3px;font-weight:900;
+}
+pre{
+  background:var(--code);color:#e5e7eb;padding:20px;border-radius:18px;overflow:auto;
+  font-size:17px;line-height:1.55;
+}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:16px}
+.small{font-size:17px;color:var(--muted)}
+.compare td:nth-child(2){background:#fef2f2}
+.compare td:nth-child(3){background:#ecfdf5}
+.big{
+  font-size:28px;font-weight:950;color:#1e3a8a;
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>플래티넘 다항식 인터렉티브 강의자료</h1>
+  <p>Horner 알고리즘으로 P(K)를 빠르게 계산하고, 조립제법과 연결합니다.</p>
+</header>
+
+<main>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('horner', event)">Horner 계산</button>
+    <button class="tab-btn" onclick="showTab('division', event)">조립제법 연결</button>
+    <button class="tab-btn" onclick="showTab('compare', event)">복잡도 비교</button>
+    <button class="tab-btn" onclick="showTab('code', event)">C 정답 코드</button>
+  </div>
+
+  <section id="horner" class="active">
+    <div class="card">
+      <h2>플래티넘 1. 다항식 빠른 계산</h2>
+      <p>다항식의 계수가 낮은 차수부터 주어집니다.</p>
+      <div class="formula">P(x) = a₀ + a₁x + a₂x² + ... + aₙxⁿ</div>
+      <p>Horner 알고리즘은 이 식을 다음처럼 바꿔 계산합니다.</p>
+      <div class="formula">P(x) = (((aₙx + aₙ₋₁)x + aₙ₋₂) ... x + a₀)</div>
+      <p class="notice">높은 차수 계수부터 시작해서, 매번 “곱하고 더하기”만 반복합니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>1. 입력값 바꾸기</h3>
+      <div class="row">
+        <label>최고차수 N</label>
+        <input id="N" type="number" value="4" min="1" max="12">
+        <label>K 값</label>
+        <input id="K" type="number" value="2">
+        <label>MOD</label>
+        <input id="MOD" type="number" value="1000000007">
+        <button class="action" onclick="loadExample()">예제 불러오기</button>
+        <button class="action" onclick="calc()">계산하기</button>
+      </div>
+      <p class="small">계수는 낮은 차수부터 입력합니다. 예: 7 5 0 2 3 → 3x^4 + 2x^3 + 5x + 7</p>
+      <label>계수 a₀ a₁ ... aₙ</label>
+      <textarea id="coef">7 5 0 2 3</textarea>
+      <div id="warn" class="warn"></div>
+    </div>
+
+    <div class="card">
+      <h3>2. Horner 계산 표</h3>
+      <div id="table"></div>
+    </div>
+
+    <div class="card">
+      <h3>3. 출력 결과</h3>
+      <div id="result" class="result"></div>
+    </div>
+
+    <div class="card">
+      <h3>4. 단계별 보기</h3>
+      <div class="row">
+        <button class="action" onclick="prevStep()">이전 단계</button>
+        <button class="action" onclick="nextStep()">다음 단계</button>
+        <button class="action" onclick="resetStep()">처음으로</button>
+      </div>
+      <div id="step" class="stepbox"></div>
+    </div>
+  </section>
+
+  <section id="division">
+    <div class="card">
+      <h2>조립제법과 나머지 정리</h2>
+      <p>Horner 알고리즘은 단순히 값을 빠르게 계산하는 방법이 아니라, 조립제법과도 연결됩니다.</p>
+      <div class="formula">P(x)를 x - K로 나눈 나머지 = P(K)</div>
+      <p class="notice">따라서 Horner 계산의 마지막 결과는 P(K)이면서, 동시에 x-K로 나누었을 때의 나머지입니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>1. 현재 다항식</h3>
+      <div id="divisionPoly" class="result"></div>
+    </div>
+
+    <div class="card">
+      <h3>2. 조립제법 표</h3>
+      <p>높은 차수 계수부터 내려오면서 계산합니다.</p>
+      <div id="divisionTable"></div>
+    </div>
+
+    <div class="card">
+      <h3>3. 의미</h3>
+      <p>예를 들어 P(x)를 x-2로 나눌 때, 나머지는 P(2)입니다.</p>
+      <p>즉, 문제에서 K=2라면 Horner 알고리즘으로 구한 값은 곧 나머지입니다.</p>
+      <div id="divisionResult" class="result"></div>
+    </div>
+  </section>
+
+  <section id="compare">
+    <div class="card">
+      <h2>왜 플래티넘 난이도인가?</h2>
+      <p>입력 크기 N이 매우 크면, 단순한 거듭제곱 계산이나 비효율적인 방식은 위험합니다.</p>
+      <table class="compare">
+        <tr>
+          <th>방법</th>
+          <th>일반적인 위험한 방식</th>
+          <th>Horner 방식</th>
+        </tr>
+        <tr>
+          <td>계산 형태</td>
+          <td>aᵢ × Kⁱ를 직접 계산</td>
+          <td>result = result × K + aᵢ</td>
+        </tr>
+        <tr>
+          <td>오버플로우 위험</td>
+          <td>매우 큼</td>
+          <td>매 단계 MOD 처리 가능</td>
+        </tr>
+        <tr>
+          <td>구현 난이도</td>
+          <td>쉬워 보이지만 실수 많음</td>
+          <td>반복 구조가 깔끔함</td>
+        </tr>
+        <tr>
+          <td>시간복잡도</td>
+          <td>잘못 구현하면 O(N²) 가능</td>
+          <td>O(N)</td>
+        </tr>
+      </table>
+      <p class="notice">N ≤ 1,000,000 같은 큰 입력에서는 한 번의 반복으로 끝나는 O(N) 알고리즘이 필요합니다.</p>
+    </div>
+
+    <div class="card">
+      <h3>연산 횟수 비교 체험</h3>
+      <div class="row">
+        <label>N</label>
+        <input id="bigN" type="number" value="1000000" min="1">
+        <button class="action" onclick="compareOps()">비교하기</button>
+      </div>
+      <div id="opsResult" class="result" style="margin-top:16px"></div>
+    </div>
+  </section>
+
+  <section id="code">
+    <div class="card">
+      <h2>C 정답 코드</h2>
+<pre>#include &lt;stdio.h&gt;
+
+#define MOD 1000000007
+
+long long coef[1000001];
+
+int main(void)
+{
+    int N;
+    long long K;
+
+    scanf("%d", &amp;N);
+
+    for(int i = 0; i &lt;= N; i++)
+    {
+        scanf("%lld", &amp;coef[i]);
+        coef[i] %= MOD;
+    }
+
+    scanf("%lld", &amp;K);
+    K %= MOD;
+
+    long long result = coef[N];
+
+    for(int i = N - 1; i &gt;= 0; i--)
+    {
+        result = (result * K + coef[i]) % MOD;
+    }
+
+    printf("%lld", result);
+
+    return 0;
+}</pre>
+    </div>
+
+    <div class="card">
+      <h3>핵심 코드 설명</h3>
+      <pre>long long result = coef[N];
+
+for(int i = N - 1; i &gt;= 0; i--)
+{
+    result = (result * K + coef[i]) % MOD;
+}</pre>
+      <p>높은 차수의 계수부터 시작합니다.</p>
+      <p>그 다음부터는 계속 다음 규칙을 반복합니다.</p>
+      <div class="formula">result = result × K + 현재 계수</div>
+    </div>
+  </section>
+</main>
+
+<script>
+let data=null;
+let stepIndex=0;
+
+function showTab(id, ev){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  ev.target.classList.add('active');
+  if(id==='division') renderDivision();
+}
+function nums(text){return text.trim().split(/\s+/).filter(Boolean).map(Number);}
+function warn(msg){
+  const e=document.getElementById('warn');
+  e.style.display=msg?'block':'none';
+  e.textContent=msg||'';
+}
+function modNorm(v,m){
+  let r=v%m;
+  if(r<0) r+=m;
+  return r;
+}
+function termText(c,e){
+  if(c===0)return "";
+  if(e===0)return String(c);
+  if(e===1)return c+"x";
+  return c+"x^"+e;
+}
+function polyToString(coef,N){
+  let parts=[];
+  for(let i=N;i>=0;i--) if(coef[i]!==0) parts.push(termText(coef[i],i));
+  return parts.length?parts.join(" + "):"0";
+}
+function loadExample(){
+  document.getElementById('N').value=4;
+  document.getElementById('K').value=2;
+  document.getElementById('MOD').value=1000000007;
+  document.getElementById('coef').value="7 5 0 2 3";
+  calc();
+}
+function calc(){
+  const N=Number(document.getElementById('N').value);
+  const Kraw=Number(document.getElementById('K').value);
+  const MOD=Number(document.getElementById('MOD').value);
+  const coef=nums(document.getElementById('coef').value);
+  if(coef.length!==N+1){
+    warn(`계수는 ${N+1}개 입력해야 합니다. 현재 ${coef.length}개입니다.`);
+    return;
+  }
+  if(MOD<=0){
+    warn("MOD는 1 이상의 정수여야 합니다.");
+    return;
+  }
+  warn("");
+  const K=modNorm(Kraw,MOD);
+  let result=modNorm(coef[N],MOD);
+  let steps=[{
+    i:N, coef:coef[N], before:null, calc:`시작값 result = a${N} = ${coef[N]} mod ${MOD}`,
+    after:result
+  }];
+  for(let i=N-1;i>=0;i--){
+    const before=result;
+    result=modNorm(before*K+modNorm(coef[i],MOD),MOD);
+    steps.push({
+      i, coef:coef[i], before,
+      calc:`result = (${before} × ${K} + ${coef[i]}) mod ${MOD}`,
+      after:result
+    });
+  }
+  data={N,Kraw,K,MOD,coef,steps,result};
+  stepIndex=0;
+  renderTable();
+  document.getElementById('result').innerHTML=`P(${Kraw}) mod ${MOD} = ${result}`;
+  renderStep();
+  renderDivision();
+}
+function renderTable(high=-999){
+  if(!data)return;
+  let html="<table><tr><th>단계</th><th>사용 계수</th><th>계산식</th><th>결과 result</th></tr>";
+  data.steps.forEach((s,idx)=>{
+    html+=`<tr class="${idx===high?'highlight':''}">
+      <td>${idx}</td>
+      <td>a${s.i} = ${s.coef}</td>
+      <td>${s.calc}</td>
+      <td><b>${s.after}</b></td>
+    </tr>`;
+  });
+  html+="</table>";
+  document.getElementById('table').innerHTML=html;
+}
+function renderStep(){
+  if(!data)return;
+  renderTable(stepIndex);
+  const s=data.steps[stepIndex];
+  if(stepIndex===0){
+    document.getElementById('step').innerHTML=
+      `<span class="pill">시작</span> 가장 높은 차수의 계수 a${data.N}부터 시작합니다.<br>
+       result = <b>${s.after}</b>`;
+  }else{
+    document.getElementById('step').innerHTML=
+      `<span class="pill">현재 i=${s.i}</span><br>
+       이전 result에 K를 곱하고 현재 계수 a${s.i}를 더합니다.<br>
+       ${s.calc} = <b>${s.after}</b>`;
+  }
+}
+function nextStep(){if(!data)calc(); if(stepIndex<data.steps.length-1)stepIndex++; renderStep();}
+function prevStep(){if(stepIndex>0)stepIndex--; renderStep();}
+function resetStep(){stepIndex=0; renderStep();}
+
+function renderDivision(){
+  if(!data)return;
+  const highCoef=[];
+  for(let i=data.N;i>=0;i--) highCoef.push(data.coef[i]);
+  document.getElementById('divisionPoly').innerHTML=`P(x) = ${polyToString(data.coef,data.N)}<br>K = ${data.Kraw}, 나누는 식 = x - ${data.Kraw}`;
+
+  let html="<table><tr><th>높은 차수 순서</th>";
+  highCoef.forEach((c,idx)=>html+=`<th>a${data.N-idx}<br>${c}</th>`);
+  html+="</tr><tr><th>Horner 결과</th>";
+  data.steps.forEach((s)=>html+=`<td><b>${s.after}</b></td>`);
+  html+="</tr></table>";
+  document.getElementById('divisionTable').innerHTML=html;
+
+  document.getElementById('divisionResult').innerHTML=
+    `P(x)를 x - ${data.Kraw}로 나눈 나머지 = P(${data.Kraw}) = <span class="big">${data.result}</span> (mod ${data.MOD})`;
+}
+function compareOps(){
+  const n=Number(document.getElementById('bigN').value);
+  const horner=n+1;
+  const bad=n*(n+1)/2;
+  document.getElementById('opsResult').innerHTML=
+    `N = ${n.toLocaleString()}일 때<br>
+     Horner 방식: 약 <b>${horner.toLocaleString()}</b>번 반복<br>
+     거듭제곱을 매번 다시 구하는 방식: 약 <b>${Math.round(bad).toLocaleString()}</b>번 반복<br>
+     차이가 매우 커집니다.`;
+}
+
+calc();
+compareOps();
+</script>
+</body>
+</html>

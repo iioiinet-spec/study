@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>실버 다항식 인터렉티브 강의자료</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    :root{
+        --bg:#f8fafc;
+        --card:#ffffff;
+        --ink:#111827;
+        --muted:#475569;
+        --primary:#2563eb;
+        --primary-dark:#1d4ed8;
+        --soft:#dbeafe;
+        --green:#15803d;
+        --orange:#ea580c;
+        --red:#dc2626;
+        --line:#cbd5e1;
+        --code:#0f172a;
+    }
+    *{box-sizing:border-box;}
+    body{
+        margin:0;
+        font-family: "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+        background:var(--bg);
+        color:var(--ink);
+        line-height:1.75;
+        font-size:20px;
+    }
+    header{
+        background:linear-gradient(135deg,#1d4ed8,#2563eb,#38bdf8);
+        color:white;
+        padding:36px 22px;
+        text-align:center;
+    }
+    header h1{
+        margin:0;
+        font-size:36px;
+    }
+    header p{
+        margin:12px 0 0;
+        font-size:22px;
+        opacity:.95;
+    }
+    main{
+        max-width:1150px;
+        margin:0 auto;
+        padding:26px 18px 70px;
+    }
+    .tabs{
+        display:flex;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-bottom:20px;
+        position:sticky;
+        top:0;
+        background:var(--bg);
+        padding:12px 0;
+        z-index:10;
+    }
+    .tab-btn{
+        border:3px solid var(--primary);
+        background:white;
+        color:var(--primary);
+        font-size:22px;
+        font-weight:800;
+        border-radius:16px;
+        padding:14px 22px;
+        cursor:pointer;
+    }
+    .tab-btn.active{
+        background:var(--primary);
+        color:white;
+    }
+    section{
+        display:none;
+    }
+    section.active{
+        display:block;
+    }
+    .card{
+        background:var(--card);
+        border:2px solid var(--line);
+        border-radius:20px;
+        padding:24px;
+        margin:20px 0;
+        box-shadow:0 8px 18px rgba(15,23,42,.08);
+    }
+    h2{
+        font-size:32px;
+        margin:8px 0 16px;
+        color:#1e3a8a;
+    }
+    h3{
+        font-size:26px;
+        margin:10px 0 12px;
+        color:#1f2937;
+    }
+    .notice{
+        background:#fff7ed;
+        border-left:8px solid var(--orange);
+        padding:16px 18px;
+        border-radius:12px;
+        font-weight:700;
+    }
+    .formula{
+        background:#eff6ff;
+        border:2px solid #bfdbfe;
+        border-radius:16px;
+        padding:18px;
+        font-size:24px;
+        font-weight:800;
+        text-align:center;
+    }
+    .row{
+        display:flex;
+        gap:16px;
+        flex-wrap:wrap;
+        align-items:center;
+    }
+    label{
+        font-weight:800;
+    }
+    input, textarea, select{
+        font-size:22px;
+        padding:12px 14px;
+        border:2px solid #94a3b8;
+        border-radius:12px;
+        background:white;
+        color:var(--ink);
+    }
+    textarea{
+        width:100%;
+        min-height:80px;
+        font-family:Consolas, monospace;
+    }
+    button.action{
+        font-size:22px;
+        font-weight:800;
+        border:none;
+        border-radius:14px;
+        background:var(--primary);
+        color:white;
+        padding:14px 22px;
+        cursor:pointer;
+    }
+    button.action:hover{
+        background:var(--primary-dark);
+    }
+    .result{
+        background:#ecfdf5;
+        border:3px solid #86efac;
+        border-radius:18px;
+        padding:20px;
+        font-size:25px;
+        font-weight:900;
+        color:#14532d;
+        word-break:break-word;
+    }
+    .warn{
+        background:#fef2f2;
+        border:2px solid #fca5a5;
+        color:#7f1d1d;
+        border-radius:14px;
+        padding:14px;
+        font-weight:700;
+        display:none;
+    }
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin:16px 0;
+        font-size:20px;
+        overflow:auto;
+    }
+    th,td{
+        border:2px solid var(--line);
+        padding:12px;
+        text-align:center;
+    }
+    th{
+        background:#e0f2fe;
+        color:#0f172a;
+    }
+    .coef-cell{
+        background:#f8fafc;
+        font-weight:800;
+    }
+    .highlight{
+        background:#fef08a !important;
+        outline:4px solid #f59e0b;
+    }
+    pre{
+        background:var(--code);
+        color:#e5e7eb;
+        padding:20px;
+        border-radius:18px;
+        overflow:auto;
+        font-size:18px;
+        line-height:1.55;
+    }
+    .stepbox{
+        background:#f1f5f9;
+        border:2px solid #cbd5e1;
+        padding:18px;
+        border-radius:16px;
+        min-height:88px;
+        font-size:23px;
+        font-weight:800;
+    }
+    .small{
+        color:var(--muted);
+        font-size:17px;
+    }
+    .pill{
+        display:inline-block;
+        background:#e0e7ff;
+        color:#312e81;
+        border-radius:999px;
+        padding:6px 14px;
+        margin:4px;
+        font-weight:800;
+    }
+    .grid2{
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(310px,1fr));
+        gap:16px;
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>실버 다항식 인터렉티브 강의자료</h1>
+    <p>순차 자료구조 배열로 다항식 덧셈과 값 계산을 연습해 봅니다.</p>
+</header>
+
+<main>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('add')">실버 1. 다항식 덧셈</button>
+        <button class="tab-btn" onclick="showTab('eval')">실버 2. 다항식 값 계산</button>
+        <button class="tab-btn" onclick="showTab('code')">C 정답 코드</button>
+    </div>
+
+    <section id="add" class="active">
+        <div class="card">
+            <h2>실버 1. 두 다항식 덧셈</h2>
+            <p>두 다항식 A(x), B(x)가 계수 배열로 주어질 때, 같은 차수끼리 더해서 C(x)를 만듭니다.</p>
+            <div class="formula">C[i] = A[i] + B[i]</div>
+            <p class="notice">배열 인덱스는 차수입니다. 즉, A[3]은 x³의 계수입니다.</p>
+        </div>
+
+        <div class="card">
+            <h3>1. 입력값 바꾸기</h3>
+            <div class="row">
+                <label>최고차수 N</label>
+                <input id="addN" type="number" value="4" min="1" max="10">
+                <button class="action" onclick="loadAddExample()">예제 불러오기</button>
+                <button class="action" onclick="calcAdd()">계산하기</button>
+            </div>
+            <p>낮은 차수부터 입력합니다. 예: <b>7 5 0 2 3</b> 은 3x^4 + 2x^3 + 5x + 7 입니다.</p>
+            <label>A 계수</label>
+            <textarea id="addA">7 5 0 2 3</textarea>
+            <label>B 계수</label>
+            <textarea id="addB">3 0 4 0 1</textarea>
+            <div id="addWarn" class="warn"></div>
+        </div>
+
+        <div class="card">
+            <h3>2. 배열 표로 보기</h3>
+            <div id="addTable"></div>
+        </div>
+
+        <div class="card">
+            <h3>3. 출력 결과</h3>
+            <div id="addResult" class="result"></div>
+        </div>
+
+        <div class="card">
+            <h3>4. 단계별 계산</h3>
+            <div class="row">
+                <button class="action" onclick="prevAddStep()">이전 단계</button>
+                <button class="action" onclick="nextAddStep()">다음 단계</button>
+                <button class="action" onclick="resetAddStep()">처음으로</button>
+            </div>
+            <div id="addStep" class="stepbox"></div>
+        </div>
+    </section>
+
+    <section id="eval">
+        <div class="card">
+            <h2>실버 2. 다항식 값 계산하기</h2>
+            <p>다항식 P(x)의 계수와 x값이 주어질 때 P(x)의 값을 계산합니다.</p>
+            <div class="formula">P(x) = coef[0]×x⁰ + coef[1]×x¹ + ... + coef[N]×xᴺ</div>
+            <p class="notice">power 변수를 사용하면 x⁰, x¹, x², ... 을 순서대로 만들 수 있습니다.</p>
+        </div>
+
+        <div class="card">
+            <h3>1. 입력값 바꾸기</h3>
+            <div class="row">
+                <label>최고차수 N</label>
+                <input id="evalN" type="number" value="4" min="1" max="10">
+                <label>x 값</label>
+                <input id="evalX" type="number" value="2">
+                <button class="action" onclick="loadEvalExample()">예제 불러오기</button>
+                <button class="action" onclick="calcEval()">계산하기</button>
+            </div>
+            <label>계수</label>
+            <textarea id="evalCoef">7 5 0 2 3</textarea>
+            <div id="evalWarn" class="warn"></div>
+        </div>
+
+        <div class="card">
+            <h3>2. 계산 표</h3>
+            <div id="evalTable"></div>
+        </div>
+
+        <div class="card">
+            <h3>3. 출력 결과</h3>
+            <div id="evalResult" class="result"></div>
+        </div>
+
+        <div class="card">
+            <h3>4. 단계별 계산</h3>
+            <div class="row">
+                <button class="action" onclick="prevEvalStep()">이전 단계</button>
+                <button class="action" onclick="nextEvalStep()">다음 단계</button>
+                <button class="action" onclick="resetEvalStep()">처음으로</button>
+            </div>
+            <div id="evalStep" class="stepbox"></div>
+        </div>
+    </section>
+
+    <section id="code">
+        <div class="card">
+            <h2>C 정답 코드</h2>
+            <div class="grid2">
+                <div>
+                    <h3>실버 1. 다항식 덧셈</h3>
+<pre>#include &lt;stdio.h&gt;
+
+void printPoly(int coef[], int N)
+{
+    int first = 1;
+
+    for(int i = N; i &gt;= 0; i--)
+    {
+        if(coef[i] == 0) continue;
+
+        if(!first) printf(" + ");
+
+        if(i == 0)
+            printf("%d", coef[i]);
+        else if(i == 1)
+            printf("%dx", coef[i]);
+        else
+            printf("%dx^%d", coef[i], i);
+
+        first = 0;
+    }
+}
+
+int main(void)
+{
+    int N;
+    int A[101], B[101], C[101];
+
+    scanf("%d", &amp;N);
+
+    for(int i = 0; i &lt;= N; i++)
+        scanf("%d", &amp;A[i]);
+
+    for(int i = 0; i &lt;= N; i++)
+        scanf("%d", &amp;B[i]);
+
+    for(int i = 0; i &lt;= N; i++)
+        C[i] = A[i] + B[i];
+
+    printPoly(C, N);
+
+    return 0;
+}</pre>
+                </div>
+
+                <div>
+                    <h3>실버 2. 다항식 값 계산</h3>
+<pre>#include &lt;stdio.h&gt;
+
+int main(void)
+{
+    int N;
+    int coef[101];
+    int x;
+
+    scanf("%d", &amp;N);
+
+    for(int i = 0; i &lt;= N; i++)
+        scanf("%d", &amp;coef[i]);
+
+    scanf("%d", &amp;x);
+
+    int result = 0;
+    int power = 1;
+
+    for(int i = 0; i &lt;= N; i++)
+    {
+        result += coef[i] * power;
+        power *= x;
+    }
+
+    printf("%d", result);
+
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+let addStepIndex = 0;
+let evalStepIndex = 0;
+let addData = null;
+let evalData = null;
+
+function showTab(id){
+    document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+}
+
+function parseNums(text){
+    return text.trim().split(/\s+/).filter(v=>v.length).map(Number);
+}
+
+function polyToString(coef, N){
+    let parts = [];
+    for(let i=N;i>=0;i--){
+        const c = coef[i];
+        if(c === 0) continue;
+        if(i === 0) parts.push(String(c));
+        else if(i === 1) parts.push(c + "x");
+        else parts.push(c + "x^" + i);
+    }
+    return parts.length ? parts.join(" + ") : "0";
+}
+
+function showWarn(id, msg){
+    const el = document.getElementById(id);
+    if(msg){
+        el.style.display = "block";
+        el.textContent = msg;
+    }else{
+        el.style.display = "none";
+        el.textContent = "";
+    }
+}
+
+function loadAddExample(){
+    document.getElementById('addN').value = 4;
+    document.getElementById('addA').value = "7 5 0 2 3";
+    document.getElementById('addB').value = "3 0 4 0 1";
+    calcAdd();
+}
+
+function calcAdd(){
+    const N = Number(document.getElementById('addN').value);
+    const A = parseNums(document.getElementById('addA').value);
+    const B = parseNums(document.getElementById('addB').value);
+    if(A.length !== N+1 || B.length !== N+1){
+        showWarn('addWarn', `계수는 각각 ${N+1}개 입력해야 합니다. 현재 A=${A.length}개, B=${B.length}개입니다.`);
+        return;
+    }
+    showWarn('addWarn', "");
+    const C = [];
+    for(let i=0;i<=N;i++) C[i] = A[i] + B[i];
+    addData = {N,A,B,C};
+    addStepIndex = 0;
+    renderAddTable();
+    document.getElementById('addResult').innerHTML = "C(x) = " + polyToString(C,N);
+    renderAddStep();
+}
+
+function renderAddTable(high=-1){
+    const {N,A,B,C} = addData;
+    let html = "<table><tr><th>차수 i</th>";
+    for(let i=0;i<=N;i++) html += `<th class="${i===high?'highlight':''}">${i}</th>`;
+    html += "</tr><tr><th>A[i]</th>";
+    for(let i=0;i<=N;i++) html += `<td class="coef-cell ${i===high?'highlight':''}">${A[i]}</td>`;
+    html += "</tr><tr><th>B[i]</th>";
+    for(let i=0;i<=N;i++) html += `<td class="coef-cell ${i===high?'highlight':''}">${B[i]}</td>`;
+    html += "</tr><tr><th>C[i]=A[i]+B[i]</th>";
+    for(let i=0;i<=N;i++) html += `<td class="coef-cell ${i===high?'highlight':''}">${C[i]}</td>`;
+    html += "</tr></table>";
+    document.getElementById('addTable').innerHTML = html;
+}
+
+function renderAddStep(){
+    if(!addData) return;
+    const {N,A,B,C} = addData;
+    if(addStepIndex === 0){
+        renderAddTable(-1);
+        document.getElementById('addStep').innerHTML = "시작합니다. 같은 차수끼리 더하면 됩니다.";
+        return;
+    }
+    const i = addStepIndex - 1;
+    renderAddTable(i);
+    document.getElementById('addStep').innerHTML =
+        `<span class="pill">차수 ${i}</span> C[${i}] = A[${i}] + B[${i}] = ${A[i]} + ${B[i]} = <b>${C[i]}</b>`;
+}
+
+function nextAddStep(){
+    if(!addData) calcAdd();
+    if(addStepIndex < addData.N + 1) addStepIndex++;
+    renderAddStep();
+}
+function prevAddStep(){
+    if(addStepIndex > 0) addStepIndex--;
+    renderAddStep();
+}
+function resetAddStep(){
+    addStepIndex = 0;
+    renderAddStep();
+}
+
+function loadEvalExample(){
+    document.getElementById('evalN').value = 4;
+    document.getElementById('evalCoef').value = "7 5 0 2 3";
+    document.getElementById('evalX').value = 2;
+    calcEval();
+}
+
+function calcEval(){
+    const N = Number(document.getElementById('evalN').value);
+    const coef = parseNums(document.getElementById('evalCoef').value);
+    const x = Number(document.getElementById('evalX').value);
+    if(coef.length !== N+1){
+        showWarn('evalWarn', `계수는 ${N+1}개 입력해야 합니다. 현재 ${coef.length}개입니다.`);
+        return;
+    }
+    showWarn('evalWarn', "");
+
+    let rows = [];
+    let power = 1;
+    let result = 0;
+    for(let i=0;i<=N;i++){
+        const term = coef[i] * power;
+        result += term;
+        rows.push({i,coef:coef[i],power,term,result});
+        power *= x;
+    }
+    evalData = {N,coef,x,rows,result};
+    evalStepIndex = 0;
+    renderEvalTable();
+    document.getElementById('evalResult').innerHTML = `P(${x}) = ${result}`;
+    renderEvalStep();
+}
+
+function renderEvalTable(high=-1){
+    const {rows} = evalData;
+    let html = "<table><tr><th>차수 i</th><th>coef[i]</th><th>x^i</th><th>coef[i]×x^i</th><th>누적 합</th></tr>";
+    rows.forEach(r=>{
+        const cls = r.i===high ? 'highlight' : '';
+        html += `<tr class="${cls}">
+            <td>${r.i}</td>
+            <td>${r.coef}</td>
+            <td>${r.power}</td>
+            <td>${r.term}</td>
+            <td>${r.result}</td>
+        </tr>`;
+    });
+    html += "</table>";
+    document.getElementById('evalTable').innerHTML = html;
+}
+
+function renderEvalStep(){
+    if(!evalData) return;
+    const {x, rows} = evalData;
+    if(evalStepIndex === 0){
+        renderEvalTable(-1);
+        document.getElementById('evalStep').innerHTML = `시작합니다. power는 처음에 1입니다. 이것은 x^0을 뜻합니다.`;
+        return;
+    }
+    const r = rows[evalStepIndex-1];
+    renderEvalTable(r.i);
+    document.getElementById('evalStep').innerHTML =
+        `<span class="pill">차수 ${r.i}</span> ${r.coef} × ${x}^${r.i} = ${r.coef} × ${r.power} = <b>${r.term}</b><br>현재까지 누적 합 = <b>${r.result}</b>`;
+}
+
+function nextEvalStep(){
+    if(!evalData) calcEval();
+    if(evalStepIndex < evalData.N + 1) evalStepIndex++;
+    renderEvalStep();
+}
+function prevEvalStep(){
+    if(evalStepIndex > 0) evalStepIndex--;
+    renderEvalStep();
+}
+function resetEvalStep(){
+    evalStepIndex = 0;
+    renderEvalStep();
+}
+
+calcAdd();
+calcEval();
+</script>
+</body>
+</html>
