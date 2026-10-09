@@ -1,0 +1,588 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>수원하이텍고 심층면접 실전노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&display=swap">
+<style>
+/* Layout: 계측기 패널 — 좌측 라벨 레일 + 단일 컬럼 본문, 데이터는 모노스페이스로 정렬 */
+:root{
+  --bg:#eef0f3; --surface:#ffffff; --surface-2:#f7f8fa;
+  --ink:#141a21; --muted:#5d6975; --line:#d6dbe2;
+  --steel:#1d5c8c; --amber:#c87a0c; --ok:#2d7a51; --alert:#a8401c;
+  --shadow:0 1px 0 rgba(20,26,33,.04), 0 8px 24px -16px rgba(20,26,33,.35);
+  --sans:"IBM Plex Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono","IBM Plex Sans KR",ui-monospace,SFMono-Regular,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1319; --surface:#161c24; --surface-2:#1b222b;
+  --ink:#e4eaf1; --muted:#95a2b0; --line:#28313c;
+  --steel:#5fa9dd; --amber:#e6a443; --ok:#5cb98a; --alert:#e07a53;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.8);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1319; --surface:#161c24; --surface-2:#1b222b;
+  --ink:#e4eaf1; --muted:#95a2b0; --line:#28313c;
+  --steel:#5fa9dd; --amber:#e6a443; --ok:#5cb98a; --alert:#e07a53;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -16px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:400;line-height:1.7;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding-inline:20px;padding-block:0 64px}
+h1,h2,h3,h4{text-wrap:balance;margin:0;font-weight:600;letter-spacing:-.02em}
+p{margin:0}
+a{color:var(--steel)}
+
+/* ── header ── */
+.masthead{padding-block:40px 24px;border-bottom:2px solid var(--ink)}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);font-weight:600}
+h1{font-size:clamp(28px,6vw,46px);line-height:1.12;margin-top:10px}
+.sub{color:var(--muted);font-size:15px;margin-top:12px;max-width:62ch}
+.dial{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+.dial div{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:10px 14px;box-shadow:var(--shadow)}
+.dial span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.dial strong{font-family:var(--mono);font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
+.dial .hot strong{color:var(--alert)}
+
+/* ── nav ── */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin-bottom:34px}
+.navrow{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin;padding-block:8px}
+.navrow button{flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);font-family:var(--sans);font-size:13.5px;font-weight:500;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.navrow button:hover{color:var(--ink)}
+.navrow button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--amber)}
+.navrow button:focus-visible{outline:2px solid var(--steel);outline-offset:-2px}
+
+/* ── section shell ── */
+section{display:grid;gap:22px}
+.shead{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.shead .idx{font-family:var(--mono);font-size:12px;color:var(--amber);font-weight:600}
+.shead h2{font-size:21px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:20px;box-shadow:var(--shadow)}
+.grid2{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.grid3{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.lbl{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:600}
+h3.ct{font-size:16px;margin-top:6px}
+.card p{font-size:14.5px;color:var(--muted);margin-top:8px}
+.card p strong{color:var(--ink);font-weight:500}
+
+/* ── score bar ── */
+.score{display:grid;gap:8px}
+.srow{display:grid;grid-template-columns:minmax(96px,auto) 1fr minmax(52px,auto);align-items:center;gap:12px}
+.srow .nm{font-size:13.5px}
+.bar{height:16px;background:var(--surface-2);border:1px solid var(--line);border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%}
+.srow .pt{font-family:var(--mono);font-size:13px;text-align:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+.srow.peak .pt{color:var(--alert);font-weight:600}
+
+/* ── timeline ── */
+ol.tl{list-style:none;margin:0;padding:0;display:grid;gap:0}
+ol.tl li{display:grid;grid-template-columns:minmax(78px,auto) 1fr;gap:16px;padding:12px 0;border-top:1px solid var(--line)}
+ol.tl li:first-child{border-top:0}
+ol.tl time{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+ol.tl li.now time{color:var(--alert);font-weight:600}
+ol.tl b{font-weight:500;font-size:14.5px}
+ol.tl em{display:block;font-style:normal;color:var(--muted);font-size:13px}
+
+/* ── question bank ── */
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters button{background:var(--surface);border:1px solid var(--line);border-radius:999px;color:var(--muted);font-family:var(--sans);font-size:12.5px;padding:5px 13px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.q{border:1px solid var(--line);border-radius:4px;background:var(--surface);overflow:hidden}
+.q+.q{margin-top:10px}
+.q>button{width:100%;text-align:left;background:none;border:0;padding:15px 18px;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;font-family:var(--sans);color:var(--ink)}
+.q .qn{font-family:var(--mono);font-size:11.5px;color:var(--amber);padding-top:3px}
+.q .qt{font-size:15px;font-weight:500;line-height:1.5;min-width:0}
+.q .chev{color:var(--muted);font-family:var(--mono);font-size:13px}
+.q .body{padding:0 18px 18px;display:grid;gap:12px;border-top:1px solid var(--line);margin-top:-1px}
+.q .body>div{padding-top:12px}
+.q .body .lbl{display:block;margin-bottom:5px}
+.q .body p,.q .body ul{font-size:14px;color:var(--muted)}
+.q .body ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.q .tag{display:inline-block;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--line);border-radius:2px;padding:1px 6px;color:var(--muted);margin-top:4px}
+.trap{border-left:3px solid var(--alert);padding-left:10px}
+.trap .lbl{color:var(--alert)}
+
+/* ── drill ── */
+.drill{display:grid;gap:18px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:22px;box-shadow:var(--shadow)}
+.stage{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+#drillQ{font-size:clamp(18px,3.6vw,24px);font-weight:500;line-height:1.45;min-height:2.9em;letter-spacing:-.01em}
+.clockwrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+#clock{font-family:var(--mono);font-size:40px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.track{flex:1;min-width:160px;height:6px;background:var(--surface-2);border:1px solid var(--line);border-radius:3px;overflow:hidden}
+#track i{display:block;height:100%;background:var(--steel);width:0%}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font-family:var(--sans);font-size:14px;font-weight:500;border-radius:3px;padding:10px 20px;cursor:pointer;border:1px solid var(--ink);background:var(--ink);color:var(--bg)}
+.btn.ghost{background:none;color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:focus-visible{outline:2px solid var(--steel);outline-offset:2px}
+.counter{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* ── builder ── */
+label.fld{display:grid;gap:5px}
+label.fld span{font-size:13px;font-weight:500}
+label.fld em{font-style:normal;color:var(--muted);font-size:12px}
+input[type=text],textarea{font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:3px;padding:9px 11px;width:100%}
+input[type=text]:focus,textarea:focus{outline:2px solid var(--steel);outline-offset:-1px}
+#draft{background:var(--surface-2);border:1px dashed var(--line);border-radius:4px;padding:18px;font-size:15px;line-height:1.9;white-space:pre-wrap}
+#draft .ph{color:var(--amber);font-weight:500}
+
+/* ── checklist ── */
+ul.check{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+ul.check li{display:flex;gap:11px;align-items:flex-start;padding:9px 0;border-top:1px solid var(--line)}
+ul.check li:first-child{border-top:0}
+ul.check input{margin-top:5px;accent-color:var(--steel);width:15px;height:15px;flex:0 0 auto}
+ul.check label{font-size:14.5px;cursor:pointer}
+ul.check input:checked+label{color:var(--muted);text-decoration:line-through}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+
+.note{font-size:12.5px;color:var(--muted);line-height:1.65}
+footer{margin-top:56px;padding-top:20px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:baseline}
+footer .sig{font-family:var(--mono);font-size:12px;letter-spacing:.04em}
+footer .src{font-size:12px;color:var(--muted);max-width:52ch}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">2027학년도 · 2차전형 대비</div>
+  <h1>수원하이텍고 심층면접 실전노트</h1>
+  <p class="sub">적성시험 100점, 심층면접 200점. 전형 총점 500점 가운데 면접 하나가 200점을 가져갑니다. 1차 내신으로 벌어진 차이를 뒤집을 수 있는 유일한 구간입니다.</p>
+  <div class="dial">
+    <div class="hot"><span>면접일 D-day</span><strong id="dday">—</strong></div>
+    <div><span>심층면접 배점</span><strong>200점</strong></div>
+    <div><span>2차 전형일</span><strong>10.27 08:30</strong></div>
+    <div><span>모집정원</span><strong>144명</strong></div>
+  </div>
+</header>
+
+<nav>
+  <div class="navrow" role="tablist">
+    <button role="tab" data-go="s1" aria-selected="true">전형 구조</button>
+    <button role="tab" data-go="s2">학교 팩트</button>
+    <button role="tab" data-go="s3">답변 설계법</button>
+    <button role="tab" data-go="s4">예상질문 36</button>
+    <button role="tab" data-go="s5">모의면접</button>
+    <button role="tab" data-go="s6">자기소개 조립</button>
+    <button role="tab" data-go="s7">당일 체크</button>
+  </div>
+</nav>
+
+<!-- ────────── 1 ────────── -->
+<section id="s1">
+  <div class="shead"><span class="idx">01</span><h2>전형 구조 — 면접이 가장 무겁다</h2></div>
+
+  <div class="card">
+    <div class="lbl">총점 500점 배분</div>
+    <h3 class="ct">심층면접 200점 = 1차 내신 전체(200점)와 같은 무게</h3>
+    <div class="score" style="margin-top:16px">
+      <div class="srow"><span class="nm">교과활동</span><span class="bar"><i style="width:30%;background:var(--steel);opacity:.55"></i></span><span class="pt">150</span></div>
+      <div class="srow"><span class="nm">출결·봉사·활동</span><span class="bar"><i style="width:10%;background:var(--steel);opacity:.35"></i></span><span class="pt">50</span></div>
+      <div class="srow"><span class="nm">적성시험</span><span class="bar"><i style="width:20%;background:var(--amber)"></i></span><span class="pt">100</span></div>
+      <div class="srow peak"><span class="nm">심층면접</span><span class="bar"><i style="width:40%;background:var(--alert)"></i></span><span class="pt">200</span></div>
+    </div>
+    <p style="margin-top:14px">1차는 내신 200점으로 모집정원의 <strong>1.5배수(216명)</strong>를 거릅니다. 즉 2차 면접장에 앉은 순간 경쟁자는 216명, 떨어질 사람은 72명입니다. 최종 동점자 처리에서도 <strong>면접 점수가 적성시험 점수보다 앞 순위</strong>입니다.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="lbl">면접 성격 — 학교 공식 답변</div>
+      <h3 class="ct">상황 제시형 면접</h3>
+      <p>학교 입학Q&amp;A는 면접에서 <strong>“학교생활이나 회사생활에서 겪을 수 있는 상황에 대한 질문”</strong>이 주어지고, 본인의 생각을 진솔하게 말하면 된다고 밝히고 있습니다. 교과 지식을 캐묻는 구술고사가 아니라, <strong>판단과 태도</strong>를 보는 면접입니다.</p>
+      <p>핵심은 ‘회사생활’이라는 단어입니다. 마이스터고는 졸업 후 바로 산업 현장으로 갑니다. 면접관은 이 학생을 3년 뒤 기업에 추천할 수 있는지를 봅니다.</p>
+    </div>
+    <div class="card">
+      <div class="lbl">같은 날 치르는 적성시험</div>
+      <h3 class="ct">언어 · 수리 · 지각 · 추리</h3>
+      <p>학교 안내상 <strong>중학교 교육과정 수준</strong>이며, 어려운 문제가 아니라 <strong>시간이 모자라는 시험</strong>입니다. 삼성 고졸채용 적성검사(GSAT) 유형을 참고 자료로 학교가 직접 언급하고 있습니다.</p>
+      <p class="note" style="margin-top:10px">응시생 후기로는 70분 140문항 수준으로 알려져 있습니다(비공식). 모르는 문제를 붙잡지 말고 <strong>마킹 시간을 따로 확보</strong>하는 연습이 실제 점수를 가릅니다.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">남은 일정</div>
+    <ol class="tl" id="tl">
+      <li data-d="2026-10-19"><time>10.19~22</time><div><b>원서접수</b><em>10.22(목) 17:00 마감 · 온라인 접수, 전형료 없음</em></div></li>
+      <li data-d="2026-10-23"><time>10.23 금</time><div><b>1차 합격자 발표</b><em>17:00 학교 홈페이지 · 내신 200점으로 1.5배수 216명</em></div></li>
+      <li data-d="2026-10-27"><time>10.27 화</time><div><b>2차 전형 — 적성시험 + 심층면접</b><em>08:30 시험실 입실 · 본교 지정 장소</em></div></li>
+      <li data-d="2026-11-02"><time>11.02 월</time><div><b>최종 합격자 발표</b><em>17:00 · 1차 200점 + 2차 300점 합산</em></div></li>
+      <li data-d="2026-11-19"><time>11.19 목</time><div><b>합격자 소집</b><em>13:00 · 이후 신체검사(건강검진) 개별 실시</em></div></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ────────── 2 ────────── -->
+<section id="s2" hidden>
+  <div class="shead"><span class="idx">02</span><h2>면접장에서 써먹을 학교 팩트</h2></div>
+  <p class="note">아래는 전부 학교 홈페이지에 공개된 내용입니다. 외워서 읊는 용도가 아니라, 답변 속에 한두 개를 자연스럽게 섞어 “이 학생은 우리 학교를 알아보고 왔다”는 신호를 주는 용도입니다.</p>
+
+  <div class="grid3">
+    <div class="card"><div class="lbl">교육지표</div><h3 class="ct">더불어 살아가는 창의적인 글로벌 기술인 육성</h3><p>핵심가치는 <strong>도덕인 · 창조인 · 건강인 · 기술인</strong> 네 가지입니다. 인성 질문의 채점 기준이 사실상 여기 있습니다.</p></div>
+    <div class="card"><div class="lbl">분야</div><h3 class="ct">메카트로닉스 계열 마이스터고</h3><p>1학년은 <strong>계열 공통</strong>으로 세 학과 기초과목을 함께 배우고, <strong>2학년 진급 시 전공을 선택</strong>합니다. 지금 학과를 못 정했어도 결격 사유가 아닙니다.</p></div>
+    <div class="card"><div class="lbl">규모</div><h3 class="ct">8학급 144명 · 학급당 18명</h3><p>정밀기계 4학급, 자동화시스템 2학급, 전기전자제어 2학급. 전국단위 92명, 지역우선 44명, 사회적배려 8명.</p></div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">학과 — 2학년 때 고를 세 갈래</div>
+    <div class="scroll">
+      <table>
+        <tr><th>학과</th><th>배우는 것</th><th>취업 분야</th></tr>
+        <tr><td><b>정밀기계과</b></td><td>반도체 기초지식과 제조공정 이해, 기계설계, 정밀가공·측정, 설비 진단</td><td>반도체 장비 유지보수·제작, 기계설계, 정밀측정, 금형설계</td></tr>
+        <tr><td><b>자동화시스템과</b></td><td>PLC제어, 마이크로프로세서·공유압·모터 제어, 센서, 로봇설계, 2D/3D CAD, 3D프린팅</td><td>반도체 장비 설계·제조, 자동화설비 유지보수, 스마트팩토리, 로봇</td></tr>
+        <tr><td><b>전기전자제어과</b></td><td>전자회로·PCB 설계, 전기전자회로 제작, 마이크로프로세서 제어 프로그램</td><td>임베디드 시스템, SW 개발, 반도체 설계·개발, 전기설비 시공·운용</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:12px">코딩 경험이 있다면 <strong>자동화시스템과·전기전자제어과</strong>와 연결 짓기 좋습니다. 마이크로프로세서 제어, 센서, 임베디드가 모두 프로그래밍과 맞닿아 있습니다.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="lbl">취업 실적 — 지원동기의 근거</div>
+      <h3 class="ct">3개년 평균 취업률 85.6%</h3>
+      <p>2023~2025년 423명 중 362명. 대기업 <strong>32.6%</strong>(삼성전자 85명, SEMES 14명, 현대오일뱅크 10명, DB하이텍 6명 등), 공기업·공무원 4.3%, 중견 29.8%, 강소기업 18.9%. 학교는 <strong>“삼성 취업에 강한 학교”</strong>라고 스스로 밝힙니다.</p>
+      <p class="note" style="margin-top:8px">배경: 수원시에 삼성전자·삼성전기와 협력업체가 밀집해 있고, 학교는 삼성전자 협성회 등 170개 업체와 MOU를 맺고 있습니다.</p>
+    </div>
+    <div class="card">
+      <div class="lbl">학교 소식 — 아는 척이 아니라 관심의 증거</div>
+      <h3 class="ct">자격증·국제교류·고교학점제</h3>
+      <p>과정평가형 산업기사(전자·기계설계·컴퓨터응용가공) <strong>취득률 95%</strong>, 자동화시스템과 2학년 <strong>생산자동화산업기사 재학생 전원 취득</strong>, 일본 아사히카와공업고등전문학교와 <strong>16년째 국제교류</strong>, 2025년 <strong>마이스터고 재도약 지원 사업 선정</strong>, 고교학점제 운영 공간 개관.</p>
+      <p class="note" style="margin-top:8px">“입학하면 ○○ 자격증에 도전하고 싶습니다” 같은 답변의 근거가 됩니다. 학과별 취득 가능 자격증 목록은 학교 입학Q&amp;A에 전부 나와 있습니다.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">생활 — 상황 질문의 배경</div>
+    <h3 class="ct">100% 기숙사, 평일 08:30~20:50</h3>
+    <p>원칙적으로 전교생 기숙사 생활이며 매주 금요일 수업 후 전원 퇴사합니다. 4인실 위주(일부 6인실), 21:00 귀사·22:30 취침점호·06:40 기상점호. 중식 무료, 조·석식은 수익자 부담. 방과후수업은 1학년 토익·컴퓨터활용.</p>
+    <p><strong>그래서 기숙사 갈등 상황이 단골 문항입니다.</strong> 학교는 Q&amp;A에서 기숙사 생활을 “회사생활에 필요한 협동심과 배려심을 키우는 과정”으로 설명합니다. 답변 방향이 이미 제시된 셈입니다.</p>
+  </div>
+</section>
+
+<!-- ────────── 3 ────────── -->
+<section id="s3" hidden>
+  <div class="shead"><span class="idx">03</span><h2>답변 설계법</h2></div>
+
+  <div class="card">
+    <div class="lbl">상황 제시형 전용 공식</div>
+    <h3 class="ct">① 판단 → ② 행동 → ③ 이유 (30~60초)</h3>
+    <p style="margin-top:12px"><strong>① 판단</strong> — 결론부터. “저는 먼저 선생님께 알리겠습니다.” 뜸 들이면 면접관이 두 번 묻습니다.<br>
+    <strong>② 행동</strong> — 구체적인 순서로. “우선 룸메이트에게 직접 말해보고, 그래도 바뀌지 않으면 사감 선생님께 상의드리겠습니다.”<br>
+    <strong>③ 이유</strong> — 가치로 마무리. “혼자 참으면 결국 둘 다 불편해지고, 기숙사는 함께 쓰는 공간이기 때문입니다.”</p>
+    <p class="note" style="margin-top:12px">이 구조는 ‘정답’이 있는 질문이 아니어도 통합니다. 면접관이 보는 것은 선택지가 아니라 <strong>선택에 이유를 댈 수 있는가</strong>입니다.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="lbl">경험 질문용</div>
+      <h3 class="ct">상황 → 행동 → 결과 → 배움</h3>
+      <p>“중학교 때 조별과제에서(상황) 제가 역할을 다시 나누자고 제안했고(행동) 발표를 제시간에 마쳤습니다(결과). 그때 말을 꺼내는 사람이 있어야 팀이 움직인다는 걸 배웠습니다(배움).”</p>
+      <p><strong>배움</strong>까지 가야 답이 끝납니다. 결과에서 멈추면 자랑으로 들립니다.</p>
+    </div>
+    <div class="card">
+      <div class="lbl">모든 답변의 종착역</div>
+      <h3 class="ct">마지막 한 문장을 학교와 연결</h3>
+      <p>“…그래서 기숙사 생활도 잘 해낼 수 있다고 생각합니다.” / “…자동화시스템과에서 이어가고 싶습니다.” 매 답변에 붙일 필요는 없지만, 지원동기·자기소개·장단점 문항에서는 반드시 붙입니다.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="lbl">감점 요인</div>
+    <h3 class="ct">이 네 가지는 내용이 좋아도 깎입니다</h3>
+    <ul style="margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:14.5px;display:grid;gap:7px">
+      <li><strong>대학 진학을 전면에 내세우는 답변.</strong> 마이스터고는 선취업 후학습이 전제입니다. 학교는 일학습병행제를 통한 진학 경로를 운영하므로, 묻는다면 “취업해서 현장 경력을 쌓고 재직자 전형으로 공부를 이어가겠습니다” 순서로 말합니다. 순서를 뒤집지 마십시오.</li>
+      <li><strong>“열심히 하겠습니다” 뿐인 답변.</strong> 무엇을, 어떻게가 없으면 아무 말도 하지 않은 것과 같습니다.</li>
+      <li><strong>남 탓.</strong> 갈등 상황에서 상대를 문제로 지목하면, 면접관은 입사 후 같은 장면을 떠올립니다.</li>
+      <li><strong>모르면서 아는 척.</strong> 반도체·기계 지식을 묻는 자리가 아닙니다. 모르면 “아직 배우지 못했지만 입학하면 가장 먼저 배우고 싶은 부분입니다”가 정답에 가깝습니다.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ────────── 4 ────────── -->
+<section id="s4" hidden>
+  <div class="shead"><span class="idx">04</span><h2>예상질문 36 — 의도와 설계</h2></div>
+  <p class="note">학교가 공개한 면접 성격(학교생활·회사생활 상황 질문)과 핵심가치 네 가지를 축으로 구성했습니다. 기출 문항이 아니라 <strong>출제 논리로 역산한 예상 문항</strong>입니다. 답을 외우지 말고 ‘답변 설계’의 뼈대만 가져가십시오.</p>
+  <div class="filters" id="filters"></div>
+  <div id="qlist"></div>
+</section>
+
+<!-- ────────── 5 ────────── -->
+<section id="s5" hidden>
+  <div class="shead"><span class="idx">05</span><h2>모의면접 — 준비 30초, 답변 90초</h2></div>
+  <p class="note">실제 면접은 생각할 시간을 길게 주지 않습니다. 소리 내어 말하십시오. 머릿속으로만 하면 반드시 실전에서 막힙니다. 답변이 끝나면 설계 포인트와 맞춰 보세요.</p>
+
+  <div class="drill">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+      <span class="stage" id="stage">대기 중</span>
+      <span class="counter" id="count">0문항 완료</span>
+    </div>
+    <p id="drillQ">아래 ‘질문 받기’를 누르면 36개 예상질문 중 하나가 무작위로 나옵니다.</p>
+    <div class="clockwrap">
+      <span id="clock">—</span>
+      <span class="track" id="track"><i></i></span>
+    </div>
+    <div class="btns">
+      <button class="btn" id="go">질문 받기</button>
+      <button class="btn ghost" id="skip" disabled>다음 질문</button>
+      <button class="btn ghost" id="reveal" disabled>설계 포인트 보기</button>
+    </div>
+    <div id="revealBox" hidden style="border-top:1px solid var(--line);padding-top:14px"></div>
+  </div>
+</section>
+
+<!-- ────────── 6 ────────── -->
+<section id="s6" hidden>
+  <div class="shead"><span class="idx">06</span><h2>1분 자기소개 조립</h2></div>
+  <p class="note">네 칸을 채우면 아래에 초안이 조립됩니다. 그대로 외우지 말고, 자기 말투로 다듬어 소리 내어 읽어 보세요. 입력한 내용은 이 브라우저에만 남습니다.</p>
+
+  <div class="card">
+    <div class="grid2">
+      <label class="fld"><span>1. 지원 계기가 된 경험</span><em>구체적인 장면 하나 — 만들었던 것, 고쳤던 것, 봤던 것</em><input type="text" id="f1" placeholder="예: 집 선풍기를 분해해서 다시 조립해 본 일"></label>
+      <label class="fld"><span>2. 그 경험에서 생긴 관심</span><em>기계 / 자동화 / 전자회로 / 프로그래밍 중 끌리는 쪽</em><input type="text" id="f2" placeholder="예: 기계가 스스로 움직이게 하는 제어"></label>
+      <label class="fld"><span>3. 중학교 때 보여준 태도</span><em>성실·협동·책임을 증명하는 활동 하나</em><input type="text" id="f3" placeholder="예: 3년 동안 학급 봉사활동 빠지지 않은 일"></label>
+      <label class="fld"><span>4. 입학 후 목표</span><em>자격증·학과·진로를 한 가지만</em><input type="text" id="f4" placeholder="예: 자동화시스템과에서 생산자동화산업기사 취득"></label>
+    </div>
+    <div class="lbl" style="margin-top:20px">조립된 초안</div>
+    <div id="draft" style="margin-top:8px"></div>
+    <p class="note" style="margin-top:12px">읽는 데 <span id="secs">—</span>초 정도 걸립니다. 60초를 넘으면 문장 하나를 덜어내세요.</p>
+  </div>
+</section>
+
+<!-- ────────── 7 ────────── -->
+<section id="s7" hidden>
+  <div class="shead"><span class="idx">07</span><h2>면접 당일 체크</h2></div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="lbl">10월 27일 화요일</div>
+      <h3 class="ct">08:30 시험실 입실</h3>
+      <ul class="check" id="chk">
+        <li data-k="c1"><input type="checkbox" id="c1"><label for="c1">수험표·신분증·검은색 수성사인펜·여분 펜</label></li>
+        <li data-k="c2"><input type="checkbox" id="c2"><label for="c2">교복 단정히 — 마이스터고는 복장과 태도를 함께 봅니다</label></li>
+        <li data-k="c3"><input type="checkbox" id="c3"><label for="c3">본교 지정 장소 사전 확인(경기 수원시 영통구 청명북로 56)</label></li>
+        <li data-k="c4"><input type="checkbox" id="c4">
+          <label for="c4">적성시험: 막히면 넘어가고 <b>마킹 시간 5분 확보</b></label></li>
+        <li data-k="c5"><input type="checkbox" id="c5"><label for="c5">면접 입실 — 노크, 인사, 착석 전 “안녕하십니까” 한 번</label></li>
+        <li data-k="c6"><input type="checkbox" id="c6"><label for="c6">질문을 끝까지 듣고 1초 쉰 뒤 결론부터 말하기</label></li>
+        <li data-k="c7"><input type="checkbox" id="c7"><label for="c7">모르는 질문엔 솔직하게 + 배우고 싶다는 방향으로</label></li>
+        <li data-k="c8"><input type="checkbox" id="c8"><label for="c8">마지막 하고 싶은 말 1문장 준비(학교와 연결)</label></li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="lbl">말하기 습관 점검</div>
+      <h3 class="ct">연습 때 녹음해서 확인할 것</h3>
+      <ul class="check" id="chk2">
+        <li data-k="d1"><input type="checkbox" id="d1"><label for="d1">“어…”, “그…” 같은 군말이 문장마다 붙지 않는가</label></li>
+        <li data-k="d2"><input type="checkbox" id="d2"><label for="d2">말끝을 흐리지 않고 “~습니다”로 끝맺는가</label></li>
+        <li data-k="d3"><input type="checkbox" id="d3"><label for="d3">한 답변이 90초를 넘지 않는가</label></li>
+        <li data-k="d4"><input type="checkbox" id="d4"><label for="d4">같은 사례를 모든 질문에 돌려쓰고 있지 않은가</label></li>
+        <li data-k="d5"><input type="checkbox" id="d5"><label for="d5">면접관 눈을 보고 말하는가(모니터·책상 아님)</label></li>
+        <li data-k="d6"><input type="checkbox" id="d6"><label for="d6">목소리가 끝까지 일정한 크기로 유지되는가</label></li>
+      </ul>
+      <p class="note" style="margin-top:14px">문의: 교무실 031-201-9000 / 입학 관련 공지는 학교 홈페이지 입학안내 게시판에 올라옵니다. 1차 합격자 발표(10.23) 직후 2차 전형 세부 안내가 공지되므로 반드시 확인하세요.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="sig">세영코딩연구소 &nbsp;저자 : 컴퓨터공학박사 KIM</span>
+  <span class="src">출처: 수원하이텍고등학교 홈페이지(전형요항·입학Q&amp;A·교육목표·마이스터플랜·언론보도) 2026년 10월 기준. 적성시험 문항수·경쟁률·커트라인 등 비공식 수치는 응시생 공개 후기 기반이며 학교 발표가 아닙니다.</span>
+</footer>
+</div>
+
+<script>
+/* ── 데이터 ── */
+const CATS={motive:"지원동기·진로",school:"학교 이해도",dorm:"학교생활 상황",work:"회사생활 상황",person:"인성·가치관",trap:"주의 문항"};
+const Q=[
+{c:"motive",q:"수원하이텍고에 지원한 이유를 말해 보세요.",why:"가장 기본이면서 가장 변별력이 큰 문항. 학교를 알아보고 왔는지, 막연한 취업 희망인지가 여기서 갈립니다.",k:["계기가 된 구체적 경험 한 장면","그 경험이 메카트로닉스 세 학과 중 어디와 닿는지","취업 실적·자격증 과정 등 학교의 실제 강점 하나","‘그래서 이 학교여야 하는 이유’로 마무리"],t:"‘취업이 잘 돼서’만 말하면 다른 마이스터고와 구분이 안 됩니다."},
+{c:"motive",q:"일반고가 아니라 마이스터고를 선택한 이유는 무엇인가요?",why:"진로 결정의 주체가 본인인지, 부모 권유인지를 봅니다.",k:["이론보다 손으로 익히는 방식이 맞는다는 근거","3년 뒤 현장에서 일하고 있는 자기 모습을 그려서 말하기","부모님 권유였다면 숨기지 말고 ‘설명회·학과체험을 보고 내가 결정했다’로 전환"],t:"일반고를 깎아내리지 말 것. 선택의 차이지 우열이 아닙니다."},
+{c:"motive",q:"세 학과 중 어느 학과에 가고 싶고, 왜 그런가요?",why:"학교 구조를 알고 있는지 확인하는 문항입니다.",k:["1학년은 계열 공통, 2학년에 선택한다는 구조를 알고 있음을 드러내기","끌리는 학과의 실제 교육 내용 한 가지(PLC제어·정밀측정·PCB설계 등)","아직 확정이 아니라면 ‘1학년 때 세 분야를 다 겪어보고 정하겠다’도 좋은 답"],t:""},
+{c:"motive",q:"졸업 후 어떤 회사에서 어떤 일을 하고 싶습니까?",why:"진로가 구체적인 학생은 3년을 버팁니다. 면접관은 그 구체성을 봅니다.",k:["직무 수준으로 말하기(‘삼성’이 아니라 ‘반도체 장비 유지보수’)","수원·화성·용인 반도체 산업단지와 학교의 지리적 연결을 알고 있다면 가점","10년 뒤 어떤 기술자가 되고 싶은지 한 문장"],t:""},
+{c:"motive",q:"반도체나 기계를 따로 공부해 본 적이 없는데 괜찮을까요?",why:"학교 입학설명회에서도 실제로 나온 질문입니다. 겁먹지 않는지를 봅니다.",k:["솔직하게 ‘아직 배우지 못했다’고 인정","대신 관심의 증거를 제시(영상·책·분해해 본 경험·코딩 경험)","1학년 계열 공통 과정에서 기초부터 배운다는 점을 언급하며 자신감으로 마무리"],t:"아는 척하면 꼬리 질문에서 무너집니다."},
+{c:"motive",q:"대학에 진학할 생각이 있습니까?",why:"마이스터고의 정체성을 이해하는지 보는 핵심 문항입니다.",k:["선취업이 먼저임을 분명히","학교가 운영하는 일학습병행제·재직자 전형을 언급","‘현장에서 필요성을 느끼는 공부를 하겠다’는 순서로 배치"],t:"“대학 가고 싶습니다”를 앞세우면 지원 동기 전체가 흔들립니다. 거짓말하라는 뜻이 아니라 순서의 문제입니다."},
+{c:"school",q:"우리 학교에 대해 아는 대로 말해 보세요.",why:"관심의 깊이를 재는 문항. 홈페이지를 봤는지 아닌지가 즉시 드러납니다.",k:["메카트로닉스 계열 마이스터고, 8학급 144명, 학급당 18명","1학년 공통 → 2학년 학과 선택 구조","3개년 평균 취업률 85.6%, 대기업 32.6%","전교생 기숙사, 금요일 퇴사"],t:"줄줄 읊지 말고 두세 개만 고르되 ‘그래서 끌렸다’를 붙이세요."},
+{c:"school",q:"우리 학교 교육지표나 핵심가치를 알고 있습니까?",why:"학교가 중시하는 가치를 공유할 수 있는 학생인지 봅니다.",k:["교육지표: 더불어 살아가는 창의적인 글로벌 기술인 육성","핵심가치 넷: 도덕인·창조인·건강인·기술인","넷 중 자신에게 가장 가까운 하나를 골라 근거 한 줄"],t:""},
+{c:"school",q:"입학하면 꼭 해 보고 싶은 것 하나를 말해 보세요.",why:"3년 계획이 있는 학생인지 봅니다.",k:["자격증 이름을 구체적으로(학과별 취득 자격증은 홈페이지에 공개)","대회·동아리·국제교류(일본 공업고등전문학교와 16년째) 중 하나","왜 그것인지 한 문장"],t:""},
+{c:"school",q:"기숙사 생활을 해 본 적 없을 텐데, 자신 있습니까?",why:"전교생 기숙사이므로 중도 이탈 위험을 거르는 문항입니다.",k:["규칙적인 생활(06:40 기상, 22:30 점호)을 알고 있다는 점","집을 떠나는 어려움을 인정하되, 견딜 수 있는 근거(수련회·캠프 경험 등)","학교 설명대로 ‘협동심과 배려심을 배우는 과정’으로 해석"],t:"‘전혀 문제없습니다’보다 ‘힘들겠지만 이렇게 적응하겠다’가 신뢰를 줍니다."},
+{c:"school",q:"평일 08:30부터 20:50까지 수업과 방과후가 이어집니다. 견딜 수 있겠습니까?",why:"학업 강도에 대한 현실 인식을 확인합니다.",k:["긴 시간을 버텨 본 경험 하나","체력 관리 계획(핵심가치의 ‘건강인’과 연결 가능)","1학년 방과후가 토익·컴퓨터활용이라는 점을 안다면 가점"],t:""},
+{c:"school",q:"우리 학교가 아니라 다른 마이스터고에 합격하면 어떻게 하겠습니까?",why:"지원 진정성 확인. 참고로 마이스터고는 이중지원이 불가합니다.",k:["이중지원 불가 규정을 알고 있고 이 학교만 썼다는 사실","이 학교를 고른 고유한 이유 하나(지역 산업·학과 구성·취업처)"],t:""},
+{c:"dorm",q:"룸메이트가 밤늦게까지 불을 켜고 떠들어 잠을 못 잡니다. 어떻게 하겠습니까?",why:"기숙사 학교의 대표 상황 문항. 갈등을 회피하는지, 폭발시키는지, 단계적으로 푸는지를 봅니다.",k:["①먼저 당사자에게 직접, 비난이 아닌 요청으로 말한다","②반복되면 사감 선생님께 상의한다","③함께 쓰는 공간이라는 이유로 마무리"],t:"‘참는다’도 ‘바로 신고한다’도 단독으로는 약합니다. 순서를 보여주세요."},
+{c:"dorm",q:"조별 실습에서 한 친구가 전혀 참여하지 않습니다. 어떻게 하겠습니까?",why:"무임승차 상황. 팀을 굴릴 수 있는 사람인지 봅니다.",k:["왜 참여를 안 하는지 먼저 물어본다(못 하는 것과 안 하는 것은 다름)","할 수 있는 작은 역할을 떼어 준다","그래도 안 되면 선생님께 상황을 공유한다"],t:"‘내가 다 하겠다’는 책임감처럼 들리지만 팀워크 점수에서는 감점입니다."},
+{c:"dorm",q:"친한 친구가 기숙사 규칙을 어기는 것을 봤습니다. 어떻게 하겠습니까?",why:"도덕인 가치의 직접 평가. 의리와 규칙 사이의 판단을 봅니다.",k:["친구에게 먼저 그만두라고 말한다","반복되거나 위험한 일이면 선생님께 알린다","‘친구를 지키는 방법’으로서의 신고라는 관점"],t:"‘못 본 척한다’는 사실상 탈락 답변입니다."},
+{c:"dorm",q:"실습 중 본인의 실수로 장비를 고장 냈습니다. 어떻게 하겠습니까?",why:"안전·정직이 걸린 문항. 현장에서 가장 중요한 태도입니다.",k:["즉시 선생님께 알린다 — 숨기면 더 큰 사고가 된다","무엇을 어떻게 했는지 사실대로 보고","같은 실수를 막을 방법을 스스로 제안"],t:"현장에서 은폐는 인명 사고로 이어집니다. 주저 없이 ‘즉시 보고’라고 하세요."},
+{c:"dorm",q:"성적이 기대만큼 나오지 않아 힘들 때 어떻게 하겠습니까?",why:"전공과목은 처음 접하는 내용이라 어렵다고 학교도 인정합니다. 중도 포기 가능성을 봅니다.",k:["원인을 혼자 삭이지 않고 선생님·친구에게 묻는다","중학교 때 성적이 떨어졌다가 올린 경험이 있다면 그 방법","포기 대신 기간을 정해 다시 해 보는 구체적 계획"],t:""},
+{c:"dorm",q:"친구와 크게 다퉜던 경험과, 어떻게 풀었는지 말해 보세요.",why:"관계 회복 능력. 기숙사에서는 피할 공간이 없습니다.",k:["다툼의 원인을 상대 탓이 아닌 상황으로 설명","먼저 다가간 행동 하나","그 뒤 관계가 어떻게 됐는지, 무엇을 배웠는지"],t:"‘다툰 적 없습니다’는 답이 아니라 회피로 들립니다."},
+{c:"work",q:"회사에서 선배가 시킨 방법이 안전수칙과 다릅니다. 어떻게 하겠습니까?",why:"제조 현장의 핵심 가치. 마이스터고 면접의 전형적인 회사생활 상황입니다.",k:["안전이 먼저라는 판단을 분명히","선배를 무시하지 않고 ‘이 방법이 맞는지 여쭤봐도 될까요’로 확인","그래도 위험하면 관리자에게 알린다"],t:"‘선배 말을 따릅니다’는 위험 인식 부족으로 읽힙니다."},
+{c:"work",q:"내가 만든 제품에서 작은 불량을 발견했습니다. 아무도 모릅니다. 어떻게 하겠습니까?",why:"정직성 문항. 반도체·정밀기계 분야에서 작은 불량은 치명적입니다.",k:["바로 보고한다","작은 불량이 뒤 공정에서 큰 손실이 된다는 이해","재발을 막기 위한 기록·점검 제안"],t:""},
+{c:"work",q:"동료의 실수로 내 작업이 밀렸습니다. 어떻게 하겠습니까?",why:"책임 전가 성향을 봅니다.",k:["먼저 일정 복구가 우선임을 말한다","감정이 아니라 사실로 공유","비슷한 실수가 반복되지 않게 함께 방법을 찾는다"],t:""},
+{c:"work",q:"맡은 일이 혼자 하기에 너무 많습니다. 어떻게 하겠습니까?",why:"무리하다 사고를 내는 유형인지, 도움을 요청할 줄 아는 유형인지 봅니다.",k:["우선순위를 정해 가능한 범위를 먼저 밝힌다","못 지킬 일정은 미리 알린다 — 늦게 말하는 것이 가장 나쁘다","도움을 요청하는 것은 무능이 아니라는 인식"],t:""},
+{c:"work",q:"고졸로 입사하면 대졸 동료와 함께 일하게 됩니다. 어떻게 하겠습니까?",why:"열등감 없이 일할 수 있는지를 봅니다.",k:["3년간 실습으로 쌓은 현장 감각이라는 강점","부족한 부분은 재직자 전형·사내 교육으로 채운다","비교가 아니라 역할의 차이로 보기"],t:""},
+{c:"work",q:"회사에서 가장 중요한 태도는 무엇이라고 생각합니까?",why:"가치관 질문. 정답은 없지만 선택 이유가 중요합니다.",k:["하나만 고를 것(안전·정직·성실·협동 중)","그 가치를 보여준 본인 경험 한 줄","학교 핵심가치 네 가지와 연결되면 더 좋음"],t:""},
+{c:"person",q:"자기소개를 1분 안에 해 보세요.",why:"거의 모든 면접의 첫 문항. 첫인상이 나머지 답변의 해석을 좌우합니다.",k:["‘○○한 사람입니다’ 한 문장으로 시작","그 문장을 뒷받침하는 경험 하나","지원 학과·분야와의 연결","입학 후 목표 한 문장으로 마무리"],t:"이름·중학교·취미 나열은 1분을 버리는 구성입니다."},
+{c:"person",q:"본인의 장점과 단점을 말해 보세요.",why:"자기 객관화 능력을 봅니다.",k:["장점은 반드시 근거가 되는 사례와 함께","단점은 실제 단점을 고르되, 고치려고 한 행동을 함께","‘꼼꼼해서 느리다’식 위장 단점은 들킵니다"],t:"단점으로 ‘성격이 급하다’를 말할 거면, 현장에서 어떻게 관리할지까지 말하세요."},
+{c:"person",q:"중학교 생활에서 가장 성실하게 해 온 일은 무엇입니까?",why:"출결·봉사·학교활동이 내신에 반영되는 학교입니다. 성실성은 실제 평가 항목입니다.",k:["3년간 이어온 것 하나(봉사·동아리·임원·운동)","이어온 이유","그 습관이 기숙사 생활에 어떻게 쓰일지"],t:""},
+{c:"person",q:"가장 열심히 해서 무언가를 이뤄낸 경험을 말해 보세요.",why:"성취 경험은 3년을 버티는 연료입니다. 크기보다 과정을 봅니다.",k:["거창하지 않아도 됨 — 과정의 구체성이 핵심","어려웠던 지점과 그걸 넘긴 방법","결과보다 ‘그때 배운 것’으로 끝맺기"],t:""},
+{c:"person",q:"스트레스를 받으면 어떻게 푸는 편입니까?",why:"기숙사에서 3년을 보내므로 자기 조절 능력이 실질적으로 중요합니다.",k:["건강한 방법 하나를 구체적으로","핵심가치 ‘건강인’과 연결 가능","주변에 피해를 주지 않는 방식임을 드러내기"],t:""},
+{c:"person",q:"존경하는 사람이 있습니까? 이유는?",why:"가치관을 우회적으로 묻는 문항.",k:["유명인이 아니어도 좋음 — 부모·선생님·기술자","존경하는 ‘행동’을 구체적으로","그 점을 어떻게 닮고 싶은지"],t:"인물 설명에 시간을 다 쓰지 말고, 나와의 연결에 절반을 쓰세요."},
+{c:"person",q:"협동과 개인의 실력 중 무엇이 더 중요하다고 생각합니까?",why:"양자택일 문항. 어느 쪽을 골라도 되지만 근거가 필요합니다.",k:["하나를 고르고 이유를 댄 뒤, 다른 쪽도 필요한 상황을 인정","자동화 설비는 혼자 만들 수 없다는 현장 논리가 유용","본인 경험과 연결"],t:"‘둘 다 중요합니다’로 시작하면 아무 말도 안 한 셈이 됩니다. 고르고 나서 균형을 잡으세요."},
+{c:"person",q:"3년 뒤 졸업할 때 어떤 학생이 되어 있고 싶습니까?",why:"목표 설정 능력. 마무리 문항으로 자주 쓰입니다.",k:["자격증·기술·태도 중 두 가지 정도로 압축","‘후배에게 알려줄 수 있는 선배’ 같은 구체적 모습","학교 교육지표와 겹치면 자연스럽게 좋음"],t:""},
+{c:"trap",q:"마지막으로 하고 싶은 말이 있습니까?",why:"준비 여부가 그대로 드러나는 문항. 여기서 ‘없습니다’는 아깝습니다.",k:["앞에서 못 한 말 한 가지 또는 지원 의지 한 문장","짧게 — 20초 이내","새로운 정보보다 ‘왜 이 학교인지’의 재확인"],t:"길게 늘어놓으면 마지막 인상이 지루함으로 끝납니다."},
+{c:"trap",q:"지금 답변, 혹시 외워 온 것 아닙니까?",why:"압박성 확인 질문. 흔들리는지를 봅니다.",k:["당황하지 말고 인정할 부분은 인정","‘준비는 했지만 제 경험에서 나온 말입니다’","바로 뒤에 준비하지 않은 세부 사례를 덧붙이면 신뢰 회복"],t:""},
+{c:"trap",q:"부모님이 권해서 지원한 것은 아닙니까?",why:"주체성 확인. 실제로 그런 경우가 많아 자주 나옵니다.",k:["계기가 부모님이었다면 숨기지 말 것","다만 ‘내가 알아본 것’을 반드시 덧붙이기(설명회·학과체험·홈페이지)","최종 결정이 본인이었음을 분명히"],t:"거짓으로 부인하면 꼬리 질문에서 드러납니다."},
+{c:"trap",q:"혹시 성적이 낮아서 마이스터고에 온 것은 아닙니까?",why:"가장 불편한 압박 문항. 감정 조절을 봅니다.",k:["감정적으로 반응하지 않기","성적이 아니라 진로 방식의 선택이었음을 사례로 설명","이 학교에서 하고 싶은 일을 다시 한 번 구체적으로"],t:"변명이나 반박보다, 하고 싶은 일을 말하는 것이 가장 강한 답입니다."}
+];
+
+/* ── 탭 ── */
+const tabs=[...document.querySelectorAll('[data-go]')];
+tabs.forEach(b=>b.addEventListener('click',()=>{
+  tabs.forEach(x=>x.setAttribute('aria-selected',x===b));
+  document.querySelectorAll('section').forEach(s=>s.hidden=(s.id!==b.dataset.go));
+  window.scrollTo({top:0,behavior:'smooth'});
+}));
+
+/* ── D-day ── */
+(function(){
+  const target=new Date(2026,9,27);
+  const now=new Date(); const t0=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const d=Math.round((target-t0)/86400000);
+  const el=document.getElementById('dday');
+  el.textContent = d>0?('D-'+d) : d===0?'D-DAY' : ('D+'+(-d));
+  document.querySelectorAll('#tl li').forEach(li=>{
+    const dd=new Date(li.dataset.d+'T00:00:00');
+    if(dd>=t0 && !document.querySelector('#tl li.now')) li.classList.add('now');
+  });
+})();
+
+/* ── 질문 뱅크 ── */
+let filter='all';
+const fbox=document.getElementById('filters'), qlist=document.getElementById('qlist');
+function mkFilters(){
+  const all=[['all','전체 36']].concat(Object.keys(CATS).map(k=>[k,CATS[k]+' '+Q.filter(q=>q.c===k).length]));
+  fbox.innerHTML='';
+  all.forEach(([k,label])=>{
+    const b=document.createElement('button');
+    b.textContent=label; b.setAttribute('aria-pressed',k===filter);
+    b.addEventListener('click',()=>{filter=k;mkFilters();render();});
+    fbox.appendChild(b);
+  });
+}
+function render(){
+  const list=Q.filter(q=>filter==='all'||q.c===filter);
+  qlist.innerHTML='';
+  list.forEach((q)=>{
+    const n=Q.indexOf(q)+1;
+    const wrap=document.createElement('div'); wrap.className='q';
+    const id='qb'+n;
+    wrap.innerHTML=`<button type="button" aria-expanded="false" aria-controls="${id}">
+      <span class="qn">${String(n).padStart(2,'0')}</span>
+      <span class="qt">${q.q}<span class="tag">${CATS[q.c]}</span></span>
+      <span class="chev">+</span></button>
+      <div class="body" id="${id}" hidden>
+        <div><span class="lbl">무엇을 보는가</span><p>${q.why}</p></div>
+        <div><span class="lbl">답변 설계</span><ul>${q.k.map(x=>'<li>'+x+'</li>').join('')}</ul></div>
+        ${q.t?`<div class="trap"><span class="lbl">주의</span><p>${q.t}</p></div>`:''}
+      </div>`;
+    const btn=wrap.querySelector('button'), body=wrap.querySelector('.body');
+    btn.addEventListener('click',()=>{
+      const open=body.hidden;
+      body.hidden=!open; btn.setAttribute('aria-expanded',open);
+      btn.querySelector('.chev').textContent=open?'−':'+';
+    });
+    qlist.appendChild(wrap);
+  });
+}
+mkFilters(); render();
+
+/* ── 모의면접 ── */
+(function(){
+  const stage=document.getElementById('stage'),qEl=document.getElementById('drillQ'),
+        clock=document.getElementById('clock'),bar=document.querySelector('#track i'),
+        go=document.getElementById('go'),skip=document.getElementById('skip'),
+        rev=document.getElementById('reveal'),box=document.getElementById('revealBox'),
+        cnt=document.getElementById('count');
+  let timer=null,cur=null,done=0,pool=[];
+  function pick(){ if(!pool.length) pool=Q.map((_,i)=>i).sort(()=>Math.random()-.5); return pool.pop(); }
+  function run(sec,label,next){
+    let left=sec; stage.textContent=label;
+    clock.textContent=String(left).padStart(2,'0')+'초';
+    bar.style.width='0%';
+    clearInterval(timer);
+    timer=setInterval(()=>{
+      left--;
+      clock.textContent=String(Math.max(left,0)).padStart(2,'0')+'초';
+      bar.style.width=(100*(sec-left)/sec)+'%';
+      clock.style.color = left<=5 ? 'var(--alert)' : '';
+      if(left<=0){clearInterval(timer); next&&next();}
+    },1000);
+  }
+  function ask(){
+    const i=pick(); cur=Q[i];
+    qEl.textContent=cur.q;
+    box.hidden=true; box.innerHTML='';
+    rev.disabled=true; skip.disabled=false; go.disabled=true;
+    bar.style.background='var(--amber)';
+    run(30,'준비 — 머릿속으로 ①판단 ②행동 ③이유 짜기',()=>{
+      bar.style.background='var(--steel)';
+      run(90,'답변 — 소리 내어 말하세요',()=>{
+        stage.textContent='종료 — 설계 포인트와 맞춰 보세요';
+        clock.textContent='00초'; clock.style.color='';
+        rev.disabled=false; go.disabled=false; go.textContent='다음 질문 받기';
+        done++; cnt.textContent=done+'문항 완료';
+      });
+    });
+  }
+  go.addEventListener('click',ask);
+  skip.addEventListener('click',()=>{clearInterval(timer);ask();});
+  rev.addEventListener('click',()=>{
+    if(!cur) return;
+    box.hidden=false;
+    box.innerHTML=`<span class="lbl">무엇을 보는가</span><p style="font-size:14px;color:var(--muted);margin:5px 0 12px">${cur.why}</p>
+      <span class="lbl">답변 설계</span><ul style="font-size:14px;color:var(--muted);margin:5px 0 0;padding-left:18px;display:grid;gap:4px">${cur.k.map(x=>'<li>'+x+'</li>').join('')}</ul>
+      ${cur.t?`<div class="trap" style="margin-top:12px"><span class="lbl">주의</span><p style="font-size:14px;color:var(--muted);margin-top:4px">${cur.t}</p></div>`:''}`;
+  });
+})();
+
+/* ── 자기소개 조립 ── */
+(function(){
+  const ids=['f1','f2','f3','f4'], draft=document.getElementById('draft'), secs=document.getElementById('secs');
+  const ph=t=>`<span class="ph">[${t}]</span>`;
+  function build(){
+    const v=ids.map(i=>document.getElementById(i).value.trim());
+    const s1=`안녕하십니까. 수원하이텍고등학교 메카트로닉스계열에 지원한 ○○○입니다.`;
+    const s2=`저는 ${v[0]||ph('지원 계기가 된 경험')}을 계기로 ${v[1]||ph('그 경험에서 생긴 관심')}에 관심을 갖게 되었습니다.`;
+    const s3=`중학교에서는 ${v[2]||ph('성실함을 보여준 활동')}을 통해 맡은 일을 끝까지 해내는 태도를 길렀고, 이 점이 기숙사에서 함께 생활하는 데에도 도움이 될 것이라 생각합니다.`;
+    const s4=`입학 후에는 ${v[3]||ph('입학 후 목표')}을 목표로 삼고, 졸업할 때는 현장에서 바로 일할 수 있는 기술인이 되고 싶습니다. 감사합니다.`;
+    draft.innerHTML=[s1,s2,s3,s4].join('\n\n');
+    const text=draft.textContent.replace(/\[|\]/g,'');
+    secs.textContent=Math.round(text.replace(/\s/g,'').length/5.5);
+    try{ localStorage.setItem('sht_intro',JSON.stringify(v)); }catch(e){}
+  }
+  try{
+    const s=JSON.parse(localStorage.getItem('sht_intro')||'[]');
+    ids.forEach((id,i)=>{ if(s[i]) document.getElementById(id).value=s[i]; });
+  }catch(e){}
+  ids.forEach(i=>document.getElementById(i).addEventListener('input',build));
+  build();
+})();
+
+/* ── 체크리스트 ── */
+(function(){
+  const boxes=[...document.querySelectorAll('#chk input,#chk2 input')];
+  let saved={};
+  try{ saved=JSON.parse(localStorage.getItem('sht_chk')||'{}'); }catch(e){}
+  boxes.forEach(b=>{
+    if(saved[b.id]) b.checked=true;
+    b.addEventListener('change',()=>{
+      const o={}; boxes.forEach(x=>{if(x.checked)o[x.id]=1;});
+      try{ localStorage.setItem('sht_chk',JSON.stringify(o)); }catch(e){}
+    });
+  });
+})();
+</script>
+
+</body></html>
