@@ -190,6 +190,10 @@ table.gugu th.hl{background:#FFD9A8;color:var(--ink)}
 .opt b{display:block;font-size:17px}
 .opt span{font-family:'Gaegu',sans-serif;font-weight:700;font-size:15px;color:var(--ink-soft)}
 
+.mob-tip{display:none;text-align:center;background:var(--accent-soft);border:2px dashed var(--accent);
+  border-radius:14px;padding:10px 14px;margin:0 0 18px;color:#8A5A2B}
+@media (pointer:coarse){.mob-tip{display:block}}
+
 footer.foot{text-align:center;color:var(--ink-soft);font-size:14px;padding:10px 0 30px;font-family:'Gaegu',sans-serif;font-weight:700}
 
 /* ===== 인쇄 영역 ===== */
@@ -254,6 +258,8 @@ footer.foot{text-align:center;color:var(--ink-soft);font-size:14px;padding:10px 
     <button class="tab" data-p="quiz">④ 도전 퀴즈</button>
     <button class="tab" data-p="print">⑤ 인쇄하기</button>
   </nav>
+
+  <p class="sub mob-tip" id="mobTip">📱 소리가 안 들리면 휴대폰 옆면의 <b>무음(진동) 스위치를 해제</b>하고 볼륨을 올려 주세요.</p>
 
   <!-- ① 배우기 -->
   <section class="panel on" id="p-learn">
@@ -413,44 +419,67 @@ footer.foot{text-align:center;color:var(--ink-soft);font-size:14px;padding:10px 
     btnTTS.textContent = ttsOn ? '🔊 소리 켜짐' : '🔇 소리 꺼짐';
   });
   // 브라우저는 '사용자가 직접 누르기 전' 음성 재생을 막습니다.
-  // 한 번이라도 클릭/터치/키 입력이 있어야 읽어 줍니다.
-  var userActed = false;
+  // 특히 아이폰 사파리는 '누른 그 순간에 바로' 말하기를 시작해야만 허용하므로
+  // 첫 터치에서 빈 소리를 한 번 재생해 음성 기능을 깨워 둡니다.
+  var userActed = false, unlocked = false;
+  function unlockTTS(){
+    userActed = true;
+    if(unlocked || !('speechSynthesis' in window)) return;
+    unlocked = true;
+    try{
+      var warm = new SpeechSynthesisUtterance(' ');
+      warm.volume = 0; warm.rate = 2; warm.lang = 'ko-KR';
+      window.speechSynthesis.speak(warm);   // 제스처 안에서 즉시 호출
+    }catch(e){}
+  }
   ['pointerdown','touchstart','keydown'].forEach(function(ev){
-    window.addEventListener(ev, function(){ userActed = true; }, true);
+    window.addEventListener(ev, unlockTTS, true);
   });
   if('speechSynthesis' in window){
     try{ window.speechSynthesis.getVoices(); }catch(e){}
-    window.speechSynthesis.onvoiceschanged = function(){};
+    window.speechSynthesis.onvoiceschanged = function(){ koVoice(); };
   }
   function koVoice(){
     try{
       var vs = window.speechSynthesis.getVoices() || [];
       for(var i = 0; i < vs.length; i++){
-        if(/^ko/i.test(vs[i].lang || '')) return vs[i];
+        if(/^ko([-_]|$)/i.test(vs[i].lang || '')) return vs[i];
       }
     }catch(e){}
     return null;
   }
-  var speakTimer = null;
+  function makeUtter(txt){
+    var u = new SpeechSynthesisUtterance(txt);
+    var v = koVoice();
+    if(v) u.voice = v;
+    u.lang = 'ko-KR'; u.rate = 0.85; u.pitch = 1.15; u.volume = 1;
+    u.onerror = function(){};           // 중단/취소는 정상 동작이므로 무시
+    return u;
+  }
+  var retryTimer = null, pendingJob = null;
   function speak(txt){
     if(!ttsOn || !userActed || !('speechSynthesis' in window)) return;
+    var s = window.speechSynthesis;
+    var job = { started:false };
+    pendingJob = job;
+    if(retryTimer){ clearTimeout(retryTimer); retryTimer = null; }
     try{
-      var s = window.speechSynthesis;
-      s.cancel();                       // 이전 말 끊기
-      if(speakTimer) clearTimeout(speakTimer);
-      // cancel() 직후 바로 speak() 하면 크롬에서 묵음이 되는 문제가 있어 한 박자 쉽니다.
-      speakTimer = setTimeout(function(){
-        try{
-          var u = new SpeechSynthesisUtterance(txt);
-          var v = koVoice();
-          if(v) u.voice = v;
-          u.lang = 'ko-KR'; u.rate = 0.85; u.pitch = 1.15;
-          u.onerror = function(){};     // 중단/취소는 정상 동작이므로 무시
-          if(s.paused) s.resume();
-          s.speak(u);
-        }catch(e){}
-      }, 80);
+      s.cancel();
+      if(s.paused) s.resume();
+      var u = makeUtter(txt);
+      u.onstart = function(){ job.started = true; };
+      s.speak(u);                       // 제스처와 같은 순간에 호출 (모바일 필수)
     }catch(e){}
+    // 데스크톱 크롬은 cancel() 직후 speak()이 묵음으로 삼켜질 때가 있습니다.
+    // 말이 실제로 시작되지 않은 경우에만 딱 한 번 다시 시도합니다.
+    retryTimer = setTimeout(function(){
+      if(pendingJob !== job || job.started || !ttsOn) return;
+      try{
+        var u2 = makeUtter(txt);
+        u2.onstart = function(){ job.started = true; };
+        s.speak(u2);
+      }catch(e){}
+    }, 300);
   }
 
   /* ---------- ① 배우기 ---------- */
