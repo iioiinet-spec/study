@@ -379,8 +379,11 @@ footer.foot{text-align:center;color:var(--ink-soft);font-size:14px;padding:10px 
     var t = Math.floor(n/10), o = n%10;
     return (t===1 ? '십' : H[t]+'십') + (o ? H[o] : '');
   }
+  // 곱이 한 자리 수일 때만 조사를 붙입니다. (일일은 일 / 삼삼은 구 / 이이는 사 / 삼사 십이)
+  var JOSA = ['','은','는','은','는','는','은','은','은','는'];
   function reading(a,b){
-    return H[a] + H[b] + (b===1 ? '은' : '') + ' ' + sino(a*b);
+    var res = a * b;
+    return H[a] + H[b] + (res < 10 ? JOSA[b] : '') + ' ' + sino(res);
   }
   function el(tag, cls, text){
     var e = document.createElement(tag);
@@ -409,13 +412,44 @@ footer.foot{text-align:center;color:var(--ink-soft);font-size:14px;padding:10px 
     btnTTS.classList.toggle('on', ttsOn);
     btnTTS.textContent = ttsOn ? '🔊 소리 켜짐' : '🔇 소리 꺼짐';
   });
-  function speak(txt){
-    if(!ttsOn || !('speechSynthesis' in window)) return;
+  // 브라우저는 '사용자가 직접 누르기 전' 음성 재생을 막습니다.
+  // 한 번이라도 클릭/터치/키 입력이 있어야 읽어 줍니다.
+  var userActed = false;
+  ['pointerdown','touchstart','keydown'].forEach(function(ev){
+    window.addEventListener(ev, function(){ userActed = true; }, true);
+  });
+  if('speechSynthesis' in window){
+    try{ window.speechSynthesis.getVoices(); }catch(e){}
+    window.speechSynthesis.onvoiceschanged = function(){};
+  }
+  function koVoice(){
     try{
-      window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(txt);
-      u.lang = 'ko-KR'; u.rate = 0.85; u.pitch = 1.15;
-      window.speechSynthesis.speak(u);
+      var vs = window.speechSynthesis.getVoices() || [];
+      for(var i = 0; i < vs.length; i++){
+        if(/^ko/i.test(vs[i].lang || '')) return vs[i];
+      }
+    }catch(e){}
+    return null;
+  }
+  var speakTimer = null;
+  function speak(txt){
+    if(!ttsOn || !userActed || !('speechSynthesis' in window)) return;
+    try{
+      var s = window.speechSynthesis;
+      s.cancel();                       // 이전 말 끊기
+      if(speakTimer) clearTimeout(speakTimer);
+      // cancel() 직후 바로 speak() 하면 크롬에서 묵음이 되는 문제가 있어 한 박자 쉽니다.
+      speakTimer = setTimeout(function(){
+        try{
+          var u = new SpeechSynthesisUtterance(txt);
+          var v = koVoice();
+          if(v) u.voice = v;
+          u.lang = 'ko-KR'; u.rate = 0.85; u.pitch = 1.15;
+          u.onerror = function(){};     // 중단/취소는 정상 동작이므로 무시
+          if(s.paused) s.resume();
+          s.speak(u);
+        }catch(e){}
+      }, 80);
     }catch(e){}
   }
 
@@ -545,7 +579,7 @@ footer.foot{text-align:center;color:var(--ink-soft);font-size:14px;padding:10px 
   function clearHl(){
     tbl.querySelectorAll('.hl').forEach(function(x){ x.classList.remove('hl'); });
   }
-  function pick(r,c){
+  function pick(r,c,silent){
     tbl.querySelectorAll('td.sel').forEach(function(x){ x.classList.remove('sel'); });
     tbl.querySelector('td[data-r="'+r+'"][data-c="'+c+'"]').classList.add('sel');
     var box = document.getElementById('areaBox');
@@ -563,12 +597,17 @@ footer.foot{text-align:center;color:var(--ink-soft);font-size:14px;padding:10px 
     line.appendChild(el('span', null, r + ' × ' + c + ' = '));
     line.appendChild(el('span','big', String(r*c)));
     txt.appendChild(line);
-    txt.appendChild(el('small', null, reading(Math.max(r,2), c) + '  ·  ' + r + '개씩 ' + c + '줄'));
+    var say = reading(r, c);           // 누른 칸 그대로 읽습니다
+    txt.appendChild(el('small', null, say + '  ·  ' + r + '개씩 ' + c + '줄'));
+    var again = el('button','btn','🔊 다시 듣기');
+    again.style.marginTop = '10px';
+    again.addEventListener('click', function(){ speak(say); });
+    txt.appendChild(again);
     box.appendChild(txt);
-    speak(reading(Math.max(r,2), c));
+    if(!silent) speak(say);
   }
   buildTable();
-  pick(3,4);
+  pick(3,4,true);                      // 첫 화면은 소리 없이 보여 주기만
 
   /* ---------- ③ 9단 손가락 ---------- */
   var handsBox = document.getElementById('hands');
